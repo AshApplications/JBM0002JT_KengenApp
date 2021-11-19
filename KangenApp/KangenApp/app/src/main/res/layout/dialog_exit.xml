@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/_10sdp"
+        app:cardBackgroundColor="@color/colorWhite"
+        app:cardCornerRadius="10dp">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_100sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:src="@drawable/ic_rate_dialog" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:fontFamily="@font/mfont_medium"
+                android:gravity="center"
+                android:text="Exit App"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/_16ssp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:fontFamily="@font/mfont"
+                android:gravity="center"
+                android:text="Are you sure want to exit this app ?"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/_14ssp" />
+
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/_10sdp"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/crd_cancel"
+                    android:background="?attr/selectableItemBackground"
+                    android:layout_width="0.0dip"
+                    android:layout_height="@dimen/_25sdp"
+                    android:layout_marginLeft="@dimen/_20sdp"
+                    android:layout_weight="1.0">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_button">
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="match_parent"
+                            android:fontFamily="@font/mfont"
+                            android:gravity="center"
+                            android:text="No"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="@dimen/_10ssp" />
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/crd_rateus"
+                    android:layout_width="0.0dip"
+                    android:layout_height="@dimen/_25sdp"
+                    android:background="?attr/selectableItemBackground"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    android:layout_weight="1.0">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_button">
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:fontFamily="@font/mfont"
+                            android:gravity="center"
+                            android:text="Rate Us"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="@dimen/_10ssp" />
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/crd_exit"
+                    android:layout_width="0.0dip"
+                    android:layout_height="@dimen/_25sdp"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    android:background="?attr/selectableItemBackground"
+                    android:layout_marginRight="@dimen/_20sdp"
+                    android:layout_weight="1.0">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_button">
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:fontFamily="@font/mfont"
+                            android:gravity="center"
+                            android:text="Yes"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="@dimen/_10ssp" />
+                    </LinearLayout>
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+</FrameLayout>

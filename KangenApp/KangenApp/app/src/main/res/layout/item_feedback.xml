@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_box_swhite"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_30sdp"
+            android:background="@color/colorBlack"
+            android:paddingHorizontal="@dimen/_10sdp">
+
+            <TextView
+                android:id="@+id/txtId"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#BF000000"
+                android:fontFamily="@font/mfont"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="ID : 12"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/_11ssp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtVideoDatetime"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:background="#BF000000"
+                android:fontFamily="@font/mfont_medium"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="21-10-2012 10:44:23"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/_11ssp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/_10sdp">
+
+            <androidx.appcompat.widget.AppCompatRatingBar
+                android:id="@+id/ratingBar"
+                style="?android:attr/ratingBarStyleIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:isIndicator="false"
+                android:numStars="5"
+                android:rating="0"
+                android:stepSize="1"
+                android:theme="@style/RatingBar" />
+
+            <TextView
+                android:id="@+id/txtQuestion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/mfont"
+                android:minHeight="@dimen/_50sdp"
+                android:paddingVertical="@dimen/_10sdp"
+                android:paddingLeft="@dimen/_5sdp"
+                android:text="Nice App Buddy"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/_11ssp" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/_30sdp"
+                        android:fontFamily="@font/mfont"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="Reply"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="@dimen/_14ssp"
+                        android:textStyle="bold" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:background="@color/colorBlack" />
+
+                    <TextView
+                        android:id="@+id/txtAnswer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/mfont"
+                        android:minHeight="@dimen/_50sdp"
+                        android:paddingVertical="@dimen/_10sdp"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="@dimen/_11ssp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

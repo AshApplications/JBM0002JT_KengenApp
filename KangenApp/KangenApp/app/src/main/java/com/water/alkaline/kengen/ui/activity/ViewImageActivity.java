@@ -90,6 +90,13 @@ public class ViewImageActivity extends AppCompatActivity {
             PAGE = getIntent().getStringExtra("PAGE");
         }
 
+        binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         binding.llmenuDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

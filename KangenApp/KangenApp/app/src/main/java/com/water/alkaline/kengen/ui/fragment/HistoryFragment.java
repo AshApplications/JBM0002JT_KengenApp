@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.os.Handler;
@@ -69,10 +70,27 @@ public class HistoryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         binding.rvFeeds.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
-        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
+        GridLayoutManager manager = new GridLayoutManager(activity,1);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                switch (adapter.getItemViewType(i)) {
+                    case Constant.STORE_TYPE:
+                        return 1;
+                    case Constant.AD_TYPE:
+                        return 1;
+                    case Constant.LOADING:
+                        return 1;
+                    default:
+                        return 1;
+
+                }
+            }
+        });
         binding.rvFeeds.setLayoutManager(manager);
         adapter = new FeedAdapter(activity, feedbacks);
         binding.rvFeeds.setAdapter(adapter);
+        binding.rvFeeds.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
 
         new Handler().postDelayed(new Runnable() {
             @Override

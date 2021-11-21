@@ -26,7 +26,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.activity.ViewImageActivity"></activity>
+        <activity
+            android:name=".ui.activity.ViewImageActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.FeedbackActivity"
             android:screenOrientation="portrait" />
@@ -71,7 +73,6 @@
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.water.alkaline.kengen.fileprovider"
-            android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
@@ -80,8 +81,7 @@
 
         <service
             android:name=".MyFirebaseMessagingService"
-            android:enabled="true"
-            android:exported="false">
+            android:enabled="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -89,7 +89,9 @@
         <service
             android:name=".MyService"
             android:enabled="true" />
-
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_logo" />

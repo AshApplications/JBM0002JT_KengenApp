@@ -20,14 +20,19 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.gson.Gson;
+import com.preference.PowerPreference;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.FragmentPdfBinding;
 import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.main.Pdf;
+import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.ui.activity.PdfActivity;
+import com.water.alkaline.kengen.ui.activity.PlayerActivity;
 import com.water.alkaline.kengen.ui.adapter.PdfAdapter;
 import com.water.alkaline.kengen.ui.listener.OnPdfListener;
+import com.water.alkaline.kengen.utils.Constant;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -81,13 +86,37 @@ public class PdfFragment extends Fragment {
         adapter = new PdfAdapter(activity, list, new OnPdfListener() {
             @Override
             public void onItemClick(int position, Pdf item) {
-                startActivity(new Intent(activity, PdfActivity.class).putExtra("mpath", item.getUrl()));
+                new InterAds().showInter(activity, new InterAds.OnAdClosedListener() {
+                    @Override
+                    public void onAdClosed() {
+
+                        startActivity(new Intent(activity, PdfActivity.class).putExtra("mpath", item.getUrl()));
+                    }
+                });
+
             }
         });
-        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        GridLayoutManager manager = new GridLayoutManager(activity,2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                switch (adapter.getItemViewType(i)) {
+                    case Constant.STORE_TYPE:
+                        return 1;
+                    case Constant.AD_TYPE:
+                        return 2;
+                    case Constant.LOADING:
+                        return 1;
+                    default:
+                        return 1;
+
+                }
+            }
+        });
         binding.rvPdfs.setLayoutManager(manager);
         binding.rvPdfs.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
         binding.rvPdfs.setAdapter(adapter);
+        binding.rvPdfs.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
         refreshFragment();
     }
 

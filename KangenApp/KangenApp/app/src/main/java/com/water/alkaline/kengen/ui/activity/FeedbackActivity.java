@@ -35,6 +35,7 @@ import com.water.alkaline.kengen.library.ViewAnimator.AnimationListener;
 import com.water.alkaline.kengen.library.ViewAnimator.ViewAnimator;
 import com.water.alkaline.kengen.model.feedback.Feedback;
 import com.water.alkaline.kengen.model.feedback.FeedbackResponse;
+import com.water.alkaline.kengen.placements.BannerAds;
 import com.water.alkaline.kengen.ui.adapter.ViewPagerFragmentAdapter;
 import com.water.alkaline.kengen.ui.fragment.FeedbackFragment;
 import com.water.alkaline.kengen.ui.fragment.HistoryFragment;
@@ -56,6 +57,11 @@ public class FeedbackActivity extends AppCompatActivity {
     public Dialog dialog;
     public Dialog loaderDialog;
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new BannerAds().showBanner(this);
+    }
     public void setBG() {
 
         Glide.with(this).load(R.drawable.bg).diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -83,6 +89,7 @@ public class FeedbackActivity extends AppCompatActivity {
         adapter.addFragment(FeedbackFragment.newInstance(this), "Feedbacks");
         adapter.addFragment(HistoryFragment.newInstance(this), "History");
         binding.vpFeeds.setAdapter(adapter);
+        binding.vpFeeds.setOffscreenPageLimit(2);
 
         new TabLayoutMediator(binding.tabHome, binding.vpFeeds, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override

@@ -12,11 +12,15 @@ import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.gson.Gson;
+import com.preference.PowerPreference;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.ActivityDownloadBinding;
 import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.DownloadEntity;
+import com.water.alkaline.kengen.placements.BannerAds;
+import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.ui.adapter.DownloadAdapter;
 import com.water.alkaline.kengen.ui.listener.OnDownloadListener;
 import com.water.alkaline.kengen.utils.Constant;
@@ -32,6 +36,11 @@ public class DownloadActivity extends AppCompatActivity {
     DownloadAdapter adapter;
     public AppViewModel viewModel;
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new BannerAds().showBanner(this);
+    }
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
 
@@ -57,17 +66,42 @@ public class DownloadActivity extends AppCompatActivity {
         adapter = new DownloadAdapter(this, list, new OnDownloadListener() {
             @Override
             public void onItemClick(int position, DownloadEntity item) {
-                if (item.type == Constant.TYPE_PDF) {
-                    startActivity(new Intent(DownloadActivity.this, PdfActivity.class).putExtra("mpath", item.filePath));
-                } else {
-                    startActivity(new Intent(DownloadActivity.this, ImageActivity.class).putExtra("mpath", item.url));
+
+                new InterAds().showInter(DownloadActivity.this, new InterAds.OnAdClosedListener() {
+                    @Override
+                    public void onAdClosed() {
+                        if (item.type == Constant.TYPE_PDF) {
+                            startActivity(new Intent(DownloadActivity.this, PdfActivity.class).putExtra("mpath", item.filePath));
+                        } else {
+                            startActivity(new Intent(DownloadActivity.this, ImageActivity.class).putExtra("mpath", item.url));
+                        }
+                    }
+                });
+
+
+            }
+        });
+        GridLayoutManager manager = new GridLayoutManager(this,2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                switch (adapter.getItemViewType(i)) {
+                    case Constant.STORE_TYPE:
+                        return 1;
+                    case Constant.AD_TYPE:
+                        return 2;
+                    case Constant.LOADING:
+                        return 1;
+                    default:
+                        return 1;
+
                 }
             }
         });
-        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         binding.rvDownloads.setLayoutManager(manager);
         binding.rvDownloads.addItemDecoration(new ItemOffsetDecoration(this, R.dimen.item_off_ten));
         binding.rvDownloads.setAdapter(adapter);
+        binding.rvDownloads.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
         refreshActivity();
     }
 

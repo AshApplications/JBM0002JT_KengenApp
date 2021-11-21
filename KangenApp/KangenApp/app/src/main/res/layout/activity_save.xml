@@ -15,16 +15,22 @@
         android:id="@+id/includedToolbar"
         layout="@layout/item_toolbar" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvSaves"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/includedAd"
-        app:layout_constraintTop_toBottomOf="@id/includedToolbar" />
+        app:layout_constraintTop_toBottomOf="@id/includedToolbar">
 
-    <include
-        android:id="@+id/includedProgress"
-        layout="@layout/layout_pro_error" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSaves"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <include
+            android:id="@+id/includedProgress"
+            layout="@layout/layout_pro_error" />
+
+    </RelativeLayout>
 
     <include
         android:id="@+id/includedAd"

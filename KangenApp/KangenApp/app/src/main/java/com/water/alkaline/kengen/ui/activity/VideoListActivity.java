@@ -26,6 +26,8 @@ import com.water.alkaline.kengen.model.channel.ChannelResponse;
 import com.water.alkaline.kengen.model.channel.PlaylistResponse;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
+import com.water.alkaline.kengen.placements.BannerAds;
+import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnLoadMoreListener;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
@@ -45,6 +47,12 @@ public class VideoListActivity extends AppCompatActivity {
     List<SaveEntity> list = new ArrayList<>();
     VideosAdapter adapter;
     public AppViewModel viewModel;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new BannerAds().showBanner(this);
+    }
 
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
@@ -73,26 +81,54 @@ public class VideoListActivity extends AppCompatActivity {
     }
 
     public void getStart() {
-        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        GridLayoutManager manager = new GridLayoutManager(this,2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                switch (adapter.getItemViewType(i)) {
+                    case Constant.STORE_TYPE:
+                        return 1;
+                    case Constant.AD_TYPE:
+                        return 2;
+                    case Constant.LOADING:
+                        return 1;
+                    default:
+                        return 1;
+
+                }
+            }
+        });
         binding.rvVideos.setLayoutManager(manager);
         binding.rvVideos.addItemDecoration(new ItemOffsetDecoration(this, R.dimen.item_off_ten));
 
         adapter = new VideosAdapter(this, list, binding.rvVideos, new OnVideoListener() {
             @Override
             public void onItemClick(int position, SaveEntity item) {
-                PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(list));
-                PowerPreference.getDefaultFile().putInt(Constant.mPosition, position);
-                startActivity(new Intent(VideoListActivity.this, PlayerActivity.class));
+
+                new InterAds().showInter(VideoListActivity.this, new InterAds.OnAdClosedListener() {
+                    @Override
+                    public void onAdClosed() {
+                        PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(list));
+                        PowerPreference.getDefaultFile().putInt(Constant.mPosition, position);
+                        startActivity(new Intent(VideoListActivity.this, PlayerActivity.class));
+                    }
+                });
+
+
             }
         });
 
         binding.rvVideos.setAdapter(adapter);
+        binding.rvVideos.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
         adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-                adapter.arrayList.add(null);
-                adapter.notifyItemInserted(adapter.arrayList.size() - 1);
-
+                try {
+                    adapter.arrayList.add(new SaveEntity("99999",null,null));
+                    adapter.notifyItemInserted(adapter.arrayList.size() - 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -119,7 +155,7 @@ public class VideoListActivity extends AppCompatActivity {
                     playlistAPI();
                 }
             }
-        },2000);
+        }, 2000);
 
     }
 
@@ -161,11 +197,10 @@ public class VideoListActivity extends AppCompatActivity {
                             if (response.body().get("error") == null) {
                                 final ChannelResponse channelResponse = new Gson().fromJson(response.body(), ChannelResponse.class);
 
-                                if (adapter.arrayList.size() != 0) {
+                                if (adapter.arrayList.size() != 0 && adapter.arrayList.get(adapter.arrayList.size() - 1).videoId.equalsIgnoreCase("99999")) {
                                     adapter.arrayList.remove(adapter.arrayList.size() - 1);
                                     adapter.notifyItemRemoved(adapter.arrayList.size());
                                 }
-
                                 if (channelResponse.nextPageToken != null && !channelResponse.nextPageToken.equalsIgnoreCase("")) {
                                     PowerPreference.getDefaultFile().putString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), channelResponse.nextPageToken);
                                 } else {

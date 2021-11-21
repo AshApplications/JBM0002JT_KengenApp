@@ -101,7 +101,7 @@ public class PlayerActivity extends YouTubeBaseActivity {
             }.getType();
 
             mList = new Gson().fromJson(PowerPreference.getDefaultFile().getString(Constant.mList, new Gson().toJson(new ArrayList<SaveEntity>())), type);
-            if (mList.get(mList.size() - 1) == null)
+            if (mList.get(mList.size() - 1).videoId.equalsIgnoreCase("99999"))
                 mList.remove(mList.size() - 1);
         } catch (Exception e) {
             mList = new ArrayList<>();
@@ -184,10 +184,27 @@ public class PlayerActivity extends YouTubeBaseActivity {
                 loadVideo(item.videoId);
             }
         });
-        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        GridLayoutManager manager = new GridLayoutManager(this, 2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                switch (videosAdapter.getItemViewType(i)) {
+                    case Constant.STORE_TYPE:
+                        return 1;
+                    case Constant.AD_TYPE:
+                        return 2;
+                    case Constant.LOADING:
+                        return 1;
+                    default:
+                        return 1;
+
+                }
+            }
+        });
         binding.rvVideos.setLayoutManager(manager);
         binding.rvVideos.addItemDecoration(new ItemOffsetDecoration(this, R.dimen.item_off_ten));
         binding.rvVideos.setAdapter(videosAdapter);
+        binding.rvVideos.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
         binding.rvVideos.scrollToPosition(PowerPreference.getDefaultFile().getInt(Constant.mPosition, 0));
 
         refreshActivity();

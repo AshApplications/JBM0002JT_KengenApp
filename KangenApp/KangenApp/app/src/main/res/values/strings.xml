@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Kengen Water</string>
 
+    <string name="title">Kengen&#160;</string>
+    <string name="title_sub">Water</string>
+
     <string name="splash_skip">SKIP</string>
     <string name="splash_update">UPDATE</string>
 

@@ -31,6 +31,8 @@ import com.water.alkaline.kengen.model.channel.PlaylistResponse;
 import com.water.alkaline.kengen.model.main.Channel;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
+import com.water.alkaline.kengen.placements.BannerAds;
+import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.ui.adapter.ChannelAdapter;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnChannelListener;
@@ -66,14 +68,6 @@ public class ChannelActivity extends AppCompatActivity {
         Glide.with(this).load(R.drawable.bg).diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(binding.ivBG);
 
-
-        binding.includedAd.adBanner.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Constant.gotoAds(ChannelActivity.this);
-            }
-        });
-
         binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,20 +100,44 @@ public class ChannelActivity extends AppCompatActivity {
 
 
     public void Channels() {
-        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        binding.rvChannels.setLayoutManager(manager);
+        GridLayoutManager manager = new GridLayoutManager(this, 2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                switch (channelAdapter.getItemViewType(i)) {
+                    case Constant.STORE_TYPE:
+                        return 1;
+                    case Constant.AD_TYPE:
+                        return 2;
+                    case Constant.LOADING:
+                        return 1;
+                    default:
+                        return 1;
 
+                }
+            }
+        });
+        binding.rvChannels.setLayoutManager(manager);
         channelAdapter = new ChannelAdapter(this, chanList, new OnChannelListener() {
             @Override
             public void onItemClick(int position, Channel item) {
-                PowerPreference.getDefaultFile().putString(Constant.mChannelID, item.getYouid());
-                PowerPreference.getDefaultFile().putBoolean(Constant.mIsChannel, item.getType().equalsIgnoreCase("0"));
-                startActivity(new Intent(ChannelActivity.this, VideoListActivity.class));
+
+                new InterAds().showInter(ChannelActivity.this, new InterAds.OnAdClosedListener() {
+                    @Override
+                    public void onAdClosed() {
+                        PowerPreference.getDefaultFile().putString(Constant.mChannelID, item.getYouid());
+                        PowerPreference.getDefaultFile().putBoolean(Constant.mIsChannel, item.getType().equalsIgnoreCase("0"));
+                        startActivity(new Intent(ChannelActivity.this, VideoListActivity.class));
+                    }
+                });
+
+
             }
         });
 
         binding.rvChannels.addItemDecoration(new ItemOffsetDecoration(ChannelActivity.this, R.dimen.item_off_ten));
         binding.rvChannels.setAdapter(channelAdapter);
+        binding.rvChannels.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
         checkData();
     }
 
@@ -137,6 +155,12 @@ public class ChannelActivity extends AppCompatActivity {
     }
 */
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new BannerAds().showBanner(this);
+    }
+
     public void checkData() {
         binding.includedProgress.progress.setVisibility(View.GONE);
         if (binding.rvChannels.getAdapter().getItemCount() > 0) {
@@ -147,25 +171,52 @@ public class ChannelActivity extends AppCompatActivity {
     }
 
     public void Videos() {
-        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        GridLayoutManager manager = new GridLayoutManager(this, 2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                switch (videosAdapter.getItemViewType(i)) {
+                    case Constant.STORE_TYPE:
+                        return 1;
+                    case Constant.AD_TYPE:
+                        return 2;
+                    case Constant.LOADING:
+                        return 1;
+                    default:
+                        return 1;
+
+                }
+            }
+        });
         binding.rvChannels.setLayoutManager(manager);
         binding.rvChannels.addItemDecoration(new ItemOffsetDecoration(ChannelActivity.this, R.dimen.item_off_ten));
 
         videosAdapter = new VideosAdapter(ChannelActivity.this, videoList, binding.rvChannels, new OnVideoListener() {
             @Override
             public void onItemClick(int position, SaveEntity item) {
-                PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(videoList));
-                PowerPreference.getDefaultFile().putInt(Constant.mPosition, position);
-                startActivity(new Intent(ChannelActivity.this, PlayerActivity.class));
+                new InterAds().showInter(ChannelActivity.this, new InterAds.OnAdClosedListener() {
+                    @Override
+                    public void onAdClosed() {
+                        PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(videoList));
+                        PowerPreference.getDefaultFile().putInt(Constant.mPosition, position);
+                        startActivity(new Intent(ChannelActivity.this, PlayerActivity.class));
+                    }
+                });
+
             }
         });
 
         binding.rvChannels.setAdapter(videosAdapter);
+        binding.rvChannels.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
         videosAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-                videosAdapter.arrayList.add(null);
-                videosAdapter.notifyItemInserted(videosAdapter.arrayList.size() - 1);
+                try {
+                    videosAdapter.arrayList.add(new SaveEntity("99999", null, null));
+                    videosAdapter.notifyItemInserted(videosAdapter.arrayList.size() - 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -238,7 +289,7 @@ public class ChannelActivity extends AppCompatActivity {
                         if (response.body() != null) {
                             if (response.body().get("error") == null) {
                                 final ChannelResponse channelResponse = new Gson().fromJson(response.body(), ChannelResponse.class);
-                                if (videosAdapter.arrayList.size() != 0) {
+                                if (videosAdapter.arrayList.size() != 0 && videosAdapter.arrayList.get(videosAdapter.arrayList.size() - 1).videoId.equalsIgnoreCase("99999")) {
                                     videosAdapter.arrayList.remove(videosAdapter.arrayList.size() - 1);
                                     videosAdapter.notifyItemRemoved(videosAdapter.arrayList.size());
                                 }
@@ -320,7 +371,8 @@ public class ChannelActivity extends AppCompatActivity {
                         if (response.body() != null) {
                             if (response.body().get("error") == null) {
                                 final PlaylistResponse playlistResponse = new Gson().fromJson(response.body(), PlaylistResponse.class);
-                                if (videosAdapter.arrayList.size() != 0) {
+
+                                if (videosAdapter.arrayList.size() != 0 && videosAdapter.arrayList.get(videosAdapter.arrayList.size() - 1) == null) {
                                     videosAdapter.arrayList.remove(videosAdapter.arrayList.size() - 1);
                                     videosAdapter.notifyItemRemoved(videosAdapter.arrayList.size());
                                 }

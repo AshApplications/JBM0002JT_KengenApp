@@ -18,7 +18,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/includedAd"
+        app:layout_constraintBottom_toTopOf="@id/includedBanner"
         app:layout_constraintTop_toTopOf="parent">
 
         <include
@@ -93,7 +93,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include
-        android:id="@+id/includedAd"
+        android:id="@+id/includedBanner"
         layout="@layout/ad_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

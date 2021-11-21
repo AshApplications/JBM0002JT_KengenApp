@@ -32,12 +32,17 @@ import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.SimpleLottieValueCallback;
+import com.appodeal.ads.Appodeal;
+import com.appodeal.ads.Native;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.water.alkaline.kengen.BuildConfig;
+import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.MyService;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
@@ -50,12 +55,19 @@ import com.water.alkaline.kengen.model.ObjectSerializer;
 import com.water.alkaline.kengen.model.feedback.Feedback;
 import com.water.alkaline.kengen.model.feedback.FeedbackResponse;
 import com.water.alkaline.kengen.model.main.MainResponse;
+import com.water.alkaline.kengen.model.update.AdsInfo;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
+import com.water.alkaline.kengen.placements.BannerAds;
+import com.water.alkaline.kengen.placements.InterAds;
+import com.water.alkaline.kengen.placements.NativeAds;
+import com.water.alkaline.kengen.placements.NativeListAds;
+import com.water.alkaline.kengen.placements.OpenAds;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -110,7 +122,7 @@ public class SplashActivity extends AppCompatActivity {
         ViewAnimator.animate(binding.ivLogo)
                 .scale(0f, 1f)
                 .andAnimate(binding.llText)
-                .alpha(0f,1f)
+                .alpha(0f, 1f)
                 .duration(1000)
                 .onStop(new AnimationListener.Stop() {
                     @Override
@@ -146,9 +158,78 @@ public class SplashActivity extends AppCompatActivity {
                             try {
                                 final UpdateResponse updateResponse = response.body();
 
+                                AdsInfo adsInfo = updateResponse.getData().getAdsInfo().get(0);
+
+                                MobileAds.initialize(
+                                        SplashActivity.this,
+                                        initializationStatus -> {
+
+                                        });
+                                RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("FB01FB6E16B9C9704083088076C527FC")).build();
+                                MobileAds.setRequestConfiguration(configuration);
+                                PowerPreference.getDefaultFile().putInt(Constant.SERVER_INTERVAL_COUNT, Integer.parseInt(adsInfo.getIntervalCount()));
+                                PowerPreference.getDefaultFile().putInt(Constant.APP_INTERVAL_COUNT, 0);
+
+                                PowerPreference.getDefaultFile().putInt(Constant.AD_DISPLAY_COUNT, Integer.valueOf(adsInfo.getNativeCount()));
+                                PowerPreference.getDefaultFile().putInt(Constant.NATIVE, Integer.valueOf(adsInfo.getNativeOn()));
+
+                                PowerPreference.getDefaultFile().putInt(Constant.AD_CLICK_COUNT, Integer.valueOf(adsInfo.getClickCount()));
+                                PowerPreference.getDefaultFile().putInt(Constant.QUREKA, Integer.valueOf(adsInfo.getQurekaOn()));
+
+                                String adsPrio = adsInfo.getAdPriority();
+                                String[] separated = adsPrio.split(",");
+                                for (String s : separated) {
+                                    MyApplication.arrayList.add(Integer.parseInt(s));
+                                }
+
+                                PowerPreference.getDefaultFile().putInt(Constant.TOTAL, separated.length);
+                                PowerPreference.getDefaultFile().putInt(Constant.BANNER_POSITION, -1);
+                                PowerPreference.getDefaultFile().putInt(Constant.INTER_POSITION, -1);
+                                PowerPreference.getDefaultFile().putInt(Constant.NATIVE_POSITION, -1);
+                                PowerPreference.getDefaultFile().putInt(Constant.NATIVELIST_POSITION, -1);
+                                PowerPreference.getDefaultFile().putInt(Constant.APP_POSITION, -1);
+
+
+                                PowerPreference.getDefaultFile().putString(Constant.APPODEAL, adsInfo.getOdealAppId());
+
+                                Appodeal.setAutoCache(Appodeal.INTERSTITIAL, false);
+                                Appodeal.setAutoCache(Appodeal.BANNER_VIEW, false);
+                                Appodeal.setAutoCache(Appodeal.NATIVE, false);
+
+                                Appodeal.setRequiredNativeMediaAssetType(Native.MediaAssetType.ALL);
+
+                                PowerPreference.getDefaultFile().putString(Constant.G_BANNERID, adsInfo.getGbanner());
+                                PowerPreference.getDefaultFile().putString(Constant.G_INTERID, adsInfo.getGinter());
+                                PowerPreference.getDefaultFile().putString(Constant.G_NATIVEID, adsInfo.getGnative());
+                                PowerPreference.getDefaultFile().putString(Constant.G_APPID, adsInfo.getGopen());
+
+                                Appodeal.initialize(SplashActivity.this, PowerPreference.getDefaultFile().getString(Constant.APPODEAL), Appodeal.BANNER_VIEW);
+                                Appodeal.initialize(SplashActivity.this, PowerPreference.getDefaultFile().getString(Constant.APPODEAL), Appodeal.INTERSTITIAL);
+                                Appodeal.initialize(SplashActivity.this, PowerPreference.getDefaultFile().getString(Constant.APPODEAL), Appodeal.NATIVE);
+
+                                new BannerAds().loadBanner(SplashActivity.this);
+                                new InterAds().loadInter(SplashActivity.this);
+                                //  new NativeAds().loadnative(SplashActivity.this);
+                                new NativeListAds().loadnatives(SplashActivity.this);
+                                new OpenAds(MyApplication.getInstance());
+
                                 AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
                                 PowerPreference.getDefaultFile().putString(Constant.mKeyId, appInfo.getApiKey());
                                 PowerPreference.getDefaultFile().putString(Constant.mNotice, appInfo.getAppNotice());
+
+                                PowerPreference.getDefaultFile().putString(Constant.notifyKey, appInfo.getNotifyKey());
+                                PowerPreference.getDefaultFile().putString(Constant.QUREKA_ID, appInfo.getQureka());
+
+                                if (!PowerPreference.getDefaultFile().getString(Constant.T_DATE, "not").equalsIgnoreCase(appInfo.getTodayDate())) {
+                                    PowerPreference.getDefaultFile().putString(Constant.T_DATE, appInfo.getTodayDate());
+                                    PowerPreference.getDefaultFile().putInt(Constant.APP_CLICK_COUNT, 0);
+                                } else {
+                                    int clickCOunt2 = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
+
+                                    if (clickCOunt2 >= PowerPreference.getDefaultFile().getInt(Constant.AD_CLICK_COUNT, 3)) {
+                                        PowerPreference.getDefaultFile().putInt(Constant.QUREKA, 99999);
+                                    }
+                                }
 
                                 if (!appInfo.getTitle().equals("")) {
                                     binding.txtName.setText(appInfo.getTitle());
@@ -422,7 +503,7 @@ public class SplashActivity extends AppCompatActivity {
 
     public void nextActivity() {
 
-        FirebaseMessaging.getInstance().subscribeToTopic("kangen").addOnSuccessListener(new OnSuccessListener<Void>() {
+        FirebaseMessaging.getInstance().subscribeToTopic(PowerPreference.getDefaultFile().getString(Constant.notifyKey,"kengen")).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
             }
@@ -431,7 +512,12 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+                new InterAds().showInter(SplashActivity.this, new InterAds.OnAdClosedListener() {
+                    @Override
+                    public void onAdClosed() {
+                        startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+                    }
+                });
 
             }
         }, 4000);

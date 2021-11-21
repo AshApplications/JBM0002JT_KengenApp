@@ -24,6 +24,13 @@ public class AppInfo {
     @Expose
     private String appNotice;
 
+    @SerializedName("qureka")
+    @Expose
+    private String qureka;
+    @SerializedName("notifyKey")
+    @Expose
+    private String notifyKey;
+
     @SerializedName("link")
     @Expose
     private String link;
@@ -42,6 +49,22 @@ public class AppInfo {
     @SerializedName("api_key")
     @Expose
     private String apiKey;
+
+    public String getQureka() {
+        return qureka;
+    }
+
+    public String getNotifyKey() {
+        return notifyKey;
+    }
+
+    public void setNotifyKey(String notifyKey) {
+        this.notifyKey = notifyKey;
+    }
+
+    public void setQureka(String qureka) {
+        this.qureka = qureka;
+    }
 
     public String getId() {
         return id;

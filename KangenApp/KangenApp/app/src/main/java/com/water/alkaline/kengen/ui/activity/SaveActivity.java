@@ -19,6 +19,8 @@ import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.ActivitySaveBinding;
 import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.SaveEntity;
+import com.water.alkaline.kengen.placements.BannerAds;
+import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
 import com.water.alkaline.kengen.utils.Constant;
@@ -36,6 +38,11 @@ public class SaveActivity extends AppCompatActivity {
     VideosAdapter adapter;
     public AppViewModel viewModel;
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new BannerAds().showBanner(this);
+    }
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
 
@@ -61,16 +68,39 @@ public class SaveActivity extends AppCompatActivity {
         adapter = new VideosAdapter(this, list,null, new OnVideoListener() {
             @Override
             public void onItemClick(int position, SaveEntity item) {
-                PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(list));
-                PowerPreference.getDefaultFile().putBoolean(Constant.isSaved, true);
-                PowerPreference.getDefaultFile().putInt(Constant.mPosition, position);
-                startActivity(new Intent(SaveActivity.this, PlayerActivity.class));
+                new InterAds().showInter(SaveActivity.this, new InterAds.OnAdClosedListener() {
+                    @Override
+                    public void onAdClosed() {
+                        PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(list));
+                        PowerPreference.getDefaultFile().putBoolean(Constant.isSaved, true);
+                        PowerPreference.getDefaultFile().putInt(Constant.mPosition, position);
+                        startActivity(new Intent(SaveActivity.this, PlayerActivity.class));
+                    }
+                });
+
             }
         });
-        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        GridLayoutManager manager = new GridLayoutManager(this,2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                switch (adapter.getItemViewType(i)) {
+                    case Constant.STORE_TYPE:
+                        return 1;
+                    case Constant.AD_TYPE:
+                        return 2;
+                    case Constant.LOADING:
+                        return 1;
+                    default:
+                        return 1;
+
+                }
+            }
+        });
         binding.rvSaves.setLayoutManager(manager);
         binding.rvSaves.addItemDecoration(new ItemOffsetDecoration(this, R.dimen.item_off_ten));
         binding.rvSaves.setAdapter(adapter);
+        binding.rvSaves.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
         refreshActivity();
     }
 

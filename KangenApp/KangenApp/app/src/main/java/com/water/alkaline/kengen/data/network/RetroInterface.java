@@ -15,7 +15,7 @@ import retrofit2.http.Query;
 public interface RetroInterface {
 
     @FormUrlEncoded
-    @POST("updateApi.php")
+    @POST("updtApi.php")
     Call<UpdateResponse> updateApi(@Field("work") String method);
 
     @FormUrlEncoded

@@ -41,9 +41,11 @@ import com.water.alkaline.kengen.model.main.Channel;
 import com.water.alkaline.kengen.model.main.Subcategory;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
+import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.ui.activity.ChannelActivity;
 import com.water.alkaline.kengen.ui.activity.PlayerActivity;
 import com.water.alkaline.kengen.ui.activity.VideoListActivity;
+import com.water.alkaline.kengen.ui.activity.ViewImageActivity;
 import com.water.alkaline.kengen.ui.adapter.ChannelAdapter;
 import com.water.alkaline.kengen.ui.adapter.SubcatAdapter;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
@@ -134,19 +136,43 @@ public class ChannelFragment extends Fragment {
     }
 
     public void SubCategory() {
-        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        GridLayoutManager manager = new GridLayoutManager(activity,2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                switch (subcatAdapter.getItemViewType(i)) {
+                    case Constant.STORE_TYPE:
+                        return 1;
+                    case Constant.AD_TYPE:
+                        return 2;
+                    case Constant.LOADING:
+                        return 1;
+                    default:
+                        return 1;
+
+                }
+            }
+        });
         binding.rvCats.setLayoutManager(manager);
         binding.rvCats.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
 
         subcatAdapter = new SubcatAdapter(activity, subList, new OnSubcatListener() {
             @Override
             public void onItemClick(int position, Subcategory item) {
-                startActivity(new Intent(activity, ChannelActivity.class)
-                        .putExtra("catId", item.getId()));
+                new InterAds().showInter(activity, new InterAds.OnAdClosedListener() {
+                    @Override
+                    public void onAdClosed() {
+                        startActivity(new Intent(activity, ChannelActivity.class)
+                                .putExtra("catId", item.getId()));
+                    }
+                });
+
+
             }
         });
 
         binding.rvCats.setAdapter(subcatAdapter);
+        binding.rvCats.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
         checkData();
     }
 
@@ -165,20 +191,44 @@ public class ChannelFragment extends Fragment {
 
 
     public void Channels() {
-        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        GridLayoutManager manager = new GridLayoutManager(activity,2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                switch (channelAdapter.getItemViewType(i)) {
+                    case Constant.STORE_TYPE:
+                        return 1;
+                    case Constant.AD_TYPE:
+                        return 2;
+                    case Constant.LOADING:
+                        return 1;
+                    default:
+                        return 1;
+
+                }
+            }
+        });
         binding.rvCats.setLayoutManager(manager);
         binding.rvCats.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
 
         channelAdapter = new ChannelAdapter(activity, chanList, new OnChannelListener() {
             @Override
             public void onItemClick(int position, Channel item) {
-                PowerPreference.getDefaultFile().putString(Constant.mChannelID, item.getYouid());
-                PowerPreference.getDefaultFile().putBoolean(Constant.mIsChannel, item.getType().equalsIgnoreCase("0"));
-                startActivity(new Intent(activity, VideoListActivity.class));
+                new InterAds().showInter(activity, new InterAds.OnAdClosedListener() {
+                    @Override
+                    public void onAdClosed() {
+                        PowerPreference.getDefaultFile().putString(Constant.mChannelID, item.getYouid());
+                        PowerPreference.getDefaultFile().putBoolean(Constant.mIsChannel, item.getType().equalsIgnoreCase("0"));
+                        startActivity(new Intent(activity, VideoListActivity.class));
+                    }
+                });
+
+
             }
         });
 
        binding.rvCats.setAdapter(channelAdapter);
+        binding.rvCats.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
         checkData();
     }
 
@@ -198,26 +248,52 @@ public class ChannelFragment extends Fragment {
 */
 
     public void Videos() {
-        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        GridLayoutManager manager = new GridLayoutManager(activity,2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                switch (videosAdapter.getItemViewType(i)) {
+                    case Constant.STORE_TYPE:
+                        return 1;
+                    case Constant.AD_TYPE:
+                        return 2;
+                    case Constant.LOADING:
+                        return 1;
+                    default:
+                        return 1;
+
+                }
+            }
+        });
         binding.rvCats.setLayoutManager(manager);
         binding.rvCats.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
 
         videosAdapter = new VideosAdapter(activity, videoList, binding.rvCats, new OnVideoListener() {
             @Override
             public void onItemClick(int position, SaveEntity item) {
-                PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(videoList));
-                PowerPreference.getDefaultFile().putInt(Constant.mPosition, position);
-                startActivity(new Intent(activity, PlayerActivity.class));
+                new InterAds().showInter(activity, new InterAds.OnAdClosedListener() {
+                    @Override
+                    public void onAdClosed() {
+
+                        PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(videoList));
+                        PowerPreference.getDefaultFile().putInt(Constant.mPosition, position);
+                        startActivity(new Intent(activity, PlayerActivity.class));
+                    }
+                });
             }
         });
 
         binding.rvCats.setAdapter(videosAdapter);
+        binding.rvCats.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
         videosAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-                videosAdapter.arrayList.add(null);
-                videosAdapter.notifyItemInserted(videosAdapter.arrayList.size() - 1);
-
+                try {
+                    videosAdapter.arrayList.add(new SaveEntity("99999",null,null));
+                    videosAdapter.notifyItemInserted(videosAdapter.arrayList.size() - 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -301,7 +377,8 @@ public class ChannelFragment extends Fragment {
                         if (response.body() != null) {
                             if (response.body().get("error") == null) {
                                 final ChannelResponse channelResponse = new Gson().fromJson(response.body(), ChannelResponse.class);
-                                if (videosAdapter.arrayList.size() != 0) {
+
+                                if (videosAdapter.arrayList.size() != 0 && videosAdapter.arrayList.get(videosAdapter.arrayList.size() - 1).videoId.equalsIgnoreCase("99999")) {
                                     videosAdapter.arrayList.remove(videosAdapter.arrayList.size() - 1);
                                     videosAdapter.notifyItemRemoved(videosAdapter.arrayList.size());
                                 }

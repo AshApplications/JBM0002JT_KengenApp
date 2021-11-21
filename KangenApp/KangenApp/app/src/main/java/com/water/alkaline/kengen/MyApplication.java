@@ -13,6 +13,7 @@ import java.util.List;
 
 public class MyApplication extends Application {
 
+    public static ArrayList<Integer> arrayList = new ArrayList<>();
     static {
         System.loadLibrary("native-lib");
     }

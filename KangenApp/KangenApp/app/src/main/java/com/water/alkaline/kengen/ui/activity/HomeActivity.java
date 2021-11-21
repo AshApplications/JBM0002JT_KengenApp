@@ -34,6 +34,8 @@ import com.water.alkaline.kengen.databinding.DialogInfoBinding;
 import com.water.alkaline.kengen.library.toprightmenu.MenuItem;
 import com.water.alkaline.kengen.library.toprightmenu.TopRightMenu;
 import com.water.alkaline.kengen.model.main.Category;
+import com.water.alkaline.kengen.placements.BannerAds;
+import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.ui.adapter.DrawerCatAdapter;
 import com.water.alkaline.kengen.ui.adapter.ViewPagerFragmentAdapter;
 import com.water.alkaline.kengen.ui.fragment.BannerFragment;
@@ -63,6 +65,11 @@ public class HomeActivity extends AppCompatActivity {
     public List<MenuItem> menuItems;
     public AppViewModel viewModel;
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new BannerAds().showBanner(this);
+    }
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
 
@@ -97,7 +104,12 @@ public class HomeActivity extends AppCompatActivity {
                                 showInfoDialog();
                                 break;
                             case 1:
-                                startActivity(new Intent(HomeActivity.this, FeedbackActivity.class));
+                                new InterAds().showInter(HomeActivity.this, new InterAds.OnAdClosedListener() {
+                                    @Override
+                                    public void onAdClosed() {
+                                        startActivity(new Intent(HomeActivity.this, FeedbackActivity.class));
+                                    }
+                                });
                                 break;
                             case 2:
                                 shareImage();
@@ -197,11 +209,30 @@ public class HomeActivity extends AppCompatActivity {
                 } else {
                     binding.drawer.closeDrawer(GravityCompat.START);
                     if (item.getItemId() == 10001) {
-                        startActivity(new Intent(HomeActivity.this, SaveActivity.class));
+                        new InterAds().showInter(HomeActivity.this, new InterAds.OnAdClosedListener() {
+                            @Override
+                            public void onAdClosed() {
+                                startActivity(new Intent(HomeActivity.this, SaveActivity.class));
+                            }
+                        });
+
+
                     } else if (item.getItemId() == 10002) {
-                        startActivity(new Intent(HomeActivity.this, DownloadActivity.class));
+                        new InterAds().showInter(HomeActivity.this, new InterAds.OnAdClosedListener() {
+                            @Override
+                            public void onAdClosed() {
+                                startActivity(new Intent(HomeActivity.this, DownloadActivity.class));
+                            }
+                        });
+
                     } else if (item.getItemId() == 10003) {
-                        startActivity(new Intent(HomeActivity.this, FeedbackActivity.class));
+                        new InterAds().showInter(HomeActivity.this, new InterAds.OnAdClosedListener() {
+                            @Override
+                            public void onAdClosed() {
+                                startActivity(new Intent(HomeActivity.this, FeedbackActivity.class));
+                            }
+                        });
+
                     } else if (item.getItemId() == 10004) {
                         shareImage();
                     }
@@ -234,10 +265,19 @@ public class HomeActivity extends AppCompatActivity {
 
             exitBinding.crdExit.setOnClickListener(view -> {
                 mDialog.dismiss();
-                Intent intent = new Intent(HomeActivity.this, ExitActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
+                PowerPreference.getDefaultFile().putInt(Constant.APP_INTERVAL_COUNT, 0);
+
+                new InterAds().showInter(HomeActivity.this, new InterAds.OnAdClosedListener() {
+                    @Override
+                    public void onAdClosed() {
+                        Intent intent = new Intent(HomeActivity.this, ExitActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+
+
 
             });
 
@@ -319,7 +359,15 @@ public class HomeActivity extends AppCompatActivity {
         menu.add(0, 10004, position, "Share App").setCheckable(false);
 
         binding.vpHome.setAdapter(pagerFragmentAdapter);
-        binding.vpHome.setOffscreenPageLimit(pagerFragmentAdapter.getItemCount());
+        if (pagerFragmentAdapter.getItemCount() > 0) {
+            binding.vpHome.setOffscreenPageLimit(pagerFragmentAdapter.getItemCount());
+
+            binding.includedProgress.progress.setVisibility(View.GONE);
+            binding.includedProgress.llError.setVisibility(View.GONE);
+        } else {
+            binding.includedProgress.progress.setVisibility(View.GONE);
+            binding.includedProgress.llError.setVisibility(View.VISIBLE);
+        }
         new TabLayoutMediator(binding.tabHome, binding.vpHome, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull @NotNull TabLayout.Tab tab, int position) {

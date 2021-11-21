@@ -11,14 +11,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
+import com.water.alkaline.kengen.databinding.AdLayoutNativeBinding;
 import com.water.alkaline.kengen.databinding.ItemVideoBinding;
 import com.water.alkaline.kengen.library.ViewAnimator.ViewAnimator;
+import com.water.alkaline.kengen.model.main.Banner;
 import com.water.alkaline.kengen.model.main.Channel;
+import com.water.alkaline.kengen.placements.NativeListAds;
 import com.water.alkaline.kengen.ui.listener.OnChannelListener;
+import com.water.alkaline.kengen.utils.Constant;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,30 +49,50 @@ public class ChannelAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    public class AdHolder extends RecyclerView.ViewHolder {
+        AdLayoutNativeBinding binding;
+
+        public AdHolder(AdLayoutNativeBinding itemView) {
+            super(itemView.getRoot());
+            binding = itemView;
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (arrayList.get(position) == null)
+            return Constant.AD_TYPE;
+        else return Constant.STORE_TYPE;
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(ItemVideoBinding.inflate(LayoutInflater.from(activity), parent, false));
+        if (viewType == Constant.AD_TYPE)
+            return new AdHolder(AdLayoutNativeBinding.inflate(LayoutInflater.from(activity), parent, false));
+        else
+            return new ViewHolder(ItemVideoBinding.inflate(LayoutInflater.from(activity), parent, false));
     }
 
     public void refreshAdapter(List<Channel> arrayList) {
         this.arrayList = arrayList;
         notifyDataSetChanged();
+
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ViewHolder viewHolder = (ViewHolder) holder;
-        Glide.with(activity).load(arrayList.get(position).getUrl())
-                .placeholder(MyApplication.getPlaceHolder())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(viewHolder.binding.imgVideo);
-        viewHolder.binding.txtVideoTitle.setText(arrayList.get(position).getName());
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onItemClick(holder.getAdapterPosition(), arrayList.get(holder.getAdapterPosition()));
-            }
-        });
+            ViewHolder viewHolder = (ViewHolder) holder;
+            Glide.with(activity).load(arrayList.get(position).getUrl())
+                    .placeholder(MyApplication.getPlaceHolder())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(viewHolder.binding.imgVideo);
+            viewHolder.binding.txtVideoTitle.setText(arrayList.get(position).getName());
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onItemClick(holder.getAdapterPosition(), arrayList.get(holder.getAdapterPosition()));
+                }
+            });
     }
 
     @Override

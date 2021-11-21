@@ -114,7 +114,8 @@ public class ImageActivity extends AppCompatActivity {
                 binding.ivShare.setVisibility(View.GONE);
             }
         } else {
-            binding.ivDownload.setImageResource(R.drawable.ic_share);
+            binding.ivDownload.setVisibility(View.GONE);
+            binding.ivShare.setVisibility(View.VISIBLE);
         }
     }
 

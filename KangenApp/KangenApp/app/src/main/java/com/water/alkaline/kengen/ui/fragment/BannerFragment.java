@@ -27,7 +27,10 @@ import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.FragmentBannerBinding;
 import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.main.Banner;
+import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.ui.activity.ImageActivity;
+import com.water.alkaline.kengen.ui.activity.PlayerActivity;
+import com.water.alkaline.kengen.ui.activity.SaveActivity;
 import com.water.alkaline.kengen.ui.activity.ViewImageActivity;
 import com.water.alkaline.kengen.ui.adapter.BannerAdapter;
 import com.water.alkaline.kengen.ui.listener.OnBannerListerner;
@@ -86,18 +89,41 @@ public class BannerFragment extends Fragment {
         adapter = new BannerAdapter(activity, list, new OnBannerListerner() {
             @Override
             public void onItemClick(int position, Banner item) {
-                PowerPreference.getDefaultFile().putString(Constant.mBanners, new Gson().toJson(list));
-                Intent intent = new Intent(activity, ViewImageActivity.class);
-                intent.putExtra("POS", position);
-                intent.putExtra("PAGE", Constant.LIVE);
-                startActivity(intent);
+
+                new InterAds().showInter(activity, new InterAds.OnAdClosedListener() {
+                    @Override
+                    public void onAdClosed() {
+                        PowerPreference.getDefaultFile().putString(Constant.mBanners, new Gson().toJson(list));
+                        Intent intent = new Intent(activity, ViewImageActivity.class);
+                        intent.putExtra("POS", position);
+                        intent.putExtra("PAGE", Constant.LIVE);
+                        startActivity(intent);
+                    }
+                });
+
+
                 // startActivity(new Intent(activity, ImageActivity.class).putExtra("mpath", item.getUrl()));
             }
         });
-        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        GridLayoutManager manager = new GridLayoutManager(activity, 2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                switch (adapter.getItemViewType(i)) {
+                    case Constant.STORE_TYPE:
+                        return 1;
+                    case Constant.AD_TYPE:
+                        return 2;
+                    default:
+                        return 1;
+
+                }
+            }
+        });
         binding.rvBanners.setLayoutManager(manager);
         binding.rvBanners.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
         binding.rvBanners.setAdapter(adapter);
+        binding.rvBanners.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
         refreshFragment();
     }
 
@@ -106,7 +132,7 @@ public class BannerFragment extends Fragment {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    list=viewModel.getAllBannerByCategory(mParam1);
+                    list = viewModel.getAllBannerByCategory(mParam1);
                     adapter.refreshAdapter(list);
                     binding.includedProgress.progress.setVisibility(View.GONE);
                     checkData();

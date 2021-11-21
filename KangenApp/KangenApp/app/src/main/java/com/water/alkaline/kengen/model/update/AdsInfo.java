@@ -7,61 +7,45 @@ public class AdsInfo {
 
     @SerializedName("id")
     @Expose
-    private String id;
+    public String id;
     @SerializedName("ad_priority")
     @Expose
-    private String adPriority;
-    @SerializedName("gopenad")
-    @Expose
-    private String gopenad;
+    public String adPriority;
     @SerializedName("gbanner")
     @Expose
-    private String gbanner;
-    @SerializedName("ginterstitial")
+    public String gbanner;
+    @SerializedName("ginter")
     @Expose
-    private String ginterstitial;
-    @SerializedName("greward")
-    @Expose
-    private String greward;
+    public String ginter;
     @SerializedName("gnative")
     @Expose
-    private String gnative;
-    @SerializedName("fbbanner")
+    public String gnative;
+    @SerializedName("greward")
     @Expose
-    private String fbbanner;
-    @SerializedName("fbinterstitial")
+    public String greward;
+    @SerializedName("gopen")
     @Expose
-    private String fbinterstitial;
-    @SerializedName("fbnative")
+    public String gopen;
+    @SerializedName("odealAppId")
     @Expose
-    private String fbnative;
-    @SerializedName("ginterval")
+    public String odealAppId;
+    @SerializedName("qurekaOn")
     @Expose
-    private String ginterval;
-    @SerializedName("fbinterval")
+    public String qurekaOn;
+
+    @SerializedName("nativeOn")
     @Expose
-    private String fbinterval;
-    @SerializedName("gbannercount")
+    public String nativeOn;
+    @SerializedName("nativeCount")
     @Expose
-    private String gbannercount;
-    @SerializedName("gintercount")
+    public String nativeCount;
+
+    @SerializedName("intervalCount")
     @Expose
-    private String gintercount;
-    @SerializedName("gnativecount")
+    public String intervalCount;
+    @SerializedName("clickCount")
     @Expose
-    private String gnativecount;
-    @SerializedName("grewardcount")
-    @Expose
-    private String grewardcount;
-    @SerializedName("fbbannercount")
-    @Expose
-    private String fbbannercount;
-    @SerializedName("fbintercount")
-    @Expose
-    private String fbintercount;
-    @SerializedName("fbnativecount")
-    @Expose
-    private String fbnativecount;
+    public String clickCount;
 
     public String getId() {
         return id;
@@ -79,14 +63,6 @@ public class AdsInfo {
         this.adPriority = adPriority;
     }
 
-    public String getGopenad() {
-        return gopenad;
-    }
-
-    public void setGopenad(String gopenad) {
-        this.gopenad = gopenad;
-    }
-
     public String getGbanner() {
         return gbanner;
     }
@@ -95,20 +71,12 @@ public class AdsInfo {
         this.gbanner = gbanner;
     }
 
-    public String getGinterstitial() {
-        return ginterstitial;
+    public String getGinter() {
+        return ginter;
     }
 
-    public void setGinterstitial(String ginterstitial) {
-        this.ginterstitial = ginterstitial;
-    }
-
-    public String getGreward() {
-        return greward;
-    }
-
-    public void setGreward(String greward) {
-        this.greward = greward;
+    public void setGinter(String ginter) {
+        this.ginter = ginter;
     }
 
     public String getGnative() {
@@ -119,100 +87,67 @@ public class AdsInfo {
         this.gnative = gnative;
     }
 
-    public String getFbbanner() {
-        return fbbanner;
+    public String getGreward() {
+        return greward;
     }
 
-    public void setFbbanner(String fbbanner) {
-        this.fbbanner = fbbanner;
+    public void setGreward(String greward) {
+        this.greward = greward;
     }
 
-    public String getFbinterstitial() {
-        return fbinterstitial;
+    public String getGopen() {
+        return gopen;
     }
 
-    public void setFbinterstitial(String fbinterstitial) {
-        this.fbinterstitial = fbinterstitial;
+    public void setGopen(String gopen) {
+        this.gopen = gopen;
     }
 
-    public String getFbnative() {
-        return fbnative;
+    public String getOdealAppId() {
+        return odealAppId;
     }
 
-    public void setFbnative(String fbnative) {
-        this.fbnative = fbnative;
+    public void setOdealAppId(String odealAppId) {
+        this.odealAppId = odealAppId;
     }
 
-    public String getGinterval() {
-        return ginterval;
+    public String getQurekaOn() {
+        return qurekaOn;
     }
 
-    public void setGinterval(String ginterval) {
-        this.ginterval = ginterval;
+    public void setQurekaOn(String qurekaOn) {
+        this.qurekaOn = qurekaOn;
     }
 
-    public String getFbinterval() {
-        return fbinterval;
+    public String getIntervalCount() {
+        return intervalCount;
     }
 
-    public void setFbinterval(String fbinterval) {
-        this.fbinterval = fbinterval;
+    public void setIntervalCount(String intervalCount) {
+        this.intervalCount = intervalCount;
     }
 
-    public String getGbannercount() {
-        return gbannercount;
+    public String getClickCount() {
+        return clickCount;
     }
 
-    public void setGbannercount(String gbannercount) {
-        this.gbannercount = gbannercount;
+    public void setClickCount(String clickCount) {
+        this.clickCount = clickCount;
     }
 
-    public String getGintercount() {
-        return gintercount;
+    public String getNativeOn() {
+        return nativeOn;
     }
 
-    public void setGintercount(String gintercount) {
-        this.gintercount = gintercount;
+    public void setNativeOn(String nativeOn) {
+        this.nativeOn = nativeOn;
     }
 
-    public String getGnativecount() {
-        return gnativecount;
+    public String getNativeCount() {
+        return nativeCount;
     }
 
-    public void setGnativecount(String gnativecount) {
-        this.gnativecount = gnativecount;
+    public void setNativeCount(String nativeCount) {
+        this.nativeCount = nativeCount;
     }
-
-    public String getGrewardcount() {
-        return grewardcount;
-    }
-
-    public void setGrewardcount(String grewardcount) {
-        this.grewardcount = grewardcount;
-    }
-
-    public String getFbbannercount() {
-        return fbbannercount;
-    }
-
-    public void setFbbannercount(String fbbannercount) {
-        this.fbbannercount = fbbannercount;
-    }
-
-    public String getFbintercount() {
-        return fbintercount;
-    }
-
-    public void setFbintercount(String fbintercount) {
-        this.fbintercount = fbintercount;
-    }
-
-    public String getFbnativecount() {
-        return fbnativecount;
-    }
-
-    public void setFbnativecount(String fbnativecount) {
-        this.fbnativecount = fbnativecount;
-    }
-
 }

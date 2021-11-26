@@ -35,8 +35,10 @@ import java.util.Objects;
 public class NativeAds {
 
     public static boolean apCheck = false;
-    private static NativeAd gNativeAd;
+    public static boolean apCheck2 = false;
+    public static boolean apCheck3 = false;
 
+    private static NativeAd gNativeAd;
     public static com.appodeal.ads.NativeAd apNativeAd;
 
     public void loadnative(Activity activity) {
@@ -50,7 +52,6 @@ public class NativeAds {
         int position2 = PowerPreference.getDefaultFile().getInt(Constant.NATIVE_POSITION);
 
         if (position2 < MyApplication.arrayList.size()) {
-            Log.e("TAG", "loadMainNative " + MyApplication.arrayList.get(position2));
             switch (MyApplication.arrayList.get(position2)) {
                 case 0:
                     loadGNative(activity);
@@ -69,14 +70,12 @@ public class NativeAds {
 
 
     private void loadGNative(Activity activity) {
-        Log.e("TAG", "loadGNative ");
         final String nativeAdstr = PowerPreference.getDefaultFile().getString(Constant.G_NATIVEID);
         AdLoader.Builder builder = new AdLoader.Builder(activity, nativeAdstr);
 
         builder.forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
             @Override
             public void onNativeAdLoaded(@NonNull NativeAd natives) {
-                Log.e("TAG", "loadGNativeAD onNativeAdLoaded");
                 gNativeAd = natives;
                 PowerPreference.getDefaultFile().putInt(Constant.NATIVE_POSITION, -1);
             }
@@ -93,7 +92,6 @@ public class NativeAds {
         AdLoader adLoader = builder.withAdListener(new AdListener() {
             @Override
             public void onAdFailedToLoad(LoadAdError errorCode) {
-                Log.e("TAG", "loadGNativeAD onAdFailedToLoad");
                 gNativeAd = null;
                 loadMainNative(activity);
             }
@@ -102,15 +100,14 @@ public class NativeAds {
         adLoader.loadAd(new AdRequest.Builder().build());
 
     }
-    private void loadApNative(Activity activity) {
-        Log.e("TAG", "loadApNative ");
-        apCheck = true;
-        Appodeal.cache(activity, Appodeal.NATIVE, 3);
 
+    private void loadApNative(Activity activity) {
+        apCheck = true;
+        apCheck2 = true;
+        Appodeal.cache(activity, Appodeal.NATIVE, 3);
         Appodeal.setNativeCallbacks(new NativeCallbacks() {
             @Override
             public void onNativeLoaded() {
-                Log.e("TAG", "loadApNative onNativeLoaded");
                 if (apCheck) {
                     apCheck = false;
                     apNativeAd = Appodeal.getNativeAds(1).get(0);
@@ -120,9 +117,8 @@ public class NativeAds {
 
             @Override
             public void onNativeFailedToLoad() {
-                Log.e("TAG", "loadApNative onAdFailedToLoad ");
-                if (apCheck) {
-                    apCheck = false;
+                 if (apCheck2) {
+                    apCheck2 = false;
                     apNativeAd = null;
                     loadMainNative(activity);
                 }
@@ -153,9 +149,6 @@ public class NativeAds {
 
     public void shownative(Activity activity, Dialog dialog) {
 
-
-
-
         PowerPreference.getDefaultFile().putInt(Constant.NATIVE_POSITION, -1);
         showMainNative(activity, dialog);
     }
@@ -168,7 +161,6 @@ public class NativeAds {
         int position2 = PowerPreference.getDefaultFile().getInt(Constant.NATIVE_POSITION);
 
         if (position2 < MyApplication.arrayList.size()) {
-            Log.e("TAG", "showMainNative " + MyApplication.arrayList.get(position2));
             switch (MyApplication.arrayList.get(position2)) {
                 case 0:
                     showGNative(activity, dialog);
@@ -187,9 +179,10 @@ public class NativeAds {
 
 
     private void showGNative(Activity activity, Dialog dialog) {
-        Log.e("TAG", "showGNative ");
-        NativeAdView adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_native_google, null);
+
         if (gNativeAd != null) {
+
+            NativeAdView adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_native_google, null);
 
             FrameLayout nativeAdLayout;
             TextView adSpace;
@@ -219,12 +212,10 @@ public class NativeAds {
 
 
     private void showApNative(Activity activity, Dialog dialog) {
-        Log.e("TAG", "showApNative ");
-        com.appodeal.ads.NativeAdView adView = (com.appodeal.ads.NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_native_appo, null);
 
         if (apNativeAd != null) {
 
-            Log.e("TAG", "showApnative not null");
+            com.appodeal.ads.NativeAdView adView = (com.appodeal.ads.NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_native_appo, null);
             FrameLayout nativeAdLayout;
             TextView adSpace;
 
@@ -342,18 +333,101 @@ public class NativeAds {
             Objects.requireNonNull(adView.getCallToActionView()).setVisibility(View.VISIBLE);
             ((TextView) adView.getCallToActionView()).setText(nativeAd.getCallToAction());
         }
-
-        /*
-        if (nativeAd.get() == null) {
-            Objects.requireNonNull(adView.getIconView()).setVisibility(View.GONE);
-        } else {
-            ((ImageView) Objects.requireNonNull(adView.getIconView())).setImageDrawable(
-                    nativeAd.getIcon().getDrawable());
-            adView.getIconView().setVisibility(View.VISIBLE);
-        }
-
-        adView.setNativeAd(nativeAd);*/
     }
 
+
+    public void setBanner(TextView adSpace) {
+        if (PowerPreference.getDefaultFile().getInt("nCount", 0) >= 7) {
+            PowerPreference.getDefaultFile().putInt("nCount", 0);
+            setBanner(adSpace);
+        } else {
+            adSpace.setBackgroundResource(Constant.adNAtives[PowerPreference.getDefaultFile().getInt("nCount", 0)]);
+            int top = PowerPreference.getDefaultFile().getInt("nCount", 0) + 1;
+            PowerPreference.getDefaultFile().putInt("nCount", top);
+        }
+    }
+
+    public void shownatives(Activity activity, RelativeLayout nativeAdLayout1, RelativeLayout nativeAdLayout2, TextView adSpaceNative) {
+
+        if (PowerPreference.getDefaultFile().getInt(Constant.QUREKA, 5) > 0) {
+            nativeAdLayout1.setVisibility(View.GONE);
+            nativeAdLayout2.setVisibility(View.GONE);
+            adSpaceNative.setVisibility(View.GONE);
+            return;
+        }
+
+        PowerPreference.getDefaultFile().putInt(Constant.NATIVE_POSITION, -1);
+        setBanner(adSpaceNative);
+        adSpaceNative.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Constant.gotoAds(activity);
+            }
+        });
+         showMainNatives(activity, nativeAdLayout1, nativeAdLayout2, adSpaceNative);
+    }
+
+    public void showMainNatives(Activity activity, RelativeLayout nativeAdLayout1, RelativeLayout nativeAdLayout2, TextView adSpaceNative) {
+
+        int position = PowerPreference.getDefaultFile().getInt(Constant.NATIVE_POSITION);
+        PowerPreference.getDefaultFile().putInt(Constant.NATIVE_POSITION, position + 1);
+        int position2 = PowerPreference.getDefaultFile().getInt(Constant.NATIVE_POSITION);
+
+        if (position2 < MyApplication.arrayList.size()) {
+            switch (MyApplication.arrayList.get(position2)) {
+                case 0:
+                    showGNatives(activity, nativeAdLayout1, nativeAdLayout2, adSpaceNative);
+                    break;
+                case 1:
+                    showApNatives(activity, nativeAdLayout1, nativeAdLayout2, adSpaceNative);
+                    break;
+                default:
+                    showMainNatives(activity, nativeAdLayout1, nativeAdLayout2, adSpaceNative);
+                    break;
+            }
+        } else {
+            loadnative(activity);
+        }
+    }
+
+
+    private void showGNatives(Activity activity, RelativeLayout nativeAdLayout1, RelativeLayout nativeAdLayout2, TextView adSpaceNative) {
+        if (gNativeAd != null) {
+
+            NativeAdView adView = nativeAdLayout1.findViewById(R.id.adSpaceNativeGoogle);
+
+            NativeAd lovalNative = gNativeAd;
+            populateUnifiedNativeAdView(lovalNative, adView);
+
+            nativeAdLayout1.setVisibility(View.VISIBLE);
+            nativeAdLayout2.setVisibility(View.GONE);
+            adSpaceNative.setVisibility(View.GONE);
+
+            loadnative(activity);
+
+        } else {
+            showMainNatives(activity, nativeAdLayout1, nativeAdLayout2, adSpaceNative);
+        }
+    }
+
+    private void showApNatives(Activity activity, RelativeLayout nativeAdLayout1, RelativeLayout nativeAdLayout2, TextView adSpaceNative) {
+
+        if (apNativeAd != null) {
+
+            com.appodeal.ads.NativeAdView adView = nativeAdLayout2.findViewById(R.id.adSpaceNativeAppo);
+
+            com.appodeal.ads.NativeAd lovalNative = apNativeAd;
+            populateUnifiedAppoNativeAdView(lovalNative, adView);
+
+            nativeAdLayout2.setVisibility(View.VISIBLE);
+            nativeAdLayout1.setVisibility(View.GONE);
+            adSpaceNative.setVisibility(View.GONE);
+
+            loadnative(activity);
+
+        } else {
+            showMainNatives(activity, nativeAdLayout1, nativeAdLayout2, adSpaceNative);
+        }
+    }
 
 }

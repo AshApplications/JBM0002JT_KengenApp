@@ -10,21 +10,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
-import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.databinding.AdLayoutNativeBinding;
 import com.water.alkaline.kengen.databinding.ItemVideoBinding;
-import com.water.alkaline.kengen.library.ViewAnimator.ViewAnimator;
-import com.water.alkaline.kengen.model.main.Pdf;
 import com.water.alkaline.kengen.model.main.Subcategory;
-import com.water.alkaline.kengen.placements.NativeListAds;
 import com.water.alkaline.kengen.ui.listener.OnSubcatListener;
 import com.water.alkaline.kengen.utils.Constant;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 public class SubcatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

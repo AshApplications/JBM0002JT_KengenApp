@@ -1,6 +1,7 @@
 package com.water.alkaline.kengen;
 
 import android.app.Application;
+import android.os.StrictMode;
 
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
@@ -14,6 +15,7 @@ import java.util.List;
 public class MyApplication extends Application {
 
     public static ArrayList<Integer> arrayList = new ArrayList<>();
+
     static {
         System.loadLibrary("native-lib");
     }

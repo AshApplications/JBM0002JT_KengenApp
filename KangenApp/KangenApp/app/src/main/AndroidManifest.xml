@@ -34,7 +34,9 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.ExitActivity"
-            android:screenOrientation="portrait" />
+            android:excludeFromRecents="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Dialog" />
         <activity
             android:name=".ui.activity.SaveActivity"
             android:screenOrientation="portrait" />
@@ -81,6 +83,7 @@
 
         <service
             android:name=".MyFirebaseMessagingService"
+            android:exported="false"
             android:enabled="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -98,6 +101,7 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorMain" />
+
     </application>
 
 </manifest>

@@ -17,14 +17,48 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:lottie_autoPlay="true"
+        android:background="@android:color/transparent"
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/leaving" />
+
+    <LinearLayout
+        android:id="@+id/llText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/animationView">
+
+        <TextView
+            android:id="@+id/txtTitle1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/mfont_medium"
+            android:gravity="center"
+            android:text="Kengen "
+            android:textColor="#FFE400"
+            android:textSize="@dimen/_14ssp" />
+
+        <TextView
+            android:id="@+id/txtTitle2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/mfont_medium"
+            android:gravity="center"
+            android:text="Water"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/_14ssp" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/wait_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_50sdp"
         android:fontFamily="@font/mfont"
         android:text="You are leaving..."
         android:textColor="#fff"

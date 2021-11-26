@@ -62,6 +62,7 @@ public class FeedbackActivity extends AppCompatActivity {
         super.onResume();
         new BannerAds().showBanner(this);
     }
+
     public void setBG() {
 
         Glide.with(this).load(R.drawable.bg).diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -74,6 +75,7 @@ public class FeedbackActivity extends AppCompatActivity {
             }
         });
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,7 +172,7 @@ public class FeedbackActivity extends AppCompatActivity {
         if (Constant.checkInternet(FeedbackActivity.this)) {
             loader_dialog();
             @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-            RetroClient.getInstance().getApi().userApi(deviceId, BuildConfig.VERSION_CODE)
+            RetroClient.getInstance().getApi().userApi(deviceId, PowerPreference.getDefaultFile().getString(Constant.Token, ""), BuildConfig.VERSION_CODE)
                     .enqueue(new Callback<FeedbackResponse>() {
                         @Override
                         public void onResponse(Call<FeedbackResponse> call, Response<FeedbackResponse> response) {
@@ -201,8 +203,7 @@ public class FeedbackActivity extends AppCompatActivity {
         }
     }
 
-    public void refresh()
-    {
+    public void refresh() {
         ((HistoryFragment) adapter.arrayList.get(1)).refreshActivity();
     }
 

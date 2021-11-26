@@ -1,26 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.appodeal.ads.NativeAdView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     android:id="@+id/adSpaceNativeAppo"
+    android:layout_width="match_parent"
+    android:layout_height="210dp"
     android:layout_margin="5dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:background="#FFFFFF"
-        android:minHeight="50dp"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingLeft="5dp"
-            android:paddingTop="2dp"
-            android:paddingRight="5dp">
+            android:padding="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -92,7 +89,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <TextView
@@ -100,19 +97,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="20dp"
-                    android:gravity="center|left"
                     android:layout_marginRight="20dp"
+                    android:gravity="center|left"
                     android:textSize="10sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="horizontal">
 
                     <com.appodeal.ads.NativeMediaView
                         android:id="@+id/ad_media"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_140sdp"
+                        android:layout_height="match_parent"
                         android:layout_gravity="center_horizontal"
                         android:layout_weight="1" />
 

@@ -1,6 +1,7 @@
 package com.water.alkaline.kengen.ui.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -28,6 +29,7 @@ import com.water.alkaline.kengen.databinding.FragmentPdfBinding;
 import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.main.Pdf;
 import com.water.alkaline.kengen.placements.InterAds;
+import com.water.alkaline.kengen.ui.activity.HomeActivity;
 import com.water.alkaline.kengen.ui.activity.PdfActivity;
 import com.water.alkaline.kengen.ui.activity.PlayerActivity;
 import com.water.alkaline.kengen.ui.adapter.PdfAdapter;
@@ -51,8 +53,20 @@ public class PdfFragment extends Fragment {
 
     public AppViewModel viewModel;
 
+    public PdfFragment() {
+    }
+
     public PdfFragment(Activity activity) {
         this.activity = activity;
+    }
+
+
+    @Override
+    public void onAttach(@NonNull @NotNull Context context) {
+        super.onAttach(context);
+        if (activity == null) {
+            activity = (HomeActivity) context;
+        }
     }
 
     public static PdfFragment newInstance(Activity activity, String param1) {
@@ -83,41 +97,43 @@ public class PdfFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
 
-        adapter = new PdfAdapter(activity, list, new OnPdfListener() {
-            @Override
-            public void onItemClick(int position, Pdf item) {
-                new InterAds().showInter(activity, new InterAds.OnAdClosedListener() {
-                    @Override
-                    public void onAdClosed() {
+        if (activity != null) {
+            adapter = new PdfAdapter(activity, list, new OnPdfListener() {
+                @Override
+                public void onItemClick(int position, Pdf item) {
+                    new InterAds().showInter(activity, new InterAds.OnAdClosedListener() {
+                        @Override
+                        public void onAdClosed() {
 
-                        startActivity(new Intent(activity, PdfActivity.class).putExtra("mpath", item.getUrl()));
-                    }
-                });
-
-            }
-        });
-        GridLayoutManager manager = new GridLayoutManager(activity,2);
-        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int i) {
-                switch (adapter.getItemViewType(i)) {
-                    case Constant.STORE_TYPE:
-                        return 1;
-                    case Constant.AD_TYPE:
-                        return 2;
-                    case Constant.LOADING:
-                        return 1;
-                    default:
-                        return 1;
+                            startActivity(new Intent(activity, PdfActivity.class).putExtra("mpath", item.getUrl()));
+                        }
+                    });
 
                 }
-            }
-        });
-        binding.rvPdfs.setLayoutManager(manager);
-        binding.rvPdfs.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
-        binding.rvPdfs.setAdapter(adapter);
-        binding.rvPdfs.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
-        refreshFragment();
+            });
+            GridLayoutManager manager = new GridLayoutManager(activity, 2);
+            manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int i) {
+                    switch (adapter.getItemViewType(i)) {
+                        case Constant.STORE_TYPE:
+                            return 1;
+                        case Constant.AD_TYPE:
+                            return 2;
+                        case Constant.LOADING:
+                            return 1;
+                        default:
+                            return 1;
+
+                    }
+                }
+            });
+            binding.rvPdfs.setLayoutManager(manager);
+            binding.rvPdfs.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
+            binding.rvPdfs.setAdapter(adapter);
+            binding.rvPdfs.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+            refreshFragment();
+        }
     }
 
     public void refreshFragment() {

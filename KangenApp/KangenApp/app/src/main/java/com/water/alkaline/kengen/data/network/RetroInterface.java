@@ -20,7 +20,7 @@ public interface RetroInterface {
 
     @FormUrlEncoded
     @POST("userApi.php")
-    Call<FeedbackResponse> userApi(@Field("device") String device, @Field("version") int version);
+    Call<FeedbackResponse> userApi(@Field("device") String device, @Field("token") String token, @Field("version") int version);
 
 
     @FormUrlEncoded

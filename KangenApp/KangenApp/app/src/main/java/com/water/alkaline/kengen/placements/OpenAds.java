@@ -36,16 +36,26 @@ public class OpenAds implements LifecycleObserver, android.app.Application.Activ
 
     private static boolean isShowingAd = false;
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    public void onAppBackgrounded() {
+        PowerPreference.getDefaultFile().putInt("isBackground", 1);
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void onAppForegrounded() {
+        PowerPreference.getDefaultFile().putInt("isBackground", 1);
+    }
+
     public OpenAds(MyApplication Application) {
         this.Application = Application;
         this.Application.registerActivityLifecycleCallbacks(this);
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     }
+
     private void loadGOpen() {
         AppOpenAd.AppOpenAdLoadCallback loadCallback = new AppOpenAd.AppOpenAdLoadCallback() {
             @Override
             public void onAdLoaded(AppOpenAd ad) {
-                Log.e("TAG", "loadGOpen Loaded");
 
                 appOpenAdGoogle = ad;
                 OpenAds.this.loadTime1 = (new Date()).getTime();
@@ -54,8 +64,7 @@ public class OpenAds implements LifecycleObserver, android.app.Application.Activ
 
             @Override
             public void onAdFailedToLoad(LoadAdError loadAdError) {
-                Log.e("TAG", "loadGOpen Failed");
-                appOpenAdGoogle = null;
+                 appOpenAdGoogle = null;
             }
         };
 
@@ -72,7 +81,6 @@ public class OpenAds implements LifecycleObserver, android.app.Application.Activ
 
 
     public void showGOpenAd() {
-        Log.e("TAG", "showGOpenAd");
         if (appOpenAdGoogle != null) {
             if (!isShowingAd) {
                 FullScreenContentCallback fullScreenContentCallback =
@@ -123,11 +131,9 @@ public class OpenAds implements LifecycleObserver, android.app.Application.Activ
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onStart() {
-
         if (PowerPreference.getDefaultFile().getInt(Constant.QUREKA, 5) <= 0) {
             showGOpenAd();
         }
-        Log.d("TAG", "onStart");
     }
 
 
@@ -161,5 +167,4 @@ public class OpenAds implements LifecycleObserver, android.app.Application.Activ
     public void onActivityDestroyed(Activity activity) {
         currentActivity = null;
     }
-
 }

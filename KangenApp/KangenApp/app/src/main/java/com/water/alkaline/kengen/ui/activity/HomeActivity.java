@@ -70,6 +70,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();
         new BannerAds().showBanner(this);
     }
+
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
 
@@ -265,17 +266,25 @@ public class HomeActivity extends AppCompatActivity {
 
             exitBinding.crdExit.setOnClickListener(view -> {
                 mDialog.dismiss();
-                PowerPreference.getDefaultFile().putInt(Constant.APP_INTERVAL_COUNT, 0);
 
-                new InterAds().showInter(HomeActivity.this, new InterAds.OnAdClosedListener() {
-                    @Override
-                    public void onAdClosed() {
-                        Intent intent = new Intent(HomeActivity.this, ExitActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
+                if (PowerPreference.getDefaultFile().getInt(Constant.SPLASH_ADS, 4) <= 0) {
+                    PowerPreference.getDefaultFile().putInt(Constant.APP_INTERVAL_COUNT, 0);
+                    new InterAds().showInter(HomeActivity.this, new InterAds.OnAdClosedListener() {
+                        @Override
+                        public void onAdClosed() {
+                            Intent intent = new Intent(HomeActivity.this, ExitActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                } else {
+                    Intent intent = new Intent(HomeActivity.this, ExitActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+
 
 
 

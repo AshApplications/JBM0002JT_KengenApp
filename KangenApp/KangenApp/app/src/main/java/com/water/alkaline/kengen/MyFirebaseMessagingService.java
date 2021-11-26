@@ -13,14 +13,19 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.water.alkaline.kengen.ui.activity.FeedbackActivity;
 import com.water.alkaline.kengen.ui.activity.SplashActivity;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,10 +44,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     Context context;
 
     @Override
+    public void onNewToken(@NonNull @NotNull String s) {
+        super.onNewToken(s);
+        PowerPreference.getDefaultFile().putString(Constant.Token, s);
+    }
+
+    @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
         try {
-
             context = this;
             title = remoteMessage.getData().get("title");
             text = remoteMessage.getData().get("text");
@@ -54,7 +64,37 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             checkurl = !url.equalsIgnoreCase("");
             checkicon = !icon.equalsIgnoreCase("");
 
-            if (!checkurl && !checkicon) {
+            if (remoteMessage.getData().containsKey("reply")) {
+                PendingIntent contentIntent;
+
+                if (isAppIsInBackground(context)) {
+
+                    Intent intent;
+                    intent = new Intent(this, SplashActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+                } else {
+                    Intent intent;
+                    intent = new Intent(this, FeedbackActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+                }
+
+                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_logo)
+                        .setSound(defaultSoundUri)
+                        .setContentTitle(title)
+                        .setContentText(text)
+                        .setAutoCancel(true).
+                                setContentIntent(contentIntent);
+                NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    NotificationChannel channel = new NotificationChannel(CHANNEL_ID, title, NotificationManager.IMPORTANCE_DEFAULT);
+                    manager.createNotificationChannel(channel);
+                }
+                manager.notify(0, builder.build());
+            } else if (!checkurl && !checkicon) {
 
                 PendingIntent contentIntent;
 
@@ -74,8 +114,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
 
                 Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_logo).setSound(defaultSoundUri).setContentTitle(title)
-                        .setContentText(text).setAutoCancel(true).setContentIntent(contentIntent);
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_logo)
+                        .setSound(defaultSoundUri)
+                        .setContentTitle(title)
+                        .setContentText(text)
+                        .setAutoCancel(true).
+                                setContentIntent(contentIntent);
                 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     NotificationChannel channel = new NotificationChannel(CHANNEL_ID, title, NotificationManager.IMPORTANCE_DEFAULT);
@@ -93,7 +138,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         PendingIntent.FLAG_ONE_SHOT);
 
                 Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_logo).setSound(defaultSoundUri).setContentTitle(title)
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_logo)
+                        .setSound(defaultSoundUri).
+                                setContentTitle(title)
                         .setContentText(text).setAutoCancel(true).setContentIntent(contentIntent);
                 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

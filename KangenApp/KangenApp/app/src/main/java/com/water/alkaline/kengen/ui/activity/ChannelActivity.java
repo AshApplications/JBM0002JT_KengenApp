@@ -198,8 +198,7 @@ public class ChannelActivity extends AppCompatActivity {
                     @Override
                     public void onAdClosed() {
                         PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(videoList));
-                        PowerPreference.getDefaultFile().putInt(Constant.mPosition, position);
-                        startActivity(new Intent(ChannelActivity.this, PlayerActivity.class));
+                        startActivity(new Intent(ChannelActivity.this, PlayerActivity.class).putExtra(Constant.POSITION, position));
                     }
                 });
 

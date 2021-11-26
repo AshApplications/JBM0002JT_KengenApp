@@ -43,6 +43,7 @@ import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
 import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.ui.activity.ChannelActivity;
+import com.water.alkaline.kengen.ui.activity.HomeActivity;
 import com.water.alkaline.kengen.ui.activity.PlayerActivity;
 import com.water.alkaline.kengen.ui.activity.VideoListActivity;
 import com.water.alkaline.kengen.ui.activity.ViewImageActivity;
@@ -88,9 +89,21 @@ public class ChannelFragment extends Fragment {
 
     public AppViewModel viewModel;
 
+    public ChannelFragment() {
+    }
+
     public ChannelFragment(Activity activity) {
         this.activity = activity;
     }
+
+    @Override
+    public void onAttach(@NonNull @NotNull Context context) {
+        super.onAttach(context);
+        if (activity == null) {
+            activity = (HomeActivity) context;
+        }
+    }
+
 
     public static ChannelFragment newInstance(Activity activity, String param1) {
         ChannelFragment fragment = new ChannelFragment(activity);
@@ -120,23 +133,25 @@ public class ChannelFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
 
 
-        subList = viewModel.getAllSubByCategory(mParam1);
-        if (subList.size() > 1) {
-            SubCategory();
-        } else if (subList.size() == 1) {
-            chanList = viewModel.getAllChannelByCategory(subList.get(0).getId());
-            if (chanList.size() > 1) {
-                Channels();
-            } else {
-                channelId = chanList.get(0).getYouid();
-                isChannel = chanList.get(0).getType().equalsIgnoreCase("0");
-                Videos();
+        if (activity != null) {
+            subList = viewModel.getAllSubByCategory(mParam1);
+            if (subList.size() > 1) {
+                SubCategory();
+            } else if (subList.size() == 1) {
+                chanList = viewModel.getAllChannelByCategory(subList.get(0).getId());
+                if (chanList.size() > 1) {
+                    Channels();
+                } else {
+                    channelId = chanList.get(0).getYouid();
+                    isChannel = chanList.get(0).getType().equalsIgnoreCase("0");
+                    Videos();
+                }
             }
         }
     }
 
     public void SubCategory() {
-        GridLayoutManager manager = new GridLayoutManager(activity,2);
+        GridLayoutManager manager = new GridLayoutManager(activity, 2);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int i) {
@@ -191,7 +206,7 @@ public class ChannelFragment extends Fragment {
 
 
     public void Channels() {
-        GridLayoutManager manager = new GridLayoutManager(activity,2);
+        GridLayoutManager manager = new GridLayoutManager(activity, 2);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int i) {
@@ -227,7 +242,7 @@ public class ChannelFragment extends Fragment {
             }
         });
 
-       binding.rvCats.setAdapter(channelAdapter);
+        binding.rvCats.setAdapter(channelAdapter);
         binding.rvCats.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
         checkData();
     }
@@ -248,7 +263,7 @@ public class ChannelFragment extends Fragment {
 */
 
     public void Videos() {
-        GridLayoutManager manager = new GridLayoutManager(activity,2);
+        GridLayoutManager manager = new GridLayoutManager(activity, 2);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int i) {
@@ -274,10 +289,8 @@ public class ChannelFragment extends Fragment {
                 new InterAds().showInter(activity, new InterAds.OnAdClosedListener() {
                     @Override
                     public void onAdClosed() {
-
                         PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(videoList));
-                        PowerPreference.getDefaultFile().putInt(Constant.mPosition, position);
-                        startActivity(new Intent(activity, PlayerActivity.class));
+                        startActivity(new Intent(activity, PlayerActivity.class).putExtra(Constant.POSITION, position));
                     }
                 });
             }
@@ -289,7 +302,7 @@ public class ChannelFragment extends Fragment {
             @Override
             public void onLoadMore() {
                 try {
-                    videosAdapter.arrayList.add(new SaveEntity("99999",null,null));
+                    videosAdapter.arrayList.add(new SaveEntity("99999", null, null));
                     videosAdapter.notifyItemInserted(videosAdapter.arrayList.size() - 1);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -297,7 +310,7 @@ public class ChannelFragment extends Fragment {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (!PowerPreference.getDefaultFile().getString(channelId,"").equalsIgnoreCase("")) {
+                        if (!PowerPreference.getDefaultFile().getString(channelId, "").equalsIgnoreCase("")) {
                             if (isChannel) {
                                 channelAPI();
                             } else {
@@ -321,7 +334,7 @@ public class ChannelFragment extends Fragment {
                     playlistAPI();
                 }
             }
-        },2000);
+        }, 2000);
 
 
     }
@@ -369,7 +382,7 @@ public class ChannelFragment extends Fragment {
     public void channelAPI() {
         if (checkInternet()) {
 
-            RetroClient.getInstance().getYouApi().channelApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), channelId,PowerPreference.getDefaultFile().getString(channelId,"")).enqueue(new Callback<JsonObject>() {
+            RetroClient.getInstance().getYouApi().channelApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), channelId, PowerPreference.getDefaultFile().getString(channelId, "")).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     try {
@@ -395,7 +408,6 @@ public class ChannelFragment extends Fragment {
                                         videoList.add(entity);
                                     }
                                 }
-
 
 
                                 refreshActivity();
@@ -459,7 +471,7 @@ public class ChannelFragment extends Fragment {
 
     public void playlistAPI() {
         if (checkInternet()) {
-            RetroClient.getInstance().getYouApi().playlistApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), channelId,PowerPreference.getDefaultFile().getString(channelId,"")).enqueue(new Callback<JsonObject>() {
+            RetroClient.getInstance().getYouApi().playlistApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), channelId, PowerPreference.getDefaultFile().getString(channelId, "")).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     try {
@@ -484,7 +496,6 @@ public class ChannelFragment extends Fragment {
                                         videoList.add(entity);
                                     }
                                 }
-
 
 
                                 refreshActivity();

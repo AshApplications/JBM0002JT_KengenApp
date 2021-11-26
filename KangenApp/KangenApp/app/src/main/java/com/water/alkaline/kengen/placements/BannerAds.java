@@ -11,23 +11,30 @@ import androidx.annotation.NonNull;
 
 import com.appodeal.ads.Appodeal;
 import com.appodeal.ads.BannerCallbacks;
+import com.appodeal.ads.BannerView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
+import com.ironsource.mediationsdk.G;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.utils.Constant;
+import com.yandex.metrica.impl.ob.V;
+
+import java.util.HashMap;
 
 public class BannerAds {
-
+    
     public static boolean isAppShow = false;
-    public static boolean ApCheck = false;
-    public static boolean adCheck = false;
 
+    public static boolean ApCheck = false;
+    public static boolean ApCheck2 = false;
+
+    public static boolean adCheck = false;
 
     public static ViewGroup parentview;
 
@@ -35,7 +42,7 @@ public class BannerAds {
     private static AdView gBannerAd;
 
     private static boolean isApbannerloaded;
-    private static com.appodeal.ads.BannerView apBannerAd;
+    private static com.appodeal.ads.BannerView apBannnerAd;
 
     public void loadBanner(Activity activity) {
         PowerPreference.getDefaultFile().putInt(Constant.BANNER_POSITION, -1);
@@ -48,7 +55,6 @@ public class BannerAds {
         int position2 = PowerPreference.getDefaultFile().getInt(Constant.BANNER_POSITION);
 
         if (position2 < MyApplication.arrayList.size()) {
-            Log.e("TAG", "loadMainBanner " + MyApplication.arrayList.get(position2));
             switch (MyApplication.arrayList.get(position2)) {
                 case 0:
                     loadGBanner(activity);
@@ -66,7 +72,6 @@ public class BannerAds {
     }
 
     public void loadGBanner(Activity activity) {
-        Log.e("TAG", "loadGBanner ");
         isGbannerloaded = false;
         final String bannerAd = PowerPreference.getDefaultFile().getString(Constant.G_BANNERID);
 
@@ -81,7 +86,7 @@ public class BannerAds {
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
-                Log.e("TAG", "loadGBanner onAdFailedToLoad " + loadAdError.getCode());
+
                 isGbannerloaded = false;
                 loadMainBanner(activity);
             }
@@ -101,7 +106,6 @@ public class BannerAds {
             @Override
             public void onAdLoaded() {
                 super.onAdLoaded();
-                Log.e("TAG", "loadGBanner onAdLoaded");
                 isGbannerloaded = true;
                 PowerPreference.getDefaultFile().putInt(Constant.BANNER_POSITION, -1);
             }
@@ -110,26 +114,29 @@ public class BannerAds {
 
 
     public void loadApBanner(Activity activity) {
-        Log.e("TAG", "loadApBanner ");
 
         isApbannerloaded = false;
         ApCheck = true;
+        ApCheck2 = true;
+
         Appodeal.setSmartBanners(true);
-        Appodeal.cache(activity, Appodeal.BANNER);
+        Appodeal.cache(activity, Appodeal.BANNER_VIEW);
         Appodeal.setBannerCallbacks(new BannerCallbacks() {
             @Override
             public void onBannerLoaded(int height, boolean isPrecache) {
-                Log.e("TAG", "loadApBanner onBannerLoaded");
-                apBannerAd = Appodeal.getBannerView(activity);
-                isApbannerloaded = true;
-                PowerPreference.getDefaultFile().putInt(Constant.BANNER_POSITION, -1);
+
+                if (ApCheck) {
+                    ApCheck = false;
+                    apBannnerAd = Appodeal.getBannerView(activity);
+                    isApbannerloaded = true;
+                    PowerPreference.getDefaultFile().putInt(Constant.BANNER_POSITION, -1);
+                }
             }
 
             @Override
             public void onBannerFailedToLoad() {
-                Log.e("TAG", "loadApBanner onBannerFailedToLoad");
-                if (ApCheck) {
-                    ApCheck = false;
+                if (ApCheck2) {
+                    ApCheck2 = false;
                     isApbannerloaded = false;
                     loadMainBanner(activity);
                 }
@@ -166,10 +173,14 @@ public class BannerAds {
     }
 
     public void showBanner(Activity activity) {
-        if (PowerPreference.getDefaultFile().getInt(Constant.QUREKA, 5) > 0) {
-            final TextView adSpace = activity.findViewById(R.id.adSpaceBanner);
-            final RelativeLayout adContainer = activity.findViewById(R.id.adBanner);
 
+        final TextView adSpace = activity.findViewById(R.id.adSpaceBanner);
+        final RelativeLayout adContainer = activity.findViewById(R.id.adBanner);
+
+        if (adContainer.getChildCount() > 0)
+            return;
+
+        if (PowerPreference.getDefaultFile().getInt(Constant.QUREKA, 5) > 0) {
             adContainer.setVisibility(View.GONE);
             adSpace.setVisibility(View.GONE);
             return;
@@ -180,9 +191,16 @@ public class BannerAds {
             return;
         }
 
+        setBanner(adSpace);
+        adSpace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Constant.gotoAds(activity);
+            }
+        });
 
         PowerPreference.getDefaultFile().putInt(Constant.BANNER_POSITION, -1);
-        showMainBanner(activity);
+        showMainBanner(activity, adContainer, adSpace);
 
     }
 
@@ -197,26 +215,13 @@ public class BannerAds {
         }
     }
 
-    public void showMainBanner(Activity activity) {
-
-        final TextView adSpace = activity.findViewById(R.id.adSpaceBanner);
-        final RelativeLayout adContainer = activity.findViewById(R.id.adBanner);
-
-        adSpace.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Constant.gotoAds(activity);
-            }
-        });
-
-        setBanner(adSpace);
+    public void showMainBanner(Activity activity, RelativeLayout adContainer, TextView adSpace) {
 
         int position = PowerPreference.getDefaultFile().getInt(Constant.BANNER_POSITION);
         PowerPreference.getDefaultFile().putInt(Constant.BANNER_POSITION, position + 1);
         int position2 = PowerPreference.getDefaultFile().getInt(Constant.BANNER_POSITION);
 
         if (position2 < MyApplication.arrayList.size()) {
-            Log.e("TAG", "showMainBanner " + MyApplication.arrayList.get(position2));
             switch (MyApplication.arrayList.get(position2)) {
                 case 0:
                     showGBanner(activity, adContainer, adSpace);
@@ -225,7 +230,7 @@ public class BannerAds {
                     showApBanner(activity, adContainer, adSpace);
                     break;
                 default:
-                    showMainBanner(activity);
+                    showMainBanner(activity, adContainer, adSpace);
                     break;
             }
         } else {
@@ -233,14 +238,15 @@ public class BannerAds {
         }
     }
 
+
     public void showGBanner(Activity activity, RelativeLayout adContainer, TextView adSpace) {
-        Log.e("TAG", "showGBanner ");
         if (isGbannerloaded) {
 
             if (gBannerAd != null) {
 
                 if (parentview != null)
                     parentview.removeAllViews();
+
 
                 adContainer.removeAllViews();
                 adContainer.addView(gBannerAd);
@@ -251,46 +257,38 @@ public class BannerAds {
                     Appodeal.hide(activity, Appodeal.BANNER_VIEW);
                 }
 
-                if (adContainer.getChildCount() <= 0)
-                    adContainer.setVisibility(View.GONE);
-                else
-                    adContainer.setVisibility(View.VISIBLE);
+                adContainer.setVisibility(View.VISIBLE);
             }
 
             loadBanner(activity);
 
         } else {
-            showMainBanner(activity);
+            showMainBanner(activity, adContainer, adSpace);
         }
     }
 
     public void showApBanner(Activity activity, RelativeLayout adContainer, TextView adSpace) {
-        Log.e("TAG", "showApBanner ");
         if (isApbannerloaded) {
 
-            if (apBannerAd != null) {
+            if (apBannnerAd != null) {
 
                 if (parentview != null)
                     parentview.removeAllViews();
 
                 adContainer.removeAllViews();
-                adContainer.addView(apBannerAd);
+                adContainer.addView(apBannnerAd);
                 parentview = adContainer;
 
                 isAppShow = true;
                 Appodeal.show(activity, Appodeal.BANNER_VIEW);
-
-                if (adContainer.getChildCount() <= 0)
-                    adContainer.setVisibility(View.GONE);
-                else
-                    adContainer.setVisibility(View.VISIBLE);
+                adContainer.setVisibility(View.VISIBLE);
 
             }
 
             loadBanner(activity);
 
         } else {
-            showMainBanner(activity);
+            showMainBanner(activity, adContainer, adSpace);
         }
     }
 }

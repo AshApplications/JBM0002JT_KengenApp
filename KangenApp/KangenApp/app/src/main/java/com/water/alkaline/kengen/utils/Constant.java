@@ -22,6 +22,7 @@ public class Constant {
     public static final String DIR = "KenGenApp";
     public static final String notifyKey = "notifyKey";
 
+    public static final String Token = "Token";
     public static Integer[] adBanners = new Integer[]{R.drawable.qureka1,
             R.drawable.qureka2, R.drawable.qureka3, R.drawable.qureka4, R.drawable.qureka5, R.drawable.qureka6, R.drawable.qureka7};
     public static Integer[] adNAtives = new Integer[]{R.drawable.nativequreka1,
@@ -38,6 +39,7 @@ public class Constant {
     public static final int AD_TYPE = 1;
     public static final int LOADING = 2;
 
+    public static String SPLASH_ADS = "SPLASH_ADS";
     public static String AD_DISPLAY_COUNT = "AD_DISPLAY_COUNT";
     public static String NATIVE = "NATIVE";
 
@@ -77,7 +79,8 @@ public class Constant {
     public static final String mNotice = "mNotice";
     public static final String mIsDuration = "mIsDuration";
     public static final String mIsApi = "mIsApi";
-    public static final String mPosition = "mPosition";
+
+    public static final String POSITION = "POSITION";
     public static final String isSaved = "isSaved";
 
 

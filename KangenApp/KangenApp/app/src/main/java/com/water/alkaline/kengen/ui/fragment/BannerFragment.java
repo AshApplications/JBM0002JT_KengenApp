@@ -1,6 +1,7 @@
 package com.water.alkaline.kengen.ui.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -28,6 +29,7 @@ import com.water.alkaline.kengen.databinding.FragmentBannerBinding;
 import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.main.Banner;
 import com.water.alkaline.kengen.placements.InterAds;
+import com.water.alkaline.kengen.ui.activity.HomeActivity;
 import com.water.alkaline.kengen.ui.activity.ImageActivity;
 import com.water.alkaline.kengen.ui.activity.PlayerActivity;
 import com.water.alkaline.kengen.ui.activity.SaveActivity;
@@ -54,8 +56,19 @@ public class BannerFragment extends Fragment {
     public AppViewModel viewModel;
 
 
+    public BannerFragment() {
+    }
+
     public BannerFragment(Activity activity) {
         this.activity = activity;
+    }
+
+    @Override
+    public void onAttach(@NonNull @NotNull Context context) {
+        super.onAttach(context);
+        if (activity == null) {
+            activity = (HomeActivity) context;
+        }
     }
 
     public static BannerFragment newInstance(Activity activity, String param1) {
@@ -85,46 +98,47 @@ public class BannerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
 
+        if (activity != null) {
+            adapter = new BannerAdapter(activity, list, new OnBannerListerner() {
+                @Override
+                public void onItemClick(int position, Banner item) {
 
-        adapter = new BannerAdapter(activity, list, new OnBannerListerner() {
-            @Override
-            public void onItemClick(int position, Banner item) {
-
-                new InterAds().showInter(activity, new InterAds.OnAdClosedListener() {
-                    @Override
-                    public void onAdClosed() {
-                        PowerPreference.getDefaultFile().putString(Constant.mBanners, new Gson().toJson(list));
-                        Intent intent = new Intent(activity, ViewImageActivity.class);
-                        intent.putExtra("POS", position);
-                        intent.putExtra("PAGE", Constant.LIVE);
-                        startActivity(intent);
-                    }
-                });
+                    new InterAds().showInter(activity, new InterAds.OnAdClosedListener() {
+                        @Override
+                        public void onAdClosed() {
+                            PowerPreference.getDefaultFile().putString(Constant.mBanners, new Gson().toJson(list));
+                            Intent intent = new Intent(activity, ViewImageActivity.class);
+                            intent.putExtra("POS", position);
+                            intent.putExtra("PAGE", Constant.LIVE);
+                            startActivity(intent);
+                        }
+                    });
 
 
-                // startActivity(new Intent(activity, ImageActivity.class).putExtra("mpath", item.getUrl()));
-            }
-        });
-        GridLayoutManager manager = new GridLayoutManager(activity, 2);
-        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int i) {
-                switch (adapter.getItemViewType(i)) {
-                    case Constant.STORE_TYPE:
-                        return 1;
-                    case Constant.AD_TYPE:
-                        return 2;
-                    default:
-                        return 1;
-
+                    // startActivity(new Intent(activity, ImageActivity.class).putExtra("mpath", item.getUrl()));
                 }
-            }
-        });
-        binding.rvBanners.setLayoutManager(manager);
-        binding.rvBanners.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
-        binding.rvBanners.setAdapter(adapter);
-        binding.rvBanners.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
-        refreshFragment();
+            });
+            GridLayoutManager manager = new GridLayoutManager(activity, 2);
+            manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int i) {
+                    switch (adapter.getItemViewType(i)) {
+                        case Constant.STORE_TYPE:
+                            return 1;
+                        case Constant.AD_TYPE:
+                            return 2;
+                        default:
+                            return 1;
+
+                    }
+                }
+            });
+            binding.rvBanners.setLayoutManager(manager);
+            binding.rvBanners.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
+            binding.rvBanners.setAdapter(adapter);
+            binding.rvBanners.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+            refreshFragment();
+        }
     }
 
     public void refreshFragment() {

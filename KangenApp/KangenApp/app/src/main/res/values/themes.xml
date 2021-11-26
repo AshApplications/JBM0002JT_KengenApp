@@ -11,7 +11,10 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
-
+    <style name="AppTheme.Dialog" parent="@style/Theme.AppCompat.Dialog">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
     <style name="TRM_ANIM_STYLE">
         <item name="android:windowEnterAnimation">@anim/trm_popup_enter</item>
         <item name="android:windowExitAnimation">@anim/trm_popup_exit</item>
@@ -33,7 +36,7 @@
     </style>
 
     <style name="RatingBar" parent="AppTheme">
-        <item name="colorControlNormal">@android:color/darker_gray</item>
+        <item name="colorControlNormal">#000000</item>
         <item name="colorControlActivated">@color/starSelectedColor</item>
     </style>
 

@@ -2,21 +2,16 @@ package com.water.alkaline.kengen.ui.adapter;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.preference.PowerPreference;
-import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.databinding.AdLayoutNativeBinding;
 import com.water.alkaline.kengen.databinding.ItemFeedbackBinding;
-import com.water.alkaline.kengen.library.ViewAnimator.ViewAnimator;
-import com.water.alkaline.kengen.model.DownloadEntity;
 import com.water.alkaline.kengen.model.feedback.Feedback;
-import com.water.alkaline.kengen.model.main.Banner;
-import com.water.alkaline.kengen.placements.NativeListAds;
+import com.water.alkaline.kengen.placements.NativeAds;
 import com.water.alkaline.kengen.utils.Constant;
 
 import org.jetbrains.annotations.NotNull;
@@ -116,10 +111,10 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof AdHolder) {
             if (!hashMap.containsKey(position)) {
                 hashMap.put(position, position);
-                new NativeListAds().shownatives(activity, ((AdHolder) holder).binding.includedGoogle, ((AdHolder) holder).binding.includedAppo, ((AdHolder) holder).binding.adSpaceNative);
+                new NativeAds().shownatives(activity, ((AdHolder) holder).binding.includedGoogle, ((AdHolder) holder).binding.includedAppo, ((AdHolder) holder).binding.adSpaceNative);
             }else {
                 if (PowerPreference.getDefaultFile().getInt(Constant.QUREKA, 5) > 0) {
-                    new NativeListAds().shownatives(activity, ((AdHolder) holder).binding.includedGoogle, ((AdHolder) holder).binding.includedAppo, ((AdHolder) holder).binding.adSpaceNative);
+                    new NativeAds().shownatives(activity, ((AdHolder) holder).binding.includedGoogle, ((AdHolder) holder).binding.includedAppo, ((AdHolder) holder).binding.adSpaceNative);
                 }
             }
         } else {

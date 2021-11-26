@@ -3,6 +3,7 @@ package com.water.alkaline.kengen.ui.fragment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import com.water.alkaline.kengen.library.ViewAnimator.ViewAnimator;
 import com.water.alkaline.kengen.model.feedback.Feedback;
 import com.water.alkaline.kengen.model.feedback.FeedbackResponse;
 import com.water.alkaline.kengen.ui.activity.FeedbackActivity;
+import com.water.alkaline.kengen.ui.activity.HomeActivity;
 import com.water.alkaline.kengen.utils.Constant;
 
 import org.jetbrains.annotations.NotNull;
@@ -57,6 +59,17 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
 
     public Dialog dialog;
     public Dialog loaderDialog;
+
+    public FeedbackFragment() {
+    }
+
+    @Override
+    public void onAttach(@NonNull @NotNull Context context) {
+        super.onAttach(context);
+        if (activity == null) {
+            activity = (FeedbackActivity) context;
+        }
+    }
 
     public void dismiss_loader_dialog() {
         if (loaderDialog != null && loaderDialog.isShowing())
@@ -119,8 +132,10 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        disableEmojiInTitle();
-        initializeUI();
+        if (activity != null) {
+            disableEmojiInTitle();
+            initializeUI();
+        }
     }
 
     private void disableEmojiInTitle() {
@@ -224,7 +239,7 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
         if (Constant.checkInternet(activity)) {
             loader_dialog();
             @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-            RetroClient.getInstance().getApi().feedApi(deviceId,String.valueOf(binding.ratingBar.getRating()), binding.txtComments.getText().toString())
+            RetroClient.getInstance().getApi().feedApi(deviceId, String.valueOf(binding.ratingBar.getRating()), binding.txtComments.getText().toString())
                     .enqueue(new Callback<FeedbackResponse>() {
                         @Override
                         public void onResponse(Call<FeedbackResponse> call, Response<FeedbackResponse> response) {
@@ -261,8 +276,6 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
     public void animate() {
         binding.txtComments.setText("");
     }
-
-
 
 
 }

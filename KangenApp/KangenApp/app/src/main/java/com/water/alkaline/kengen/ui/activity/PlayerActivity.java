@@ -71,6 +71,7 @@ public class PlayerActivity extends YouTubeBaseActivity {
     Dialog loaderDialog;
     AppViewModel viewModel;
     YouTubePlayerFragment playerFragment;
+    int position = 0;
 
     public void dismiss_loader_dialog() {
         if (loaderDialog != null && loaderDialog.isShowing())
@@ -96,6 +97,9 @@ public class PlayerActivity extends YouTubeBaseActivity {
         setContentView(binding.getRoot());
         viewModel = MyApplication.getInstance().getViewModel();
 
+        if (getIntent() != null && getIntent().hasExtra(Constant.POSITION)) {
+            position = getIntent().getIntExtra(Constant.POSITION, 0);
+        }
         try {
             Type type = new TypeToken<List<SaveEntity>>() {
             }.getType();
@@ -129,22 +133,27 @@ public class PlayerActivity extends YouTubeBaseActivity {
             @Override
             public void onClick(View v) {
 
-                SaveEntity entity = mList.get(PowerPreference.getDefaultFile().getInt(Constant.mPosition, 0));
-                SaveEntity entity2 = null;
-                if (viewModel.getSavebyVideoId(entity.videoId).size() > 0)
-                    entity2 = viewModel.getSavebyVideoId(entity.videoId).get(0);
+                try {
+                    SaveEntity entity = mList.get(position);
+                    SaveEntity entity2 = null;
+                    if (viewModel.getSavebyVideoId(entity.videoId).size() > 0)
+                        entity2 = viewModel.getSavebyVideoId(entity.videoId).get(0);
 
-                if (entity2 != null) {
-                    viewModel.deleteSaves(entity2);
-                    checkLike();
-                    if (SaveActivity.saveActivity != null)
-                        SaveActivity.saveActivity.refreshData();
-                } else {
-                    SaveEntity entity1 = new SaveEntity(entity.videoId, entity.title, entity.imgUrl);
-                    viewModel.insertSaves(entity1);
-                    binding.ivLike.setSpeed(100f);
-                    binding.ivLike.playAnimation();
+                    if (entity2 != null) {
+                        viewModel.deleteSaves(entity2);
+                        checkLike();
+                        if (SaveActivity.saveActivity != null)
+                            SaveActivity.saveActivity.refreshData();
+                    } else {
+                        SaveEntity entity1 = new SaveEntity(entity.videoId, entity.title, entity.imgUrl);
+                        viewModel.insertSaves(entity1);
+                        binding.ivLike.setSpeed(100f);
+                        binding.ivLike.playAnimation();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+
 
             }
         });
@@ -161,16 +170,21 @@ public class PlayerActivity extends YouTubeBaseActivity {
 
     public void checkLike() {
 
-        SaveEntity entity = mList.get(PowerPreference.getDefaultFile().getInt(Constant.mPosition, 0));
-        SaveEntity entity2 = null;
-        if (viewModel.getSavebyVideoId(entity.videoId).size() > 0)
-            entity2 = viewModel.getSavebyVideoId(entity.videoId).get(0);
+        try {
+            SaveEntity entity = mList.get(position);
+            SaveEntity entity2 = null;
+            if (viewModel.getSavebyVideoId(entity.videoId).size() > 0)
+                entity2 = viewModel.getSavebyVideoId(entity.videoId).get(0);
 
-        if (entity2 != null) {
-            binding.ivLike.setProgress(1);
-        } else {
-            binding.ivLike.setProgress(0);
+            if (entity2 != null) {
+                binding.ivLike.setProgress(1);
+            } else {
+                binding.ivLike.setProgress(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
 
     }
 
@@ -179,8 +193,8 @@ public class PlayerActivity extends YouTubeBaseActivity {
 
         videosAdapter = new VideosAdapter(this, mList, null, new OnVideoListener() {
             @Override
-            public void onItemClick(int position, SaveEntity item) {
-                PowerPreference.getDefaultFile().putInt(Constant.mPosition, position);
+            public void onItemClick(int pos, SaveEntity item) {
+                position = pos;
                 loadVideo(item.videoId);
             }
         });
@@ -205,7 +219,7 @@ public class PlayerActivity extends YouTubeBaseActivity {
         binding.rvVideos.addItemDecoration(new ItemOffsetDecoration(this, R.dimen.item_off_ten));
         binding.rvVideos.setAdapter(videosAdapter);
         binding.rvVideos.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
-        binding.rvVideos.scrollToPosition(PowerPreference.getDefaultFile().getInt(Constant.mPosition, 0));
+        binding.rvVideos.scrollToPosition(position);
 
         refreshActivity();
     }
@@ -279,7 +293,7 @@ public class PlayerActivity extends YouTubeBaseActivity {
                         }
                     });
                     if (videoID == null) {
-                        loadVideo(mList.get(PowerPreference.getDefaultFile().getInt(Constant.mPosition, 0)).videoId);
+                        loadVideo(mList.get(position).videoId);
                     } else {
                         loadVideo(videoID);
                     }
@@ -312,10 +326,10 @@ public class PlayerActivity extends YouTubeBaseActivity {
 
 
     public void nextVideo() {
-        int mPos = PowerPreference.getDefaultFile().getInt(Constant.mPosition);
+        int mPos = position;
         if (mPos + 1 < mList.size()) {
-            PowerPreference.getDefaultFile().putInt(Constant.mPosition, mPos + 1);
-            loadVideo(mList.get(mPos + 1).videoId);
+            position = position + 1;
+            loadVideo(mList.get(position).videoId);
         } else {
             Constant.showToast(PlayerActivity.this, "Completed All Videos");
         }
@@ -371,7 +385,7 @@ public class PlayerActivity extends YouTubeBaseActivity {
         loader_dialog();
         String path = "";
 
-        path = mList.get(PowerPreference.getDefaultFile().getInt(Constant.mPosition, 0)).imgUrl;
+        path = mList.get(position).imgUrl;
 
         Glide.with(this).asBitmap().load(path)
                 .into(new CustomTarget<Bitmap>() {
@@ -409,7 +423,7 @@ public class PlayerActivity extends YouTubeBaseActivity {
             i.setType("image/*");
             i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name));
 
-            String title = mList.get(PowerPreference.getDefaultFile().getInt(Constant.mPosition, 0)).title;
+            String title = mList.get(position).title;
             String sAux = title + "\n\nI recommend Kengen app which gives you all the information like Kengen Demo, Business Plan, Results Photo & Videos, Events video, Motivational video, Forms, PPT, PDF etc.\n" +
                     "\n" +
                     "So Download & share this app into your growth line, leaders and work easily and smartly and achieve your target as soon as possible. \n\n";

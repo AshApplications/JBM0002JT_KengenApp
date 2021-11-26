@@ -16,20 +16,26 @@ public class ExitActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_exit);
+
+        getWindow().setLayout(-1, -1);
+        getWindow().setBackgroundDrawable(null);
+        setFinishOnTouchOutside(false);
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 PowerPreference.getDefaultFile().putBoolean(Constant.isRunning,false);
                 try {
                     System.exit(0);
-                } catch (Exception e) {
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
                     finishAffinity();
                 }
             }
         }, 2000);
+
 
     }
 }

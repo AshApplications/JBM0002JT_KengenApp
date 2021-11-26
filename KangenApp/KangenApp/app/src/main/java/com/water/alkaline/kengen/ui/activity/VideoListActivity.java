@@ -109,8 +109,7 @@ public class VideoListActivity extends AppCompatActivity {
                     @Override
                     public void onAdClosed() {
                         PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(list));
-                        PowerPreference.getDefaultFile().putInt(Constant.mPosition, position);
-                        startActivity(new Intent(VideoListActivity.this, PlayerActivity.class));
+                        startActivity(new Intent(VideoListActivity.this, PlayerActivity.class).putExtra(Constant.POSITION,position));
                     }
                 });
 

@@ -43,6 +43,7 @@ public class SaveActivity extends AppCompatActivity {
         super.onResume();
         new BannerAds().showBanner(this);
     }
+
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
 
@@ -65,22 +66,20 @@ public class SaveActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         setBG();
         saveActivity = this;
-        adapter = new VideosAdapter(this, list,null, new OnVideoListener() {
+        adapter = new VideosAdapter(this, list, null, new OnVideoListener() {
             @Override
             public void onItemClick(int position, SaveEntity item) {
                 new InterAds().showInter(SaveActivity.this, new InterAds.OnAdClosedListener() {
                     @Override
                     public void onAdClosed() {
                         PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(list));
-                        PowerPreference.getDefaultFile().putBoolean(Constant.isSaved, true);
-                        PowerPreference.getDefaultFile().putInt(Constant.mPosition, position);
-                        startActivity(new Intent(SaveActivity.this, PlayerActivity.class));
+                        startActivity(new Intent(SaveActivity.this, PlayerActivity.class).putExtra(Constant.POSITION, position));
                     }
                 });
 
             }
         });
-        GridLayoutManager manager = new GridLayoutManager(this,2);
+        GridLayoutManager manager = new GridLayoutManager(this, 2);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int i) {

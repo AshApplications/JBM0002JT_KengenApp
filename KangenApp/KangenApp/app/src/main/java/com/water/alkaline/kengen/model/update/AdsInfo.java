@@ -46,6 +46,17 @@ public class AdsInfo {
     @SerializedName("clickCount")
     @Expose
     public String clickCount;
+    @SerializedName("splashAds")
+    @Expose
+    public String splashAds;
+
+    public String getSplashAds() {
+        return splashAds;
+    }
+
+    public void setSplashAds(String splashAds) {
+        this.splashAds = splashAds;
+    }
 
     public String getId() {
         return id;

@@ -271,7 +271,6 @@ public class ChannelActivity extends AppCompatActivity {
         binding.txtRetry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 binding.includedProgress.cvProError.setVisibility(View.VISIBLE);
                 binding.cvIerror.setVisibility(View.GONE);
                 channelAPI();

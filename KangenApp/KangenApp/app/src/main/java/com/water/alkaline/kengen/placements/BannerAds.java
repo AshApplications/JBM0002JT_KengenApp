@@ -177,13 +177,15 @@ public class BannerAds {
         final TextView adSpace = activity.findViewById(R.id.adSpaceBanner);
         final RelativeLayout adContainer = activity.findViewById(R.id.adBanner);
 
-        if (adContainer.getChildCount() > 0)
-            return;
-
-        if (PowerPreference.getDefaultFile().getInt(Constant.QUREKA, 5) > 0) {
+        if (PowerPreference.getDefaultFile().getInt(Constant.QUREKA, 1) > 5) {
             adContainer.setVisibility(View.GONE);
             adSpace.setVisibility(View.GONE);
             return;
+        }
+
+        if (PowerPreference.getDefaultFile().getInt(Constant.QUREKA, 1) > 0) {
+            adContainer.setVisibility(View.GONE);
+           return;
         }
 
         if (adCheck) {

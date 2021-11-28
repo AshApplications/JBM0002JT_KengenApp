@@ -20,6 +20,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +33,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -78,10 +81,46 @@ public class SplashActivity extends AppCompatActivity {
 
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-
         Glide.with(this).load(R.drawable.bg).diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(binding.ivBG);
     }
+
+
+    public Handler handler = new Handler(Looper.getMainLooper()) {
+        public void handleMessage(Message msg) {
+            if (msg.what == 1000) {
+                network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dismiss_dialog();
+                        if (Constant.checkInternet(SplashActivity.this)) {
+                            updateAPI();
+                        } else dialog.show();
+                    }
+                });
+            } else if (msg.what == 1001) {
+                network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dismiss_dialog();
+                        if (Constant.checkInternet(SplashActivity.this)) {
+                            userAPI();
+                        } else dialog.show();
+                    }
+                });
+            } else if (msg.what == 1002) {
+                network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dismiss_dialog();
+                        if (Constant.checkInternet(SplashActivity.this)) {
+                            mainAPI();
+                        } else dialog.show();
+                    }
+                });
+            }
+        }
+    };
 
     public void dismiss_dialog() {
         if (dialog != null && dialog.isShowing())
@@ -126,19 +165,6 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-
-    public void updateError() {
-        network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss_dialog();
-                if (Constant.checkInternet(SplashActivity.this)) {
-                    updateAPI();
-                } else dialog.show();
-            }
-        });
-    }
-
     public void updateAPI() {
         if (Constant.checkInternet(SplashActivity.this)) {
             RetroClient.getInstance().getApi().updateApi("update")
@@ -164,8 +190,7 @@ public class SplashActivity extends AppCompatActivity {
                                 PowerPreference.getDefaultFile().putInt(Constant.NATIVE, Integer.valueOf(adsInfo.getNativeOn()));
 
                                 PowerPreference.getDefaultFile().putInt(Constant.AD_CLICK_COUNT, Integer.valueOf(adsInfo.getClickCount()));
-                                //  PowerPreference.getDefaultFile().putInt(Constant.QUREKA, Integer.valueOf(adsInfo.getQurekaOn()));
-                                PowerPreference.getDefaultFile().putInt(Constant.QUREKA, 0);
+                                PowerPreference.getDefaultFile().putInt(Constant.QUREKA, Integer.valueOf(adsInfo.getQurekaOn()));
 
                                 String adsPrio = adsInfo.getAdPriority();
                                 String[] separated = adsPrio.split(",");
@@ -199,9 +224,9 @@ public class SplashActivity extends AppCompatActivity {
                                 Appodeal.initialize(SplashActivity.this, PowerPreference.getDefaultFile().getString(Constant.APPODEAL), Appodeal.INTERSTITIAL);
                                 Appodeal.initialize(SplashActivity.this, PowerPreference.getDefaultFile().getString(Constant.APPODEAL), Appodeal.NATIVE);
 
-                            //    new BannerAds().loadBanner(SplashActivity.this);
+                                new BannerAds().loadBanner(SplashActivity.this);
                                 new InterAds().loadInter(SplashActivity.this);
-                             //   new NativeAds().loadnative(SplashActivity.this);
+                                new NativeAds().loadnative(SplashActivity.this);
                                 new OpenAds(MyApplication.getInstance());
 
                                 AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
@@ -302,36 +327,32 @@ public class SplashActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Call<UpdateResponse> call, Throwable t) {
-                            updateError();
+                            handler.sendEmptyMessage(1000);
                         }
                     });
         } else {
-            updateError();
+            handler.sendEmptyMessage(1000);
         }
     }
 
-    public void userError() {
-        network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss_dialog();
-                if (Constant.checkInternet(SplashActivity.this)) {
-                    userAPI();
-                } else dialog.show();
-            }
-        });
-    }
 
     public void getToken() {
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
             @Override
-            public void onComplete(@NonNull @NotNull Task<String> task) {
-                if (task.isSuccessful()) {
-                    PowerPreference.getDefaultFile().putString(Constant.Token, task.getResult());
-                    userAPI();
-                } else {
-                    getToken();
-                }
+            public void onSuccess(@NonNull @NotNull String s) {
+                PowerPreference.getDefaultFile().putString(Constant.Token, s);
+                userAPI();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull @NotNull Exception e) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getToken();
+                    }
+                },1000);
             }
         });
     }
@@ -360,24 +381,12 @@ public class SplashActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Call<FeedbackResponse> call, Throwable t) {
-                            userError();
+                            handler.sendEmptyMessage(1001);
                         }
                     });
         } else {
-            userError();
+            handler.sendEmptyMessage(1001);
         }
-    }
-
-    public void mainError() {
-        network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss_dialog();
-                if (Constant.checkInternet(SplashActivity.this)) {
-                    mainAPI();
-                } else dialog.show();
-            }
-        });
     }
 
     public void mainAPI() {
@@ -411,11 +420,11 @@ public class SplashActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<MainResponse> call, Throwable t) {
-                    mainError();
+                    handler.sendEmptyMessage(1002);
                 }
             });
         } else {
-            mainError();
+            handler.sendEmptyMessage(1002);
         }
     }
 

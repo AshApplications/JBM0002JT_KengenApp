@@ -348,13 +348,20 @@ public class NativeAds {
     }
 
     public void shownatives(Activity activity, RelativeLayout nativeAdLayout1, RelativeLayout nativeAdLayout2, TextView adSpaceNative) {
-
-        if (PowerPreference.getDefaultFile().getInt(Constant.QUREKA, 5) > 0) {
+        
+        if (PowerPreference.getDefaultFile().getInt(Constant.QUREKA, 1) > 5) {
             nativeAdLayout1.setVisibility(View.GONE);
             nativeAdLayout2.setVisibility(View.GONE);
             adSpaceNative.setVisibility(View.GONE);
             return;
         }
+
+        if (PowerPreference.getDefaultFile().getInt(Constant.QUREKA, 1) > 0) {
+            nativeAdLayout1.setVisibility(View.GONE);
+            nativeAdLayout2.setVisibility(View.GONE);
+            return;
+        }
+
 
         PowerPreference.getDefaultFile().putInt(Constant.NATIVE_POSITION, -1);
         setBanner(adSpaceNative);

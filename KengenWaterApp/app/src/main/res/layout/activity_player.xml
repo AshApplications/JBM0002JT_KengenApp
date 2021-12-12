@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/ivBG"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        app:cardBackgroundColor="@color/colorMain"
+        app:cardElevation="10dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/txtTitle1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/mfont_medium"
+                android:gravity="center"
+                android:text="@string/title"
+                android:textColor="#FFE400"
+                android:textSize="@dimen/_14ssp" />
+
+            <TextView
+                android:id="@+id/txtTitle2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/mfont_medium"
+                android:gravity="center"
+                android:text="@string/title_sub"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/_14ssp" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center|left"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"
+            android:src="@drawable/ic_back"
+            android:tint="@color/colorWhite" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/ivShare"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="right|center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"
+            app:lottie_colorFilter="@color/colorWhite"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/share" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/ivLike"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="right|center"
+            android:layout_marginRight="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:lottie_progress="0"
+            app:lottie_rawRes="@raw/save" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvVideoCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/cvToolbar"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="@dimen/_10sdp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="10dp">
+
+        <FrameLayout
+            android:id="@+id/frameContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/cvVideoCard">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvVideos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <include
+            android:id="@+id/includedProgress"
+            layout="@layout/layout_pro_error" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>

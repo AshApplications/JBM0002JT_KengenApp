@@ -110,6 +110,7 @@ dependencies {
     //New Android X dependency is this -
     implementation "androidx.lifecycle:lifecycle-extensions:2.0.0"
     implementation "com.github.skydoves:elasticviews:2.1.0"
+    implementation "androidx.work:work-runtime:2.7.0"
 }
 
 apply plugin: 'com.google.gms.google-services'

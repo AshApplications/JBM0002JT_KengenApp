@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.appodeal.ads.Appodeal;
+import com.appodeal.ads.Native;
 import com.appodeal.ads.NativeCallbacks;
 import com.appodeal.ads.NativeMediaView;
 import com.google.android.gms.ads.AdListener;
@@ -281,8 +282,8 @@ public class NativeAds {
                 adSpace = activity.findViewById(R.id.adSpaceNative);
             }
 
-            NativeAd lovalNative = gNativeAd;
-            populateUnifiedNativeAdView(lovalNative, adLayoutGoogle.findViewById(R.id.adSpaceNativeAppo));
+            com.appodeal.ads.NativeAd lovalNative = apNativeAd;
+            populateUnifiedAppoNativeAdView(lovalNative, adLayoutAppo.findViewById(R.id.adSpaceNativeAppo));
 
             adLayoutAppo.setVisibility(View.VISIBLE);
             adLayoutGoogle.setVisibility(View.GONE);

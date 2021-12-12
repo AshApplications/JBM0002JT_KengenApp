@@ -311,7 +311,7 @@ public class SplashActivity extends AppCompatActivity {
                                     public void onClick(View v) {
                                         binding.cvUpdate.setVisibility(View.GONE);
                                         binding.cvSplash.setVisibility(View.VISIBLE);
-                                        mainAPI();
+                                        getToken();
                                     }
                                 });
 

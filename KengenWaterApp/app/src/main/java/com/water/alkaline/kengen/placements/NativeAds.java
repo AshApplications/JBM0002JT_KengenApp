@@ -197,6 +197,12 @@ public class NativeAds {
         }
 
         setBanner(adSpace);
+ 	adSpace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Constant.gotoAds(activity);
+            }
+        });
 
         if (PowerPreference.getDefaultFile().getInt(Constant.QUREKA, 1) > 0) {
             adLayoutGoogle.setVisibility(View.GONE);

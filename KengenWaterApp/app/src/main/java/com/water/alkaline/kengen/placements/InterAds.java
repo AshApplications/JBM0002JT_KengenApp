@@ -235,7 +235,7 @@ public class InterAds {
         int custGCount = PowerPreference.getDefaultFile().getInt(Constant.SERVER_INTERVAL_COUNT);
         int appGCount = PowerPreference.getDefaultFile().getInt(Constant.APP_INTERVAL_COUNT);
 
-        if (appGCount % custGCount == 0) {
+        if (custGCount != 0 && appGCount % custGCount == 0) {
 
             PowerPreference.getDefaultFile().putInt(Constant.INTER_POSITION, -1);
             showMainInter(activity, listener);

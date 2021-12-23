@@ -197,7 +197,7 @@ public class NativeAds {
         }
 
         setBanner(adSpace);
- 	adSpace.setOnClickListener(new View.OnClickListener() {
+ 	    adSpace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Constant.gotoAds(activity);

@@ -71,12 +71,7 @@ public class PreviewActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                new NativeAds().shownative(PreviewActivity.this, null);
-            }
-        },250);
+        new NativeAds().shownative(PreviewActivity.this, null);
     }
 
     @Override

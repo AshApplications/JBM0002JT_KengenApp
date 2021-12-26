@@ -9,8 +9,8 @@ android {
         applicationId "com.water.alkaline.kengen"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode 5
+        versionName "1.5"
         android.ndkVersion '21.0.6113669'
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -33,10 +33,10 @@ android {
 
     signingConfigs {
         release {
-            keyAlias 'alkaline.kengen'
-            keyPassword 'alkaline.kengen'
-            storeFile file('G:/Android/FinalAPK/KengenApp/Upload/alkaline.kengen.jks')
-            storePassword 'alkaline.kengen'
+            keyAlias 'jbmapps'
+            keyPassword 'jbmapps'
+            storeFile file('G:/aDocs/jbmapps.jks')
+            storePassword 'jbmapps'
         }
     }
 

@@ -185,7 +185,7 @@ public class OpenAds implements LifecycleObserver, android.app.Application.Activ
                 mDialog.show();
 
             } catch (Exception e) {
-                Log.w("Catch", Objects.requireNonNull(e.getMessage()));
+                Log.e("Catch", Objects.requireNonNull(e.getMessage()));
             }
         }
     }
@@ -193,6 +193,7 @@ public class OpenAds implements LifecycleObserver, android.app.Application.Activ
     @OnLifecycleEvent(ON_START)
     public void onStart() {
 
+        Log.e("TAG", "yess");
         if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, true)) {
             if (!(currentActivity instanceof SplashActivity)) {
                 if (mDialog != null && mDialog.isShowing()) {

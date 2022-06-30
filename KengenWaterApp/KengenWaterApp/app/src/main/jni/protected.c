@@ -90,7 +90,21 @@ const char *getSignature(JNIEnv *env, jobject context) {
 
 
 const int getVerified(JNIEnv *env, jobject context) {
-    return strcmp("AF87F8A27B43CE0FF65DD3DC50B89894", getSignature(env, context));
+    return strcmp("4C9838757CF1697439E8BE6EA5944644", getSignature(env, context));
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_water_alkaline_kengen_MyApplication_getMainn(JNIEnv *env, jobject instance, jobject context)
+{
+    if(getVerified(env,context) == 0)
+    {
+        char str[100];
+        const char *Z = "https://jbmapps.online/kangen/";
+        strcpy(str, Z);
+        return (*env)->NewStringUTF(env, str);
+    }else{
+        return (*env)->NewStringUTF(env, getSignature(env, context));
+    }
 }
 
 JNIEXPORT jstring JNICALL

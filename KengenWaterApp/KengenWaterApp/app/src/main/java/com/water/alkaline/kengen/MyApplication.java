@@ -49,6 +49,7 @@ public class MyApplication extends Application {
     }
 
     public static native String getMain(Context context);
+    public static native String getMainn(Context context);
 
     public static native String getSub(Context context);
 

@@ -148,7 +148,7 @@ public class SplashActivity extends AppCompatActivity {
         PowerPreference.getDefaultFile().putInt(Constant.mIsDuration, 1);
         PowerPreference.getDefaultFile().putBoolean(Constant.isRunning, true);
 
-        Log.e("TAG", MyApplication.getMain(this));
+        Log.e("TAG", MyApplication.getMainn(this));
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

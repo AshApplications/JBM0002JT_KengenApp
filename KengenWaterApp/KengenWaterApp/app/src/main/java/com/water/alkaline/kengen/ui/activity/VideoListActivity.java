@@ -13,8 +13,6 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -32,8 +30,9 @@ import com.water.alkaline.kengen.model.channel.PlaylistResponse;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
 import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.BannerAds;
 import com.water.alkaline.kengen.placements.InterAds;
+import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.water.alkaline.kengen.placements.MiniNativeAds;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnLoadMoreListener;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
@@ -57,7 +56,7 @@ public class VideoListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new BannerAds().showNativeAds(this, null);
+        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
     }
 
     @Override
@@ -415,22 +414,25 @@ public class VideoListActivity extends AppCompatActivity {
             }
 
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance().getApi().refreshApi(deviceId, token, getPackageName(), VERSION, "refresh")
+            RetroClient.getInstance().getApi().refreshApi(DecryptEncrypt.EncryptStr(deviceId), DecryptEncrypt.EncryptStr(token), DecryptEncrypt.EncryptStr(getPackageName()), VERSION, "refresh")
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
                             try {
                                 PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, false);
                                 final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(response.body())), UpdateResponse.class);
-                                AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
-                                PowerPreference.getDefaultFile().putString(Constant.mKeyId, appInfo.getApiKey());
+                                if (updateResponse.getFlag()) {
+                                    AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
+                                    PowerPreference.getDefaultFile().putString(Constant.mKeyId, appInfo.getApiKey());
 
-                                if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
-                                    channelAPI();
+                                    if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
+                                        channelAPI();
+                                    } else {
+                                        playlistAPI();
+                                    }
                                 } else {
-                                    playlistAPI();
+                                    Constant.showToast(VideoListActivity.this, "Something went Wrong");
                                 }
-
                             } catch (Exception e) {
                                 Constant.showLog(e.toString());
                                 e.printStackTrace();

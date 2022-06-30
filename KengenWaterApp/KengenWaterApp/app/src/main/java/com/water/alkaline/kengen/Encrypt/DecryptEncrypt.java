@@ -40,7 +40,7 @@ public class DecryptEncrypt {
 
     public static String EncryptStr(String str1) {
         EncScript script = new EncScript();
-        String newStr = null;
+        String newStr = str1;
         try {
             newStr = EncScript.bytesToHex(script.encrypt(str1));
         } catch (Exception e) {

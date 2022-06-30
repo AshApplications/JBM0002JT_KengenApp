@@ -1,23 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/adSpaceBanner"
+        android:id="@+id/adSpaceMedium"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="130dp"
         android:background="@drawable/bg_native"
         android:gravity="center"
-        android:layout_margin="4dp"
         android:text="Space For Ads"
         android:textColor="@color/colorBlack" />
 
     <FrameLayout
-        android:id="@+id/frameNativeBanner"
-        android:layout_margin="4dp"
+        android:id="@+id/frameNativeMedium"
         android:layout_width="match_parent"
-        android:layout_height="60dp" />
+        android:layout_height="130dp" />
 
 </RelativeLayout>

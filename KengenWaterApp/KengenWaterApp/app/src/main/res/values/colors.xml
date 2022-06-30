@@ -38,4 +38,6 @@
 
     <color name="colorBGNativeStart">#1a02adff</color>
     <color name="colorBGNativeEnd">#2602adff</color>
+
+    <color name="colorStar">#000000</color>
 </resources>

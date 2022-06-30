@@ -32,7 +32,6 @@ import com.water.alkaline.kengen.library.ActionListeners;
 import com.water.alkaline.kengen.library.ViewToImage;
 import com.water.alkaline.kengen.model.SaveEntity;
 import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.BannerAds;
 import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.placements.LargeNativeAds;
 import com.water.alkaline.kengen.utils.Constant;

@@ -2,7 +2,6 @@ package com.water.alkaline.kengen.placements;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -29,8 +28,6 @@ import com.water.alkaline.kengen.utils.Constant;
 
 import java.util.ArrayList;
 import java.util.Objects;
-
-import retrofit2.http.POST;
 
 public class MiniNativeAds {
 
@@ -168,6 +165,66 @@ public class MiniNativeAds {
         }
     }
 
+    public void showNativeAds(Activity activity, FrameLayout nativeAd, TextView adSpace) {
+
+        LinearLayout adView = null;
+
+        if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, true)) {
+
+            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff,false ) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleMiniNativeOnOff, true) &&
+                    gNativeAd.size() > 0) {
+
+                adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_mini, null);
+
+                NativeAd lovalNative = gNativeAd.get(0);
+
+                populateUnifiedNativeAdView(lovalNative, adView.findViewById(R.id.uadview));
+
+                nativeAd.removeAllViews();
+                nativeAd.addView(adView);
+
+                adSpace.setVisibility(View.GONE);
+                nativeAd.setVisibility(View.VISIBLE);
+
+                loadNativeAds(activity);
+
+            } else {
+
+                loadNativeAds(activity);
+
+                if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaMiniNativeOnOff, true)) {
+
+                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_mini, null);
+
+                    ImageView imageViewMain = adView.findViewById(R.id.qurekaAds1);
+                    ImageView imageViewBG = adView.findViewById(R.id.qurekaAds);
+                    ImageView imageViewGif = adView.findViewById(R.id.gif_inter_round);
+
+                    setQureka(activity, imageViewMain, imageViewBG, imageViewGif, Constant.QMINI_COUNT);
+
+                    adView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Constant.gotoAds(activity);
+                        }
+                    });
+
+                    nativeAd.removeAllViews();
+                    nativeAd.addView(adView);
+
+                    adSpace.setVisibility(View.GONE);
+                    nativeAd.setVisibility(View.VISIBLE);
+
+                } else {
+                    nativeAd.setVisibility(View.GONE);
+                    adSpace.setVisibility(View.GONE);
+                }
+            }
+        } else {
+            nativeAd.setVisibility(View.GONE);
+            adSpace.setVisibility(View.GONE);
+        }
+    }
 
     public void setQureka(Activity activity, ImageView imageViewMain, ImageView imageViewBG, ImageView imageViewGif, String isSmall) {
 

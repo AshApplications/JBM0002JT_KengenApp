@@ -16,8 +16,6 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -36,8 +34,10 @@ import com.water.alkaline.kengen.model.main.Channel;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
 import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.BannerAds;
 import com.water.alkaline.kengen.placements.InterAds;
+import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.water.alkaline.kengen.placements.ListNativeAds;
+import com.water.alkaline.kengen.placements.MiniNativeAds;
 import com.water.alkaline.kengen.ui.adapter.ChannelAdapter;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnChannelListener;
@@ -92,7 +92,7 @@ public class ChannelActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new BannerAds().showNativeAds(this, null);
+        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
     }
 
     @Override
@@ -170,7 +170,6 @@ public class ChannelActivity extends AppCompatActivity {
         }
     }
 */
-
 
 
     public void checkData() {
@@ -512,7 +511,7 @@ public class ChannelActivity extends AppCompatActivity {
             }
 
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance().getApi().refreshApi(deviceId, token, getPackageName(), VERSION, "refresh")
+            RetroClient.getInstance().getApi().refreshApi(DecryptEncrypt.EncryptStr(deviceId), DecryptEncrypt.EncryptStr(token), DecryptEncrypt.EncryptStr(getPackageName()), VERSION, "refresh")
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
@@ -520,13 +519,17 @@ public class ChannelActivity extends AppCompatActivity {
                                 PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, false);
                                 final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(response.body())), UpdateResponse.class);
 
-                                AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
-                                PowerPreference.getDefaultFile().putString(Constant.mKeyId, appInfo.getApiKey());
+                                if(updateResponse.getFlag()) {
+                                    AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
+                                    PowerPreference.getDefaultFile().putString(Constant.mKeyId, appInfo.getApiKey());
 
-                                if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
-                                    channelAPI();
-                                } else {
-                                    playlistAPI();
+                                    if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
+                                        channelAPI();
+                                    } else {
+                                        playlistAPI();
+                                    }
+                                }else{
+                                    Constant.showToast(ChannelActivity.this, "Something went Wrong");
                                 }
 
                             } catch (Exception e) {

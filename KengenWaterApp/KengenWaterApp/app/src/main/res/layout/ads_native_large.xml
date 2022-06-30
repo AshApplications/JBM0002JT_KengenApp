@@ -148,8 +148,8 @@
                                             android:layout_weight="1"
                                             android:isIndicator="true"
                                             android:max="5"
-                                            android:progressBackgroundTint="@color/colorBlack"
-                                            android:progressTint="@color/colorBlack"
+                                            android:progressBackgroundTint="@color/colorStar"
+                                            android:progressTint="@color/colorStar"
                                             android:stepSize="0.5"
                                             android:visibility="visible" />
                                     </LinearLayout>

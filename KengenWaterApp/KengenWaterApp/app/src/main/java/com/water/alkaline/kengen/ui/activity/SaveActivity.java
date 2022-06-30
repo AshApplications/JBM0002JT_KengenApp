@@ -9,8 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.Gson;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
@@ -18,8 +16,9 @@ import com.water.alkaline.kengen.databinding.ActivitySaveBinding;
 import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.SaveEntity;
 import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.BannerAds;
 import com.water.alkaline.kengen.placements.InterAds;
+import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.water.alkaline.kengen.placements.MiniNativeAds;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
 import com.water.alkaline.kengen.utils.Constant;
@@ -40,7 +39,7 @@ public class SaveActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new BannerAds().showNativeAds(this, null);
+        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
     }
 
     @Override

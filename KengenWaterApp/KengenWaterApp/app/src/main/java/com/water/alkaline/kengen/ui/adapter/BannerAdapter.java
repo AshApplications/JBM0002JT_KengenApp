@@ -15,11 +15,13 @@ import com.water.alkaline.kengen.databinding.ItemImageBinding;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.databinding.NativeAdLargeBinding;
+import com.water.alkaline.kengen.databinding.NativeAdMediumBinding;
 import com.water.alkaline.kengen.databinding.NativeAdMiniBinding;
 import com.water.alkaline.kengen.model.main.Banner;
 import com.water.alkaline.kengen.placements.ListNativeAds;
 import com.water.alkaline.kengen.ui.listener.OnBannerListerner;
 import com.water.alkaline.kengen.ui.viewholder.LargeAdHolder;
+import com.water.alkaline.kengen.ui.viewholder.MediumAdHolder;
 import com.water.alkaline.kengen.ui.viewholder.MiniAdHolder;
 import com.water.alkaline.kengen.utils.Constant;
 
@@ -56,7 +58,6 @@ public class BannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         int PARTICLE_AD_DISPLAY_COUNT = PowerPreference.getDefaultFile().getInt(Constant.ListNativeAfterCount, 10);
         arrayList.removeAll(Collections.singleton(null));
         ArrayList<Banner> tempArr = new ArrayList<>();
-
 
 
         for (int i = 0; i < arrayList.size(); i++) {
@@ -96,7 +97,7 @@ public class BannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if (PowerPreference.getDefaultFile().getInt(Constant.ListNativeWhichOne, 0) == 0)
                 return new LargeAdHolder(NativeAdLargeBinding.inflate(LayoutInflater.from(activity), parent, false));
             else
-                return new MiniAdHolder(NativeAdMiniBinding.inflate(LayoutInflater.from(activity), parent, false));
+                return new MediumAdHolder(NativeAdMediumBinding.inflate(LayoutInflater.from(activity), parent, false));
         }
     }
 
@@ -125,9 +126,9 @@ public class BannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         } else if (holder instanceof LargeAdHolder) {
             LargeAdHolder adHolder = (LargeAdHolder) holder;
             new ListNativeAds().showListNativeAds(activity, adHolder.binding.frameNativeLarge, adHolder.binding.adSpaceLarge);
-        } else if (holder instanceof MiniAdHolder) {
-            MiniAdHolder adHolder = (MiniAdHolder) holder;
-            new ListNativeAds().showListNativeAds(activity, adHolder.binding.frameNativeMini, adHolder.binding.adSpaceMini);
+        } else if (holder instanceof MediumAdHolder) {
+            MediumAdHolder adHolder = (MediumAdHolder) holder;
+            new ListNativeAds().showListNativeAds(activity, adHolder.binding.frameNativeMedium, adHolder.binding.adSpaceMedium);
         }
     }
 

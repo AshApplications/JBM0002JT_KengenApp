@@ -604,7 +604,7 @@ public class ChannelFragment extends Fragment {
             }
 
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance().getApi().refreshApi(deviceId, token, activity.getPackageName(), VERSION,"refresh")
+            RetroClient.getInstance().getApi().refreshApi(DecryptEncrypt.EncryptStr(deviceId), DecryptEncrypt.EncryptStr(token), DecryptEncrypt.EncryptStr(activity.getPackageName()), VERSION,"refresh")
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
@@ -612,15 +612,18 @@ public class ChannelFragment extends Fragment {
                                 PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, false);
                                 final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(response.body())), UpdateResponse.class);
 
-                                AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
-                                PowerPreference.getDefaultFile().putString(Constant.mKeyId, appInfo.getApiKey());
+                                if(updateResponse.getFlag()) {
+                                    AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
+                                    PowerPreference.getDefaultFile().putString(Constant.mKeyId, appInfo.getApiKey());
 
-                                if (isChannel) {
-                                    channelAPI();
-                                } else {
-                                    playlistAPI();
+                                    if (isChannel) {
+                                        channelAPI();
+                                    } else {
+                                        playlistAPI();
+                                    }
+                                }else{
+                                    Constant.showToast(activity, "Something went Wrong");
                                 }
-
                             } catch (Exception e) {
                                 Constant.showLog(e.toString());
                                 e.printStackTrace();

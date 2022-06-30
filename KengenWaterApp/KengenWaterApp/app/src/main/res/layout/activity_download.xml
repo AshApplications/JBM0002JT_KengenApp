@@ -25,7 +25,10 @@
             layout="@layout/layout_pro_error" />
 
     </RelativeLayout>
-
-    <include layout="@layout/native_ad_banner" />
+    <include
+        android:id="@+id/includedAd"
+        layout="@layout/native_ad_mini"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

@@ -9,6 +9,9 @@ public class AdsInfo {
     @SerializedName("id")
     @Expose
     private String id;
+    @SerializedName("GoogleBannerAds")
+    @Expose
+    private String GoogleBannerAds;
     @SerializedName("GoogleInterAds")
     @Expose
     private String googleInterAds;
@@ -39,6 +42,12 @@ public class AdsInfo {
     @SerializedName("GoogleAppOpenAdsOnOff")
     @Expose
     private Boolean googleAppOpenAdsOnOff;
+    @SerializedName("GoogleBannerOnOff")
+    @Expose
+    private Boolean GoogleBannerOnOff;
+    @SerializedName("BannerAdWhichOne")
+    @Expose
+    private Integer BannerAdWhichOne;
     @SerializedName("IntervalCount")
     @Expose
     private Integer IntervalCount;
@@ -66,6 +75,9 @@ public class AdsInfo {
     @SerializedName("ListNativeAfterCount")
     @Expose
     private Integer listNativeAfterCount;
+    @SerializedName("QurekaBannerOnOff")
+    @Expose
+    private Boolean QurekaBannerOnOff;
     @SerializedName("QurekaInterOnOff")
     @Expose
     private Boolean QurekaInterOnOff;
@@ -348,5 +360,37 @@ public class AdsInfo {
 
     public void setQurekaBackInterOnOff(Boolean qurekaBackInterOnOff) {
         QurekaBackInterOnOff = qurekaBackInterOnOff;
+    }
+
+    public String getGoogleBannerAds() {
+        return GoogleBannerAds;
+    }
+
+    public void setGoogleBannerAds(String googleBannerAds) {
+        GoogleBannerAds = googleBannerAds;
+    }
+
+    public Boolean getGoogleBannerOnOff() {
+        return GoogleBannerOnOff;
+    }
+
+    public void setGoogleBannerOnOff(Boolean googleBannerOnOff) {
+        GoogleBannerOnOff = googleBannerOnOff;
+    }
+
+    public Integer getBannerAdWhichOne() {
+        return BannerAdWhichOne;
+    }
+
+    public void setBannerAdWhichOne(Integer bannerAdWhichOne) {
+        BannerAdWhichOne = bannerAdWhichOne;
+    }
+
+    public Boolean getQurekaBannerOnOff() {
+        return QurekaBannerOnOff;
+    }
+
+    public void setQurekaBannerOnOff(Boolean qurekaBannerOnOff) {
+        QurekaBannerOnOff = qurekaBannerOnOff;
     }
 }

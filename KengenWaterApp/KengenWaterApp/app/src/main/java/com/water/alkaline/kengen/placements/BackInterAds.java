@@ -63,7 +63,6 @@ public class BackInterAds {
             mLoadingDialog.dismiss();
     }
 
-
     public interface OnAdClosedListener {
         public void onAdClosed();
     }

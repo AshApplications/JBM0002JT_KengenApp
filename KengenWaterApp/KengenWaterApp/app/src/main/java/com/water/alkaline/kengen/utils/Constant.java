@@ -25,6 +25,7 @@ public class Constant {
 
     public static final String Token = "Token";
 
+    public static Integer[] adsQurekaBanners = new Integer[]{R.drawable.qureka_banner1, R.drawable.qureka_banner2, R.drawable.qureka_banner3, R.drawable.qureka_banner4, R.drawable.qureka_banner5, R.drawable.qureka_banner6, R.drawable.qureka_banner7};
     public static Integer[] adsQurekaInters = new Integer[]{R.drawable.qureka_inter1, R.drawable.qureka_inter2, R.drawable.qureka_inter3, R.drawable.qureka_inter4, R.drawable.qureka_inter5};
     public static Integer[] adsQurekaGifInters = new Integer[]{R.drawable.qureka_round1, R.drawable.qureka_round2, R.drawable.qureka_round3, R.drawable.qureka_round4, R.drawable.qureka_round5};
 
@@ -41,7 +42,7 @@ public class Constant {
     public static String OPENAD = "GoogleAppOpenAds";
     public static String INTERID = "GoogleInterAds";
     public static String NATIVEID = "GoogleNativeAds";
-
+    public static String BANNERID = "GoogleBannerAds";
 
     public static final String QUREKA_ADS = "QurekaLink";
 
@@ -61,6 +62,7 @@ public class Constant {
 
     public static final String BACK_ADS = "BACK_ADS";
 
+    public static final String GoogleBannerOnOff = "GoogleBannerOnOff";
     public static final String GoogleInterOnOff = "GoogleInterOnOff";
     public static final String GoogleBackInterOnOff = "GoogleBackInterOnOff";
 
@@ -68,10 +70,12 @@ public class Constant {
     public static final String GoogleLargeNativeOnOff = "GoogleLargeNativeOnOff";
     public static final String GoogleListNativeOnOff = "GoogleListNativeOnOff";
 
+    public static final String BannerAdWhichOne = "BannerAdWhichOne";
     public static final String ListNativeWhichOne = "ListNativeWhichOne";
     public static final String ListNativeAfterCount = "ListNativeAfterCount";
     ;
 
+    public static final String QurekaBannerOnOff = "QurekaBannerOnOff";
     public static final String QurekaInterOnOff = "QurekaInterOnOff";
     public static final String QurekaBackInterOnOff = "QurekaBackInterOnOff";
     public static final String QurekaMiniNativeOnOff = "QurekaMiniNativeOnOff";

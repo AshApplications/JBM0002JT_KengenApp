@@ -18,6 +18,7 @@ import com.water.alkaline.kengen.databinding.ItemImageBinding;
 import com.water.alkaline.kengen.databinding.ItemVideoBinding;
 import com.water.alkaline.kengen.databinding.LayoutProgressBinding;
 import com.water.alkaline.kengen.databinding.NativeAdLargeBinding;
+import com.water.alkaline.kengen.databinding.NativeAdMediumBinding;
 import com.water.alkaline.kengen.databinding.NativeAdMiniBinding;
 import com.water.alkaline.kengen.model.SaveEntity;
 import com.water.alkaline.kengen.placements.ListNativeAds;
@@ -25,6 +26,7 @@ import com.water.alkaline.kengen.ui.activity.PlayerActivity;
 import com.water.alkaline.kengen.ui.listener.OnLoadMoreListener;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
 import com.water.alkaline.kengen.ui.viewholder.LargeAdHolder;
+import com.water.alkaline.kengen.ui.viewholder.MediumAdHolder;
 import com.water.alkaline.kengen.ui.viewholder.MiniAdHolder;
 import com.water.alkaline.kengen.utils.Constant;
 
@@ -149,7 +151,7 @@ public class VideosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if (PowerPreference.getDefaultFile().getInt(Constant.ListNativeWhichOne, 0) == 0)
                 return new LargeAdHolder(NativeAdLargeBinding.inflate(LayoutInflater.from(activity), parent, false));
             else
-                return new MiniAdHolder(NativeAdMiniBinding.inflate(LayoutInflater.from(activity), parent, false));
+                return new MediumAdHolder(NativeAdMediumBinding.inflate(LayoutInflater.from(activity), parent, false));
         }
     }
 
@@ -166,9 +168,9 @@ public class VideosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (holder instanceof LargeAdHolder) {
             LargeAdHolder adHolder = (LargeAdHolder) holder;
             new ListNativeAds().showListNativeAds(activity, adHolder.binding.frameNativeLarge, adHolder.binding.adSpaceLarge);
-        } else if (holder instanceof MiniAdHolder) {
-            MiniAdHolder adHolder = (MiniAdHolder) holder;
-            new ListNativeAds().showListNativeAds(activity, adHolder.binding.frameNativeMini, adHolder.binding.adSpaceMini);
+        } else if (holder instanceof MediumAdHolder) {
+            MediumAdHolder adHolder = (MediumAdHolder) holder;
+            new ListNativeAds().showListNativeAds(activity, adHolder.binding.frameNativeMedium, adHolder.binding.adSpaceMedium);
         } else if (holder instanceof LoadingView) {
 
         } else {

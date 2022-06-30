@@ -13,14 +13,11 @@ import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.preference.PowerPreference;
-import com.water.alkaline.kengen.BuildConfig;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.network.RetroClient;
@@ -28,9 +25,9 @@ import com.water.alkaline.kengen.databinding.ActivityFeedbackBinding;
 import com.water.alkaline.kengen.databinding.DialogInternetBinding;
 import com.water.alkaline.kengen.databinding.DialogLoadingBinding;
 import com.water.alkaline.kengen.model.feedback.FeedbackResponse;
-import com.water.alkaline.kengen.model.update.UpdateResponse;
 import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.BannerAds;
+import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.water.alkaline.kengen.placements.MiniNativeAds;
 import com.water.alkaline.kengen.ui.adapter.ViewPagerFragmentAdapter;
 import com.water.alkaline.kengen.ui.fragment.FeedbackFragment;
 import com.water.alkaline.kengen.ui.fragment.HistoryFragment;
@@ -55,7 +52,7 @@ public class FeedbackActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new BannerAds().showNativeAds(this, null);
+        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
     }
     @Override
     public void onBackPressed() {
@@ -173,7 +170,8 @@ public class FeedbackActivity extends AppCompatActivity {
         if (Constant.checkInternet(FeedbackActivity.this)) {
             loader_dialog();
             @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-            RetroClient.getInstance().getApi().GetfeedApi(deviceId)
+
+            RetroClient.getInstance().getApi().GetfeedApi(DecryptEncrypt.EncryptStr(deviceId))
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {

@@ -239,7 +239,7 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
         if (Constant.checkInternet(activity)) {
             loader_dialog();
             @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-            RetroClient.getInstance().getApi().SendfeedApi(deviceId, String.valueOf(binding.ratingBar.getRating()), binding.txtComments.getText().toString())
+           RetroClient.getInstance().getApi().SendfeedApi(DecryptEncrypt.EncryptStr(deviceId), String.valueOf(binding.ratingBar.getRating()), binding.txtComments.getText().toString())
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {

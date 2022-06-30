@@ -27,9 +27,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -186,7 +184,7 @@ public class SplashActivity extends AppCompatActivity {
                     public void run() {
                         getToken();
                     }
-                }, 1000);
+                }, 2000);
             }
         });
     }
@@ -208,7 +206,8 @@ public class SplashActivity extends AppCompatActivity {
                 VERSION = BuildConfig.VERSION_CODE;
             }
 
-            RetroClient.getInstance().getApi().updateApi(deviceId, token, getPackageName(), VERSION)
+
+            RetroClient.getInstance().getApi().updateApi(DecryptEncrypt.EncryptStr(deviceId), DecryptEncrypt.EncryptStr(token), DecryptEncrypt.EncryptStr(getPackageName()), VERSION)
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
@@ -245,6 +244,8 @@ public class SplashActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleExitSplashInterOnOff, appData.getGoogleExitSplashInterOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAppOpenAdsOnOff, appData.getGoogleAppOpenAdsOnOff());
 
+                                    PowerPreference.getDefaultFile().putBoolean(Constant.GoogleBannerOnOff, appData.getGoogleBannerOnOff());
+
                                     PowerPreference.getDefaultFile().putInt(Constant.SERVER_INTERVAL_COUNT, appData.getIntervalCount());
                                     PowerPreference.getDefaultFile().putInt(Constant.APP_INTERVAL_COUNT, 0);
 
@@ -258,9 +259,12 @@ public class SplashActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleLargeNativeOnOff, appData.getGoogleLargeNativeOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleListNativeOnOff, appData.getGoogleListNativeOnOff());
 
+                                    PowerPreference.getDefaultFile().putInt(Constant.BannerAdWhichOne, appData.getBannerAdWhichOne());
+
                                     PowerPreference.getDefaultFile().putInt(Constant.ListNativeWhichOne, appData.getListNativeWhichOne());
                                     PowerPreference.getDefaultFile().putInt(Constant.ListNativeAfterCount, appData.getListNativeAfterCount());
 
+                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaBannerOnOff, appData.getGoogleBannerOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.QurekaInterOnOff, appData.getQurekaInterOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.QurekaBackInterOnOff, appData.getQurekaBackInterOnOff());
 
@@ -291,7 +295,7 @@ public class SplashActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putString(Constant.appShareMsg, appInfo.getAppShareMsg());
                                     PowerPreference.getDefaultFile().putString(Constant.vidShareMsg, appInfo.getVidShareMsg());
 
-                                    if (!PowerPreference.getDefaultFile().getString(Constant.T_DATE, "not").equalsIgnoreCase(appInfo.getTodayDate())) {
+                                   if (!PowerPreference.getDefaultFile().getString(Constant.T_DATE, "not").equalsIgnoreCase(appInfo.getTodayDate())) {
                                         PowerPreference.getDefaultFile().putString(Constant.T_DATE, appInfo.getTodayDate());
                                         PowerPreference.getDefaultFile().putInt(Constant.APP_CLICK_COUNT, 0);
                                     } else {
@@ -303,7 +307,7 @@ public class SplashActivity extends AppCompatActivity {
 
                                     if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, false)) {
                                         new BackInterAds().loadInterAds(SplashActivity.this);
-                                        new BannerAds().loadNativeAds(SplashActivity.this);
+                                        new BannerAds().loadBannerAds(SplashActivity.this);
                                         new InterAds().loadInterAds(SplashActivity.this);
                                         new LargeNativeAds().loadNativeAds(SplashActivity.this);
                                         new ListNativeAds().loadNativeAds(SplashActivity.this);
@@ -408,7 +412,8 @@ public class SplashActivity extends AppCompatActivity {
 
     public void mainAPI() {
         if (Constant.checkInternet(SplashActivity.this)) {
-            RetroClient.getInstance().getApi().dataApi().enqueue(new Callback<String>() {
+            @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+            RetroClient.getInstance().getApi().dataApi(DecryptEncrypt.EncryptStr(deviceId)).enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     try {

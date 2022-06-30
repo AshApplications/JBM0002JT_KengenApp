@@ -32,8 +32,9 @@ public interface RetroInterface {
     Call<String> SendfeedApi(@Field("device") String device, @Field("star") String star, @Field("message") String message);
 
 
+    @FormUrlEncoded
     @POST("dataApi.php")
-    Call<String> dataApi();
+    Call<String> dataApi(@Field("device") String device);
 
 
     @GET("youtube/v3/search?part=snippet&maxResults=50&order=date&type=video")

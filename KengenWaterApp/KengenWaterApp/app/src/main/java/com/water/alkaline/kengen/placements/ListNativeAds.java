@@ -1,7 +1,6 @@
 package com.water.alkaline.kengen.placements;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -163,7 +162,7 @@ public class ListNativeAds {
             if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff,false ) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleListNativeOnOff, true) &&
                     gNativeAd.size() > 0) {
 
-                adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_mini, null);
+                adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_medium, null);
 
                 NativeAd lovalNative = gNativeAd.get(0);
 
@@ -183,7 +182,7 @@ public class ListNativeAds {
 
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaListNativeOnOff, true)) {
 
-                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_mini, null);
+                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_medium, null);
 
                     ImageView imageViewMain = adView.findViewById(R.id.qurekaAds1);
                     ImageView imageViewBG = adView.findViewById(R.id.qurekaAds);

@@ -14,6 +14,9 @@ import com.preference.PowerPreference;
 import com.water.alkaline.kengen.R;
 
 import java.io.File;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Collections;
 
 public class Constant {
 
@@ -180,6 +183,24 @@ public class Constant {
             myCreationDir.mkdirs();
 
         return String.valueOf(myCreationDir);
+    }
+
+    public static boolean isVpnConnected() {
+        String iface = "";
+        try {
+            for (NetworkInterface networkInterface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                if (networkInterface.isUp())
+                    iface = networkInterface.getName();
+
+                if (iface.contains("tun") || iface.contains("ppp") || iface.contains("pptp")) {
+                    return true;
+                }
+            }
+        } catch (SocketException e1) {
+            e1.printStackTrace();
+        }
+
+        return false;
     }
 
 

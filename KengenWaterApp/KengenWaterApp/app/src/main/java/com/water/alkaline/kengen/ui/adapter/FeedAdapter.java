@@ -20,7 +20,7 @@ import com.water.alkaline.kengen.ui.viewholder.MediumAdHolder;
 import com.water.alkaline.kengen.ui.viewholder.MiniAdHolder;
 import com.water.alkaline.kengen.utils.Constant;
 
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,7 +47,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public class FeedHolder extends RecyclerView.ViewHolder {
         ItemFeedbackBinding binding;
 
-        public FeedHolder(@NonNull @NotNull ItemFeedbackBinding itemView) {
+        public FeedHolder(@NonNull ItemFeedbackBinding itemView) {
             super(itemView.getRoot());
             binding = itemView;
         }
@@ -90,9 +90,8 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @NonNull
-    @NotNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == Constant.STORE_TYPE)
             return new FeedHolder(ItemFeedbackBinding.inflate(LayoutInflater.from(activity), parent, false));
         else {
@@ -104,7 +103,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull @NotNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof FeedHolder) {
             FeedHolder holder1 = (FeedHolder) holder;
             Feedback feedback = arrayList.get(position);

@@ -1,5 +1,10 @@
 package com.water.alkaline.kengen.Encrypt;
 
+import android.content.Context;
+
+
+import com.water.alkaline.kengen.MyApplication;
+
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
@@ -14,10 +19,11 @@ public class EncScript {
     private SecretKeySpec keyspec;
     private Cipher cipher;
 
-    EncScript() {
+    EncScript(Context context) {
 
-        ivspec = new IvParameterSpec(DecryptEncrypt.decryptKey(getEncKey1()).getBytes());
-        keyspec = new SecretKeySpec(DecryptEncrypt.decryptKey(getEncKey2()).getBytes(), "AES");
+        ivspec = new IvParameterSpec(DecryptEncrypt.decryptKey(MyApplication.getEncKey1(context)).getBytes());
+        keyspec = new SecretKeySpec(DecryptEncrypt.decryptKey(MyApplication.getEncKey2(context)).getBytes(), "AES");
+
         try {
             cipher = Cipher.getInstance("AES/CBC/NoPadding");
         } catch (NoSuchAlgorithmException e) {
@@ -109,8 +115,5 @@ public class EncScript {
         return decrypted;
     }
 
-    public native String getEncKey1();
-
-    public native String getEncKey2();
 
 }

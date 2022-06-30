@@ -34,11 +34,10 @@ import com.water.alkaline.kengen.databinding.FragmentFeedbackBinding;
 import com.water.alkaline.kengen.library.ViewAnimator.AnimationListener;
 import com.water.alkaline.kengen.library.ViewAnimator.ViewAnimator;
 import com.water.alkaline.kengen.model.feedback.FeedbackResponse;
-import com.water.alkaline.kengen.model.update.UpdateResponse;
 import com.water.alkaline.kengen.ui.activity.FeedbackActivity;
 import com.water.alkaline.kengen.utils.Constant;
 
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.Objects;
 
@@ -64,7 +63,7 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
     }
 
     @Override
-    public void onAttach(@NonNull @NotNull Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (activity == null) {
             activity = (FeedbackActivity) context;
@@ -129,7 +128,7 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
     }
 
     @Override
-    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         if (activity != null) {
@@ -239,7 +238,7 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
         if (Constant.checkInternet(activity)) {
             loader_dialog();
             @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-           RetroClient.getInstance().getApi().SendfeedApi(DecryptEncrypt.EncryptStr(deviceId), String.valueOf(binding.ratingBar.getRating()), binding.txtComments.getText().toString())
+           RetroClient.getInstance(activity).getApi().SendfeedApi(DecryptEncrypt.EncryptStr(activity,deviceId), String.valueOf(binding.ratingBar.getRating()), binding.txtComments.getText().toString())
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
@@ -247,7 +246,7 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
 
                             if (response.isSuccessful()) {
                                 try {
-                                    final FeedbackResponse response1 = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(response.body())), FeedbackResponse.class);
+                                    final FeedbackResponse response1 = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(activity,response.body())), FeedbackResponse.class);
                                     if (response1 != null && response1.feedbacks != null)
                                         PowerPreference.getDefaultFile().putString(Constant.mFeeds, new Gson().toJson(response1.feedbacks));
 

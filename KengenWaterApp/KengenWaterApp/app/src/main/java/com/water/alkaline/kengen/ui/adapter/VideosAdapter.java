@@ -30,7 +30,7 @@ import com.water.alkaline.kengen.ui.viewholder.MediumAdHolder;
 import com.water.alkaline.kengen.ui.viewholder.MiniAdHolder;
 import com.water.alkaline.kengen.utils.Constant;
 
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -135,7 +135,7 @@ public class VideosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public class LoadingView extends RecyclerView.ViewHolder {
         LayoutProgressBinding progressBinding;
 
-        public LoadingView(@NonNull @NotNull LayoutProgressBinding itemView) {
+        public LoadingView(@NonNull LayoutProgressBinding itemView) {
             super(itemView.getRoot());
             progressBinding = itemView;
         }

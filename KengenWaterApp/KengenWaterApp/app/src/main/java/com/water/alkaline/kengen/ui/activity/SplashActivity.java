@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -27,6 +28,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +41,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.water.alkaline.kengen.BuildConfig;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
+import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.MyService;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
@@ -62,8 +65,9 @@ import com.water.alkaline.kengen.placements.OpenAds;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
-import org.jetbrains.annotations.NotNull;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -140,9 +144,11 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
         PowerPreference.getDefaultFile().putInt(Constant.mIsDuration, 1);
         PowerPreference.getDefaultFile().putBoolean(Constant.isRunning, true);
 
+        Log.e("TAG", MyApplication.getMain(this));
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -161,24 +167,53 @@ public class SplashActivity extends AppCompatActivity {
                     public void onStop() {
                         binding.progress.setVisibility(View.VISIBLE);
                         setBG();
-                        getToken();
+                        checkVpn();
                     }
                 }).start();
 
 
     }
 
+    public void checkVpn() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                if (Constant.isVpnConnected()) {
+                    network_dialog("VPN is Connected Please Turn it Off & Try Again !")
+                            .txtRetry.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dismiss_dialog();
+                            checkVpn();
+                        }
+                    });
+                } else if (MyApplication.getMain(SplashActivity.this).equalsIgnoreCase("")) {
+                    network_dialog("Something Went Wrong\nPlease Try Again Later !")
+                            .txtRetry.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dismiss_dialog();
+                        }
+                    });
+                } else {
+                    getToken();
+                }
+            }
+        }, 1000);
+    }
+
     public void getToken() {
 
         FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
             @Override
-            public void onSuccess(@NonNull @NotNull String s) {
+            public void onSuccess(@NonNull String s) {
                 PowerPreference.getDefaultFile().putString(Constant.Token, s);
                 updateAPI();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull @NotNull Exception e) {
+            public void onFailure(@NonNull Exception e) {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -190,6 +225,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     public void updateAPI() {
+
         if (Constant.checkInternet(SplashActivity.this)) {
             @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
             String token = PowerPreference.getDefaultFile().getString(Constant.Token, "");
@@ -207,12 +243,12 @@ public class SplashActivity extends AppCompatActivity {
             }
 
 
-            RetroClient.getInstance().getApi().updateApi(DecryptEncrypt.EncryptStr(deviceId), DecryptEncrypt.EncryptStr(token), DecryptEncrypt.EncryptStr(getPackageName()), VERSION)
+            RetroClient.getInstance(this).getApi().updateApi(DecryptEncrypt.EncryptStr(SplashActivity.this, deviceId), DecryptEncrypt.EncryptStr(SplashActivity.this, token), DecryptEncrypt.EncryptStr(SplashActivity.this, getPackageName()), VERSION)
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
                             try {
-                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(response.body())), UpdateResponse.class);
+                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(SplashActivity.this, response.body())), UpdateResponse.class);
 
                                 if (updateResponse != null) {
                                     AdsInfo appData = updateResponse.getData().getAdsInfo().get(0);
@@ -295,7 +331,7 @@ public class SplashActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putString(Constant.appShareMsg, appInfo.getAppShareMsg());
                                     PowerPreference.getDefaultFile().putString(Constant.vidShareMsg, appInfo.getVidShareMsg());
 
-                                   if (!PowerPreference.getDefaultFile().getString(Constant.T_DATE, "not").equalsIgnoreCase(appInfo.getTodayDate())) {
+                                    if (!PowerPreference.getDefaultFile().getString(Constant.T_DATE, "not").equalsIgnoreCase(appInfo.getTodayDate())) {
                                         PowerPreference.getDefaultFile().putString(Constant.T_DATE, appInfo.getTodayDate());
                                         PowerPreference.getDefaultFile().putInt(Constant.APP_CLICK_COUNT, 0);
                                     } else {
@@ -413,11 +449,11 @@ public class SplashActivity extends AppCompatActivity {
     public void mainAPI() {
         if (Constant.checkInternet(SplashActivity.this)) {
             @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-            RetroClient.getInstance().getApi().dataApi(DecryptEncrypt.EncryptStr(deviceId)).enqueue(new Callback<String>() {
+            RetroClient.getInstance(this).getApi().dataApi(DecryptEncrypt.EncryptStr(SplashActivity.this, deviceId)).enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     try {
-                        final MainResponse mainResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(response.body())), MainResponse.class);
+                        final MainResponse mainResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(SplashActivity.this, response.body())), MainResponse.class);
 
                         viewModel.deleteAllCategory();
                         viewModel.deleteAllSubCategory();

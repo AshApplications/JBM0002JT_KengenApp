@@ -27,13 +27,10 @@ import com.water.alkaline.kengen.databinding.DialogLoadingBinding;
 import com.water.alkaline.kengen.model.feedback.FeedbackResponse;
 import com.water.alkaline.kengen.placements.BackInterAds;
 import com.water.alkaline.kengen.placements.ListBannerAds;
-import com.water.alkaline.kengen.placements.MiniNativeAds;
 import com.water.alkaline.kengen.ui.adapter.ViewPagerFragmentAdapter;
 import com.water.alkaline.kengen.ui.fragment.FeedbackFragment;
 import com.water.alkaline.kengen.ui.fragment.HistoryFragment;
 import com.water.alkaline.kengen.utils.Constant;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -93,7 +90,7 @@ public class FeedbackActivity extends AppCompatActivity {
 
         new TabLayoutMediator(binding.tabHome, binding.vpFeeds, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
-            public void onConfigureTab(@NonNull @NotNull TabLayout.Tab tab, int position) {
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
                 tab.setText(adapter.mFragmentTitleList.get(position));
             }
         }).attach();
@@ -171,14 +168,14 @@ public class FeedbackActivity extends AppCompatActivity {
             loader_dialog();
             @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-            RetroClient.getInstance().getApi().GetfeedApi(DecryptEncrypt.EncryptStr(deviceId))
+            RetroClient.getInstance(this).getApi().GetfeedApi(DecryptEncrypt.EncryptStr(FeedbackActivity.this,deviceId))
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
 
                             dismiss_loader_dialog();
                             try {
-                                final FeedbackResponse response1 = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(response.body())), FeedbackResponse.class);
+                                final FeedbackResponse response1 = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(FeedbackActivity.this,response.body())), FeedbackResponse.class);
 
                                 if (response1 != null && response1.feedbacks != null)
                                     PowerPreference.getDefaultFile().putString(Constant.mFeeds, new Gson().toJson(response1.feedbacks));

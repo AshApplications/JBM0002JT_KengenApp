@@ -17,7 +17,6 @@ import com.water.alkaline.kengen.model.DownloadEntity;
 import com.water.alkaline.kengen.placements.BackInterAds;
 import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.placements.ListBannerAds;
-import com.water.alkaline.kengen.placements.MiniNativeAds;
 import com.water.alkaline.kengen.ui.adapter.DownloadAdapter;
 import com.water.alkaline.kengen.ui.listener.OnDownloadListener;
 import com.water.alkaline.kengen.utils.Constant;

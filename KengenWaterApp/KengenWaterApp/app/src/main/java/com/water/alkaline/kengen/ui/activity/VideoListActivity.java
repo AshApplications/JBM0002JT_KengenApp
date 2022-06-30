@@ -32,7 +32,6 @@ import com.water.alkaline.kengen.model.update.UpdateResponse;
 import com.water.alkaline.kengen.placements.BackInterAds;
 import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.placements.ListBannerAds;
-import com.water.alkaline.kengen.placements.MiniNativeAds;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnLoadMoreListener;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
@@ -206,7 +205,7 @@ public class VideoListActivity extends AppCompatActivity {
 
     public void channelAPI() {
         if (Constant.checkInternet(VideoListActivity.this)) {
-            RetroClient.getInstance().getYouApi().channelApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), PowerPreference.getDefaultFile().getString(Constant.mChannelID), PowerPreference.getDefaultFile().getString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "")).enqueue(new Callback<JsonObject>() {
+            RetroClient.getInstance(this).getYouApi().channelApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), PowerPreference.getDefaultFile().getString(Constant.mChannelID), PowerPreference.getDefaultFile().getString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "")).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     try {
@@ -289,7 +288,7 @@ public class VideoListActivity extends AppCompatActivity {
 
     public void playlistAPI() {
         if (Constant.checkInternet(VideoListActivity.this)) {
-            RetroClient.getInstance().getYouApi().playlistApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), PowerPreference.getDefaultFile().getString(Constant.mChannelID), PowerPreference.getDefaultFile().getString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "")).enqueue(new Callback<JsonObject>() {
+            RetroClient.getInstance(this).getYouApi().playlistApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), PowerPreference.getDefaultFile().getString(Constant.mChannelID), PowerPreference.getDefaultFile().getString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "")).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     try {
@@ -414,13 +413,13 @@ public class VideoListActivity extends AppCompatActivity {
             }
 
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance().getApi().refreshApi(DecryptEncrypt.EncryptStr(deviceId), DecryptEncrypt.EncryptStr(token), DecryptEncrypt.EncryptStr(getPackageName()), VERSION, "refresh")
+            RetroClient.getInstance(this).getApi().refreshApi(DecryptEncrypt.EncryptStr(VideoListActivity.this,deviceId), DecryptEncrypt.EncryptStr(VideoListActivity.this,token), DecryptEncrypt.EncryptStr(VideoListActivity.this,getPackageName()), VERSION, "refresh")
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
                             try {
                                 PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, false);
-                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(response.body())), UpdateResponse.class);
+                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(VideoListActivity.this,response.body())), UpdateResponse.class);
                                 if (updateResponse.getFlag()) {
                                     AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
                                     PowerPreference.getDefaultFile().putString(Constant.mKeyId, appInfo.getApiKey());

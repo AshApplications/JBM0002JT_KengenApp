@@ -22,7 +22,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.youtube.player.YouTubeBaseActivity;
@@ -46,7 +45,7 @@ import com.water.alkaline.kengen.ui.listener.OnVideoListener;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
-import org.jetbrains.annotations.NotNull;
+
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -395,12 +394,12 @@ public class PlayerActivity extends YouTubeBaseActivity {
         Glide.with(this).asBitmap().load(path)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
-                    public void onResourceReady(@NonNull @NotNull Bitmap resource, @Nullable @org.jetbrains.annotations.Nullable Transition<? super Bitmap> transition) {
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         saveBitmap(resource);
                     }
 
                     @Override
-                    public void onLoadCleared(@Nullable @org.jetbrains.annotations.Nullable Drawable placeholder) {
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
                         Toast.makeText(PlayerActivity.this, "Something went Wrong", Toast.LENGTH_SHORT).show();
                         dismiss_loader_dialog();
                     }

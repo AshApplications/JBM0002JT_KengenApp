@@ -1,9 +1,6 @@
 package com.water.alkaline.kengen.data.network;
 
 import com.google.gson.JsonObject;
-import com.water.alkaline.kengen.model.feedback.FeedbackResponse;
-import com.water.alkaline.kengen.model.main.MainResponse;
-import com.water.alkaline.kengen.model.update.UpdateResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Field;

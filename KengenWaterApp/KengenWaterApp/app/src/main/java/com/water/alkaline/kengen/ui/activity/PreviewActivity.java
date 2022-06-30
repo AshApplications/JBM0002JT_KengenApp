@@ -37,7 +37,7 @@ import com.water.alkaline.kengen.placements.LargeNativeAds;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
-import org.jetbrains.annotations.NotNull;
+
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -152,12 +152,12 @@ public class PreviewActivity extends AppCompatActivity {
         Glide.with(this).asBitmap().load(path)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
-                    public void onResourceReady(@NonNull @NotNull Bitmap resource, @Nullable @org.jetbrains.annotations.Nullable Transition<? super Bitmap> transition) {
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         saveBitmap(resource);
                     }
 
                     @Override
-                    public void onLoadCleared(@Nullable @org.jetbrains.annotations.Nullable Drawable placeholder) {
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
                         Toast.makeText(PreviewActivity.this, "Something went Wrong", Toast.LENGTH_SHORT).show();
                         dismiss_loader_dialog();
                     }

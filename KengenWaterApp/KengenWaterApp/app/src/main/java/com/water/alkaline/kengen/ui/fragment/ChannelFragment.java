@@ -57,7 +57,7 @@ import com.water.alkaline.kengen.ui.listener.OnVideoListener;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,8 +97,9 @@ public class ChannelFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(@NonNull @NotNull Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        context.getPackageManager();
         if (activity == null) {
             activity = (HomeActivity) context;
         }
@@ -122,13 +123,13 @@ public class ChannelFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup parent, Bundle savedInstanseState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup parent, Bundle savedInstanseState) {
         binding = FragmentChannelBinding.inflate(getLayoutInflater());
         return binding.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
 
@@ -387,7 +388,7 @@ public class ChannelFragment extends Fragment {
     public void channelAPI() {
         if (checkInternet()) {
 
-            RetroClient.getInstance().getYouApi().channelApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), channelId, PowerPreference.getDefaultFile().getString(channelId, "")).enqueue(new Callback<JsonObject>() {
+            RetroClient.getInstance(activity).getYouApi().channelApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), channelId, PowerPreference.getDefaultFile().getString(channelId, "")).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     try {
@@ -476,7 +477,7 @@ public class ChannelFragment extends Fragment {
 
     public void playlistAPI() {
         if (checkInternet()) {
-            RetroClient.getInstance().getYouApi().playlistApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), channelId, PowerPreference.getDefaultFile().getString(channelId, "")).enqueue(new Callback<JsonObject>() {
+            RetroClient.getInstance(activity).getYouApi().playlistApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), channelId, PowerPreference.getDefaultFile().getString(channelId, "")).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     try {
@@ -604,13 +605,13 @@ public class ChannelFragment extends Fragment {
             }
 
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance().getApi().refreshApi(DecryptEncrypt.EncryptStr(deviceId), DecryptEncrypt.EncryptStr(token), DecryptEncrypt.EncryptStr(activity.getPackageName()), VERSION,"refresh")
+            RetroClient.getInstance(activity).getApi().refreshApi(DecryptEncrypt.EncryptStr(activity,deviceId), DecryptEncrypt.EncryptStr(activity,token), DecryptEncrypt.EncryptStr(activity,activity.getPackageName()), VERSION,"refresh")
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
                             try {
                                 PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, false);
-                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(response.body())), UpdateResponse.class);
+                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(activity,response.body())), UpdateResponse.class);
 
                                 if(updateResponse.getFlag()) {
                                     AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);

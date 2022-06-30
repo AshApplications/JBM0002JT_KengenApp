@@ -25,7 +25,7 @@ import com.water.alkaline.kengen.ui.activity.FeedbackActivity;
 import com.water.alkaline.kengen.ui.adapter.FeedAdapter;
 import com.water.alkaline.kengen.utils.Constant;
 
-import org.jetbrains.annotations.NotNull;
+
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class HistoryFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(@NonNull @NotNull Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (activity == null) {
             activity = (FeedbackActivity) context;
@@ -77,7 +77,7 @@ public class HistoryFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         if (activity != null) {

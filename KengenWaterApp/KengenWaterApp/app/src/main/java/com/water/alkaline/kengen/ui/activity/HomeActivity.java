@@ -9,6 +9,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -34,7 +35,6 @@ import com.water.alkaline.kengen.model.main.Category;
 import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.placements.LargeNativeAds;
 import com.water.alkaline.kengen.placements.ListBannerAds;
-import com.water.alkaline.kengen.placements.MiniNativeAds;
 import com.water.alkaline.kengen.ui.adapter.DrawerCatAdapter;
 import com.water.alkaline.kengen.ui.adapter.ViewPagerFragmentAdapter;
 import com.water.alkaline.kengen.ui.fragment.BannerFragment;
@@ -43,7 +43,6 @@ import com.water.alkaline.kengen.ui.fragment.PdfFragment;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,6 +130,8 @@ public class HomeActivity extends AppCompatActivity {
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         savedState = savedInstanceState;
+        Context context;
+
         setBG();
         if (PowerPreference.getDefaultFile().getBoolean("mCheckFirst", true)) {
             PowerPreference.getDefaultFile().putBoolean("mCheckFirst", false);
@@ -196,7 +197,7 @@ public class HomeActivity extends AppCompatActivity {
         });
         binding.navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull @NotNull android.view.MenuItem item) {
+            public boolean onNavigationItemSelected(@NonNull android.view.MenuItem item) {
                 if (item.getItemId() < 10000) {
                     binding.navView.setCheckedItem(item.getItemId());
                     binding.vpHome.setCurrentItem(item.getOrder());
@@ -365,7 +366,7 @@ public class HomeActivity extends AppCompatActivity {
         }
         new TabLayoutMediator(binding.tabHome, binding.vpHome, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
-            public void onConfigureTab(@NonNull @NotNull TabLayout.Tab tab, int position) {
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
                 tab.setText(pagerFragmentAdapter.mFragmentTitleList.get(position));
             }
         }).attach();

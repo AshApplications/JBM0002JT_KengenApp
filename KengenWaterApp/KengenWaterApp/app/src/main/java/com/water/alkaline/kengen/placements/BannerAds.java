@@ -20,7 +20,7 @@ import com.preference.PowerPreference;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.utils.Constant;
 
-import org.jetbrains.annotations.NotNull;
+
 
 public class BannerAds {
     public static AdView adView;
@@ -35,7 +35,7 @@ public class BannerAds {
             adView.setAdSize(AdSize.SMART_BANNER);
             adView.setAdListener(new AdListener() {
                 @Override
-                public void onAdFailedToLoad(@NonNull @NotNull LoadAdError loadAdError) {
+                public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                     super.onAdFailedToLoad(loadAdError);
                     isLoaded = true;
                 }

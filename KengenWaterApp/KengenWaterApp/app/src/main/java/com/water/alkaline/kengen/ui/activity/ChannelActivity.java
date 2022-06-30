@@ -24,6 +24,7 @@ import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.data.network.RetroClient;
+
 import com.water.alkaline.kengen.databinding.ActivityChannelBinding;
 import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.ErrorReponse;
@@ -36,8 +37,6 @@ import com.water.alkaline.kengen.model.update.UpdateResponse;
 import com.water.alkaline.kengen.placements.BackInterAds;
 import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.placements.ListBannerAds;
-import com.water.alkaline.kengen.placements.ListNativeAds;
-import com.water.alkaline.kengen.placements.MiniNativeAds;
 import com.water.alkaline.kengen.ui.adapter.ChannelAdapter;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnChannelListener;
@@ -299,7 +298,7 @@ public class ChannelActivity extends AppCompatActivity {
 
     public void channelAPI() {
         if (checkInternet()) {
-            RetroClient.getInstance().getYouApi().channelApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), PowerPreference.getDefaultFile().getString(Constant.mChannelID), PowerPreference.getDefaultFile().getString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "")).enqueue(new Callback<JsonObject>() {
+            RetroClient.getInstance(this).getYouApi().channelApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), PowerPreference.getDefaultFile().getString(Constant.mChannelID), PowerPreference.getDefaultFile().getString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "")).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     try {
@@ -386,7 +385,7 @@ public class ChannelActivity extends AppCompatActivity {
 
     public void playlistAPI() {
         if (checkInternet()) {
-            RetroClient.getInstance().getYouApi().playlistApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), PowerPreference.getDefaultFile().getString(Constant.mChannelID), PowerPreference.getDefaultFile().getString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "")).enqueue(new Callback<JsonObject>() {
+            RetroClient.getInstance(this).getYouApi().playlistApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), PowerPreference.getDefaultFile().getString(Constant.mChannelID), PowerPreference.getDefaultFile().getString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "")).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     try {
@@ -511,15 +510,15 @@ public class ChannelActivity extends AppCompatActivity {
             }
 
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance().getApi().refreshApi(DecryptEncrypt.EncryptStr(deviceId), DecryptEncrypt.EncryptStr(token), DecryptEncrypt.EncryptStr(getPackageName()), VERSION, "refresh")
+            RetroClient.getInstance(this).getApi().refreshApi(DecryptEncrypt.EncryptStr(ChannelActivity.this,deviceId), DecryptEncrypt.EncryptStr(ChannelActivity.this,token), DecryptEncrypt.EncryptStr(ChannelActivity.this,getPackageName()), VERSION, "refresh")
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
                             try {
                                 PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, false);
-                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(response.body())), UpdateResponse.class);
+                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(ChannelActivity.this,response.body())), UpdateResponse.class);
 
-                                if(updateResponse.getFlag()) {
+                                if (updateResponse.getFlag()) {
                                     AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
                                     PowerPreference.getDefaultFile().putString(Constant.mKeyId, appInfo.getApiKey());
 
@@ -528,7 +527,7 @@ public class ChannelActivity extends AppCompatActivity {
                                     } else {
                                         playlistAPI();
                                     }
-                                }else{
+                                } else {
                                     Constant.showToast(ChannelActivity.this, "Something went Wrong");
                                 }
 

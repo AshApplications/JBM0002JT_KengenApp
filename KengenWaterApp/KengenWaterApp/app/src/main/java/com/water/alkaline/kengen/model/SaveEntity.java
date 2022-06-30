@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import org.jetbrains.annotations.NotNull;
 
 @Entity(tableName = "tbl_likes")
 public class SaveEntity {
@@ -16,7 +15,7 @@ public class SaveEntity {
     public String des;
     public String imgUrl;
 
-    public SaveEntity(@NotNull String videoId, String title, String des, String imgUrl) {
+    public SaveEntity(@NonNull String videoId, String title, String des, String imgUrl) {
         this.videoId = videoId;
         this.title = title;
         this.des = des;

@@ -24,7 +24,7 @@ import com.water.alkaline.kengen.ui.activity.SplashActivity;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
-import org.jetbrains.annotations.NotNull;
+
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +43,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     Context context;
 
     @Override
-    public void onNewToken(@NonNull @NotNull String s) {
+    public void onNewToken(@NonNull String s) {
         super.onNewToken(s);
         PowerPreference.getDefaultFile().putString(Constant.Token, s);
     }

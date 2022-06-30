@@ -1,6 +1,7 @@
 package com.water.alkaline.kengen;
 
 import android.app.Application;
+import android.content.Context;
 
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
@@ -13,12 +14,12 @@ public class MyApplication extends Application {
 
     public static ArrayList<Integer> arrayList = new ArrayList<>();
 
-    static {
-        System.loadLibrary("native-lib");
-    }
-
     private static MyApplication instance;
     public AppViewModel viewModel;
+
+    static {
+        System.loadLibrary("protected");
+    }
 
     public static MyApplication getInstance() {
         if (instance == null)
@@ -28,7 +29,7 @@ public class MyApplication extends Application {
 
     public AppViewModel getViewModel() {
         if (viewModel == null)
-            viewModel = new AppViewModel(MyApplication.getInstance());
+            viewModel = new AppViewModel(this);
         return viewModel;
     }
 
@@ -46,4 +47,16 @@ public class MyApplication extends Application {
         instance = this;
         PRDownloader.initialize(getApplicationContext());
     }
+
+    public static native String getMain(Context context);
+
+    public static native String getSub(Context context);
+
+    public static native String getDecKey1(Context context);
+
+    public static native String getDecKey2(Context context);
+
+    public static native String getEncKey1(Context context);
+
+    public static native String getEncKey2(Context context);
 }

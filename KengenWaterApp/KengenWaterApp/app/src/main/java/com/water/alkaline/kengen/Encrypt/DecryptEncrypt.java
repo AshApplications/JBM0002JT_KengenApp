@@ -26,8 +26,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class DecryptEncrypt {
 
-    public static String DecryptStr(String str) {
-        DecScript script = new DecScript();
+    public static String DecryptStr(Context context,String str) {
+        DecScript script = new DecScript(context);
         String newStr = null;
         try {
             newStr = new String(script.decrypt(str));
@@ -38,8 +38,8 @@ public class DecryptEncrypt {
         return newStr;
     }
 
-    public static String EncryptStr(String str1) {
-        EncScript script = new EncScript();
+    public static String EncryptStr(Context context,String str1) {
+        EncScript script = new EncScript(context);
         String newStr = str1;
         try {
             newStr = EncScript.bytesToHex(script.encrypt(str1));
@@ -136,137 +136,4 @@ public class DecryptEncrypt {
         sb.append(HEX.charAt((b >> 4) & 0x0f)).append(HEX.charAt(b & 0x0f));
     }
 
-    //    --------------------------------------------------------------------------------------------------------------
-
-    // TODO: 1/17/2020 To encrypt-decrypt file
-    private static SecretKey generateKey(char[] passphraseOrPin, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        // Number of PBKDF2 hardening rounds to use. Larger values increase
-        // computation time. You should select a value that causes computation
-        // to take >100ms.
-        final int iterations = 1000;
-
-        // Generate a 256-bit key
-        final int outputKeyLength = 256;
-
-        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        KeySpec keySpec = new PBEKeySpec(passphraseOrPin, salt, iterations, outputKeyLength);
-        return secretKeyFactory.generateSecret(keySpec);
-    }
-
-    private static byte[] encodeFile(SecretKey yourKey, byte[] fileData)
-            throws Exception {
-        byte[] encrypted = null;
-        byte[] data = yourKey.getEncoded();
-        SecretKeySpec skeySpec = new SecretKeySpec(data, 0, data.length, "AES");
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new IvParameterSpec(
-                new byte[cipher.getBlockSize()]));
-        encrypted = cipher.doFinal(fileData);
-        return encrypted;
-    }
-
-    private static byte[] decodeFile(SecretKey yourKey, byte[] fileData)
-            throws Exception {
-        byte[] decrypted = null;
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.DECRYPT_MODE, yourKey);
-        decrypted = cipher.doFinal(fileData);
-        return decrypted;
-    }
-
-    public static void decodeFile(Context mContext, String encryptedFilename, String decryptedFilename) {
-        try {
-            SecretKey yourKey = generateKey(new char[]{'p', 'a', 's', 's'}, decryptKey(encryptionKey()).getBytes());
-            byte[] decodedData = decodeFile(yourKey, getFile(mContext, encryptedFilename));
-            showImage(decodedData, decryptedFilename);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void showImage(byte[] decodedData, String decodedFileName) {
-
-        File tempImg = new File(decodedFileName);
-        try {
-            if (!tempImg.exists())
-                tempImg.createNewFile();
-
-            FileOutputStream fos = new FileOutputStream(tempImg);
-            fos.write(decodedData);
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public static byte[] readFile(String encryptedFileName) {
-        byte[] contents = null;
-
-        File file = new File(encryptedFileName);
-        int size = (int) file.length();
-        contents = new byte[size];
-        try {
-            BufferedInputStream buf = new BufferedInputStream(
-                    new FileInputStream(file));
-            try {
-                buf.read(contents);
-                buf.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return contents;
-    }
-
-    public static byte[] getFile(Context mContext, String srcFileName) throws FileNotFoundException {
-        byte[] audio_data = null;
-        byte[] inarry = null;
-        AssetManager am = mContext.getAssets();
-        try {
-            InputStream is = am.open(srcFileName); // use recorded file instead of getting file from assets folder.
-            int length = is.available();
-            audio_data = new byte[length];
-            int bytesRead;
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            while ((bytesRead = is.read(audio_data)) != -1) {
-                output.write(audio_data, 0, bytesRead);
-            }
-            inarry = output.toByteArray();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return inarry;
-
-    }
-
-    public static void saveFile(byte[] stringToSave, String encryptedFileName) {
-        SecretKey yourKey;
-
-        try {
-            String encryptedFilePath = Environment.getExternalStorageDirectory() + File.separator + encryptedFileName;
-            File file = new File(encryptedFilePath);
-
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-            yourKey = generateKey(new char[]{'p', 'a', 's', 's'}, decryptKey(encryptionKey()).getBytes());
-            byte[] filesBytes = encodeFile(yourKey, stringToSave);
-            bos.write(filesBytes);
-            bos.flush();
-            bos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public static native String encryptionKey();
-
-    public static native String zipencryptionkey();
 }

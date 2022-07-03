@@ -413,7 +413,7 @@ public class VideoListActivity extends AppCompatActivity {
             }
 
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance(this).getApi().refreshApi(DecryptEncrypt.EncryptStr(VideoListActivity.this,deviceId), DecryptEncrypt.EncryptStr(VideoListActivity.this,token), DecryptEncrypt.EncryptStr(VideoListActivity.this,getPackageName()), VERSION, "refresh")
+            RetroClient.getInstance(this).getApi().refreshApi(DecryptEncrypt.EncryptStr(VideoListActivity.this,deviceId), DecryptEncrypt.EncryptStr(VideoListActivity.this,token), DecryptEncrypt.EncryptStr(VideoListActivity.this,getPackageName()), VERSION, DecryptEncrypt.EncryptStr(VideoListActivity.this,"refresh"))
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {

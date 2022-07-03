@@ -10,6 +10,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
 
+import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.Request;
@@ -52,6 +53,9 @@ public class RetroClient {
                 .setLenient()
                 .create();
 
+        Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxRequests(1);
+
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(
                         chain -> {
@@ -72,7 +76,7 @@ public class RetroClient {
                                 return chain.proceed(request);
                             }
                         }
-                ).build();
+                ).dispatcher(dispatcher).build();
 
         retroMain = new Retrofit.Builder()
                 .baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create(gson))

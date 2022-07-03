@@ -14,6 +14,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 
 import com.google.gson.Gson;
@@ -510,11 +511,11 @@ public class ChannelActivity extends AppCompatActivity {
             }
 
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance(this).getApi().refreshApi(DecryptEncrypt.EncryptStr(ChannelActivity.this,deviceId), DecryptEncrypt.EncryptStr(ChannelActivity.this,token), DecryptEncrypt.EncryptStr(ChannelActivity.this,getPackageName()), VERSION, "refresh")
+            RetroClient.getInstance(this).getApi().refreshApi(DecryptEncrypt.EncryptStr(ChannelActivity.this,deviceId), DecryptEncrypt.EncryptStr(ChannelActivity.this,token), DecryptEncrypt.EncryptStr(ChannelActivity.this,getPackageName()), VERSION, DecryptEncrypt.EncryptStr(ChannelActivity.this,"refresh"))
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
-                            try {
+                           try {
                                 PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, false);
                                 final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(ChannelActivity.this,response.body())), UpdateResponse.class);
 

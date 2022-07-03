@@ -605,7 +605,7 @@ public class ChannelFragment extends Fragment {
             }
 
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance(activity).getApi().refreshApi(DecryptEncrypt.EncryptStr(activity,deviceId), DecryptEncrypt.EncryptStr(activity,token), DecryptEncrypt.EncryptStr(activity,activity.getPackageName()), VERSION,"refresh")
+            RetroClient.getInstance(activity).getApi().refreshApi(DecryptEncrypt.EncryptStr(activity,deviceId), DecryptEncrypt.EncryptStr(activity,token), DecryptEncrypt.EncryptStr(activity,activity.getPackageName()), VERSION,DecryptEncrypt.EncryptStr(activity,"refresh"))
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {

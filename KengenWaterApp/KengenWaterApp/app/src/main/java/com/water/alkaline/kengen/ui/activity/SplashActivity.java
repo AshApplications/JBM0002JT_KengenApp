@@ -252,6 +252,8 @@ public class SplashActivity extends AppCompatActivity {
                                 if (updateResponse != null) {
                                     AdsInfo appData = updateResponse.getData().getAdsInfo().get(0);
 
+                                    PowerPreference.getDefaultFile().putString(Constant.mToken, updateResponse.getMtoken());
+
                                     PowerPreference.getDefaultFile().putString(Constant.INTERID, appData.getGoogleInterAds());
                                     PowerPreference.getDefaultFile().putString(Constant.NATIVEID, appData.getGoogleNativeAds());
                                     PowerPreference.getDefaultFile().putString(Constant.OPENAD, appData.getGoogleAppOpenAds());
@@ -371,7 +373,7 @@ public class SplashActivity extends AppCompatActivity {
                                     if (flag.equals("NORMAL")) {
 
                                     } else if (flag.equals("SKIP")) {
-                                        if (VERSION != Integer.parseInt(appInfo.getVersion())) {
+                                        if (VERSION < Integer.parseInt(appInfo.getVersion())) {
                                             binding.cvUpdate.setVisibility(View.VISIBLE);
                                             binding.txtUpdate.setVisibility(View.VISIBLE);
                                             binding.txtSkip.setVisibility(View.VISIBLE);
@@ -390,7 +392,7 @@ public class SplashActivity extends AppCompatActivity {
                                         flagCheck = false;
 
                                     } else if (flag.equals("FORCE")) {
-                                        if (VERSION != Integer.parseInt(appInfo.getVersion())) {
+                                        if (VERSION < Integer.parseInt(appInfo.getVersion())) {
                                             binding.cvUpdate.setVisibility(View.VISIBLE);
                                             binding.txtSkip.setVisibility(View.GONE);
                                             binding.txtUpdate.setVisibility(View.VISIBLE);
@@ -447,8 +449,7 @@ public class SplashActivity extends AppCompatActivity {
 
     public void mainAPI() {
         if (Constant.checkInternet(SplashActivity.this)) {
-            @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-            RetroClient.getInstance(this).getApi().dataApi(DecryptEncrypt.EncryptStr(SplashActivity.this, deviceId)).enqueue(new Callback<String>() {
+             RetroClient.getInstance(this).getApi().dataApi(DecryptEncrypt.EncryptStr(SplashActivity.this, PowerPreference.getDefaultFile().getString(Constant.mToken,"123"))).enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     try {

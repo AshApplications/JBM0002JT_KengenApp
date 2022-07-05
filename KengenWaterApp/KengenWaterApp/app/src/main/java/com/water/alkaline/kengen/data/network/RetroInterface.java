@@ -22,16 +22,16 @@ public interface RetroInterface {
 
     @FormUrlEncoded
     @POST("feedApi.php")
-    Call<String> GetfeedApi(@Field("device") String device);
+    Call<String> GetfeedApi(@Field("mtoken") String mtoken);
 
     @FormUrlEncoded
     @POST("feedApi.php")
-    Call<String> SendfeedApi(@Field("device") String device, @Field("star") String star, @Field("message") String message);
+    Call<String> SendfeedApi(@Field("mtoken") String mtoken,@Field("device") String device, @Field("star") String star, @Field("message") String message);
 
 
     @FormUrlEncoded
     @POST("dataApi.php")
-    Call<String> dataApi(@Field("device") String device);
+    Call<String> dataApi(@Field("mtoken") String v);
 
 
     @GET("youtube/v3/search?part=snippet&maxResults=50&order=date&type=video")

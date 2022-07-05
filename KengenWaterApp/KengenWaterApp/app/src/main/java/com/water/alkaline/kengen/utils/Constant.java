@@ -27,6 +27,7 @@ public class Constant {
     public static final String vidShareMsg = "vidShareMsg";
 
     public static final String Token = "Token";
+    public static final String mToken = "mToken";
 
     public static Integer[] adsQurekaBanners = new Integer[]{R.drawable.qureka_banner1, R.drawable.qureka_banner2, R.drawable.qureka_banner3, R.drawable.qureka_banner4, R.drawable.qureka_banner5, R.drawable.qureka_banner6, R.drawable.qureka_banner7};
     public static Integer[] adsQurekaInters = new Integer[]{R.drawable.qureka_inter1, R.drawable.qureka_inter2, R.drawable.qureka_inter3, R.drawable.qureka_inter4, R.drawable.qureka_inter5};

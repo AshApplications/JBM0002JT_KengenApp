@@ -1,3 +1,52 @@
+# Add project specific ProGuard rules here.
+# You can control the set of applied configuration files using the
+# proguardFiles setting in build.gradle.
+#
+-keepattributes LineNumberTable,SourceFile
+-renamesourcefileattribute SourceFile
+# For more details, see
+#   http://developer.android.com/guide/developing/tools/proguard.html
+
+# If your project uses WebView with JS, uncomment the following
+# and specify the fully qualified class name to the JavaScript interface
+# class:
+#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+#   public *;
+#}
+# If you keep the line number information, uncomment this to
+# hide the original source file name.
+#-renamesourcefileattribute SourceFile
+
+# Add project specific ProGuard rules here.
+# You can control the set of applied configuration files using the
+# proguardFiles setting in build.gradle.
+#
+# For more details, see
+#   http://developer.android.com/guide/developing/tools/proguard.html
+
+# If your project uses WebView with JS, uncomment the following
+# and specify the fully qualified class name to the JavaScript interface
+# class:
+#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+#   public *;
+#}
+
+# Uncomment this to preserve the line number information for
+# debugging stack traces.
+#-keepattributes SourceFile,LineNumberTable
+
+# If you keep the line number information, uncomment this to
+# hide the original source file name.
+#-renamesourcefileattribute SourceFile
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-dontwarn androidx.room.paging.**
+-keep class com.google.gson.reflect.TypeToken
+-keep class * extends com.google.gson.reflect.TypeToken
+-keep public class * implements java.lang.reflect.Type
+
+-keep class androidx.renderscript.** { *; }
+
 #Mine
 -dontwarn javax.**
 -dontwarn java.lang.management.**
@@ -49,8 +98,56 @@
 -keepclasseswithmembernames class * {
     @butterknife.* <methods>;
 }
+# Retrofit 1.X
 
+-keep class com.squareup.okhttp.** { *; }
+-keep class retrofit.** { *; }
+-keep interface com.squareup.okhttp.** { *; }
 
+-dontwarn com.squareup.okhttp.**
+-dontwarn okio.**
+-dontwarn retrofit.**
+-dontwarn rx.**
+
+-keepclasseswithmembers class * {
+    @retrofit.http.* <methods>;
+}
+
+# Retrofit 2.X
+## https://square.github.io/retrofit/ ##
+
+-dontwarn retrofit2.**
+-keep class retrofit2.** { *; }
+-keepattributes Signature
+-keepattributes Exceptions
+
+-keepclasseswithmembers class * {
+    @retrofit2.http.* <methods>;
+}
+
+# If in your rest service interface you use methods with Callback argument.
+-keepattributes Exceptions
+
+# If your rest service methods throw custom exceptions, because you've defined an ErrorHandler.
+-keepattributes Signature
+
+# Also you must note that if you are using GSON for conversion from JSON to POJO representation, you must ignore those POJO classes from being obfuscated.
+# Here include the POJO's that have you have created for mapping JSON response to POJO for example.
+# Retrofit 2.X
+## https://square.github.io/retrofit/ ##
+# Okio
+-keep class sun.misc.Unsafe { *; }
+-dontwarn java.nio.file.*
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+-dontwarn okio.**
+-dontwarn retrofit2.**
+-keep class retrofit2.** { *; }
+-keepattributes Signature
+-keepattributes Exceptions
+
+-keepclasseswithmembers class * {
+    @retrofit2.http.* <methods>;
+}
 
 #Code obfuscation
 -keepclassmembers class com.water.alkaline.kengen.model** { <fields>; }
@@ -58,7 +155,11 @@
   public protected *;
 }
 #OLD
-
+# Okio
+-keep class sun.misc.Unsafe { *; }
+-dontwarn java.nio.file.*
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+-dontwarn okio.**
 # This is a configuration file for ProGuard.
 # http://proguard.sourceforge.net/index.html#manual/usage.html
 -dontusemixedcaseclassnames
@@ -185,6 +286,54 @@
 #-keep class videostatusmakerapp.Data.** { *; }
 
 -keep class android.support.v8.renderscript.** { *; }
+
+
+ -dontwarn okio.**
+    -keepattributes InnerClasses
+    -dontwarn sun.misc.**
+    -dontwarn java.lang.invoke.**
+    -dontwarn okhttp3.**
+    -dontwarn com.anchorfree.sdk.**
+    -dontwarn okio.**
+    -dontwarn javax.annotation.**
+    -dontwarn org.conscrypt.**
+    -keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+    #DNSJava
+    -keep class org.xbill.DNS.** {*;}
+    -dontnote org.xbill.DNS.spi.DNSJavaNameServiceDescriptor
+    -dontwarn org.xbill.DNS.spi.DNSJavaNameServiceDescriptor
+    -keep class * implements com.google.gson.TypeAdapterFactory
+    -keep class * implements com.google.gson.JsonSerializer
+    -keep class * implements com.google.gson.JsonDeserializer
+    -keep class com.anchorfree.sdk.SessionConfig { *; }
+    -keep class com.anchorfree.sdk.fireshield.** { *; }
+    -keep class com.anchorfree.sdk.dns.** { *; }
+    -keep class com.anchorfree.sdk.HydraSDKConfig { *; }
+    -keep class com.anchorfree.partner.api.ClientInfo { *; }
+    -keep class com.anchorfree.sdk.NotificationConfig { *; }
+    -keep class com.anchorfree.sdk.NotificationConfig$Builder { *; }
+    -keep class com.anchorfree.sdk.NotificationConfig$StateNotification { *; }
+    -keepclassmembers public class com.anchorfree.ucr.transport.DefaultTrackerTransport {
+       public <init>(...);
+     }
+     -keepclassmembers class com.anchorfree.ucr.SharedPrefsStorageProvider{
+        public <init>(...);
+     }
+     -keepclassmembers class com.anchorfree.sdk.InternalReporting$InternalTrackingTransport{
+     public <init>(...);
+     }
+     -keep class com.anchorfree.sdk.exceptions.* {
+        *;
+     }
+
+    -keepclassmembers class * implements javax.net.ssl.SSLSocketFactory {
+        final javax.net.ssl.SSLSocketFactory delegate;
+    }
+
+    # https://stackoverflow.com/questions/56142150/fatal-exception-java-lang-nullpointerexception-in-release-build
+    -keepclassmembers,allowobfuscation class * {
+      @com.google.gson.annotations.SerializedName <fields>;
+    }
 
 
 

@@ -15,6 +15,9 @@ public class UpdateResponse {
     @SerializedName("message")
     @Expose
     private String message;
+    @SerializedName("mtoken")
+    @Expose
+    private String mtoken;
     @SerializedName("code")
     @Expose
     private Integer code;
@@ -24,6 +27,14 @@ public class UpdateResponse {
     @SerializedName("feedbacks")
     @Expose
     private List<Feedback> feedbacks = new ArrayList<>();
+
+    public String getMtoken() {
+        return mtoken;
+    }
+
+    public void setMtoken(String mtoken) {
+        this.mtoken = mtoken;
+    }
 
     public Boolean getFlag() {
         return flag;

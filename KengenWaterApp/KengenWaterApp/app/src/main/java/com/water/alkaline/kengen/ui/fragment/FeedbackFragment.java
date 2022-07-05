@@ -38,7 +38,6 @@ import com.water.alkaline.kengen.ui.activity.FeedbackActivity;
 import com.water.alkaline.kengen.utils.Constant;
 
 
-
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -238,7 +237,7 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
         if (Constant.checkInternet(activity)) {
             loader_dialog();
             @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-           RetroClient.getInstance(activity).getApi().SendfeedApi(DecryptEncrypt.EncryptStr(activity,deviceId), String.valueOf(binding.ratingBar.getRating()), binding.txtComments.getText().toString())
+            RetroClient.getInstance(activity).getApi().SendfeedApi(DecryptEncrypt.EncryptStr(activity, PowerPreference.getDefaultFile().getString(Constant.mToken, "123")), deviceId, String.valueOf(binding.ratingBar.getRating()), binding.txtComments.getText().toString())
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
@@ -246,7 +245,7 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
 
                             if (response.isSuccessful()) {
                                 try {
-                                    final FeedbackResponse response1 = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(activity,response.body())), FeedbackResponse.class);
+                                    final FeedbackResponse response1 = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(activity, response.body())), FeedbackResponse.class);
                                     if (response1 != null && response1.feedbacks != null)
                                         PowerPreference.getDefaultFile().putString(Constant.mFeeds, new Gson().toJson(response1.feedbacks));
 

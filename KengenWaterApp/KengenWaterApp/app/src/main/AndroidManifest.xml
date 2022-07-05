@@ -36,51 +36,64 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.PreviewActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.ViewImageActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.FeedbackActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.QurekaInterActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.ExitActivity"
             android:excludeFromRecents="true"
+            android:exported="false"
             android:theme="@style/AppTheme.Dialog" />
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.SaveActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.DownloadActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.PlayerActivity"
+            android:exported="false"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.ImageActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.VideoListActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.PdfActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.ChannelActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.HomeActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.SplashActivity"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

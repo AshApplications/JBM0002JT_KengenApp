@@ -51,6 +51,7 @@ public class FeedbackActivity extends AppCompatActivity {
         super.onResume();
         new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
     }
+
     @Override
     public void onBackPressed() {
         new BackInterAds().showInterAds(this, new BackInterAds.OnAdClosedListener() {
@@ -166,16 +167,14 @@ public class FeedbackActivity extends AppCompatActivity {
     public void FeedAPI() {
         if (Constant.checkInternet(FeedbackActivity.this)) {
             loader_dialog();
-            @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-
-            RetroClient.getInstance(this).getApi().GetfeedApi(DecryptEncrypt.EncryptStr(FeedbackActivity.this,deviceId))
+            RetroClient.getInstance(this).getApi().GetfeedApi(DecryptEncrypt.EncryptStr(FeedbackActivity.this, PowerPreference.getDefaultFile().getString(Constant.mToken, "123")))
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
 
                             dismiss_loader_dialog();
                             try {
-                                final FeedbackResponse response1 = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(FeedbackActivity.this,response.body())), FeedbackResponse.class);
+                                final FeedbackResponse response1 = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(FeedbackActivity.this, response.body())), FeedbackResponse.class);
 
                                 if (response1 != null && response1.feedbacks != null)
                                     PowerPreference.getDefaultFile().putString(Constant.mFeeds, new Gson().toJson(response1.feedbacks));

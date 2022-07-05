@@ -9,12 +9,11 @@ android {
         applicationId "com.water.alkaline.kengen"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 6
-        versionName "1.6"
+        versionCode 8
+        versionName "1.8"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
 
     buildFeatures {
         viewBinding true

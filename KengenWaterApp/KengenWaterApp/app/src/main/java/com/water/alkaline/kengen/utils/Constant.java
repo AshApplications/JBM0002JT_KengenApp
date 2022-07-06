@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.preference.PowerPreference;
+import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
 
 import java.io.File;
@@ -20,7 +21,6 @@ import java.util.Collections;
 
 public class Constant {
 
-    public static final String DIR = "MotivationMenia";
     public static final String notifyKey = "notifyKey";
 
     public static final String appShareMsg = "appShareMsg";
@@ -91,6 +91,7 @@ public class Constant {
     public static final String DialogTimeInSec = "DialogTimeInSec";
 
     public static final String VpnOnOff = "VpnOnOff";
+    public static final String VpnAuto = "VpnAuto";
     public static final String VpnUrl = "VpnUrl";
 
     public static final String adsCloseCount = "adsCloseCount";
@@ -166,7 +167,7 @@ public class Constant {
 
         if (!dCimDirPath.exists())
             dCimDirPath.mkdir();
-        File myCreationDir = new File(dCimDirPath, DIR + "/SavedPDF");
+        File myCreationDir = new File(dCimDirPath, MyApplication.getContext().getString(R.string.app_name) + "/SavedPDF");
         if (!myCreationDir.exists())
             myCreationDir.mkdirs();
 
@@ -179,7 +180,7 @@ public class Constant {
 
         if (!dCimDirPath.exists())
             dCimDirPath.mkdir();
-        File myCreationDir = new File(dCimDirPath, DIR + "/SavedIamges");
+        File myCreationDir = new File(dCimDirPath, MyApplication.getContext().getString(R.string.app_name) + "/SavedIamges");
         if (!myCreationDir.exists())
             myCreationDir.mkdirs();
 

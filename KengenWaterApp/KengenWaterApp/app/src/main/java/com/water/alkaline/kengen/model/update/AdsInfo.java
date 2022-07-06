@@ -108,6 +108,9 @@ public class AdsInfo {
     @SerializedName("VpnUrl")
     @Expose
     private String vpnUrl;
+    @SerializedName("VpnAuto")
+    @Expose
+    private Boolean VpnAuto;
     @SerializedName("adsCloseCount")
     @Expose
     private Integer adsCloseCount;
@@ -134,6 +137,14 @@ public class AdsInfo {
 
     public void setGoogleNativeAds(String googleNativeAds) {
         this.googleNativeAds = googleNativeAds;
+    }
+
+    public Boolean getVpnAuto() {
+        return VpnAuto;
+    }
+
+    public void setVpnAuto(Boolean vpnAuto) {
+        VpnAuto = vpnAuto;
     }
 
     public String getGoogleAppOpenAds() {

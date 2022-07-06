@@ -33,6 +33,10 @@ public class MyApplication extends Application {
         return viewModel;
     }
 
+    public static Context getContext() {
+        return getInstance().getApplicationContext();
+    }
+
     public static CircularProgressDrawable getPlaceHolder() {
         CircularProgressDrawable circularProgressDrawable = new CircularProgressDrawable(getInstance());
         circularProgressDrawable.setStrokeWidth(5f);

@@ -254,6 +254,7 @@ public class SplashActivity extends AppCompatActivity {
 
                                     PowerPreference.getDefaultFile().putString(Constant.mToken, updateResponse.getMtoken());
 
+                                    PowerPreference.getDefaultFile().putString(Constant.BANNERID, appData.getGoogleBannerAds());
                                     PowerPreference.getDefaultFile().putString(Constant.INTERID, appData.getGoogleInterAds());
                                     PowerPreference.getDefaultFile().putString(Constant.NATIVEID, appData.getGoogleNativeAds());
                                     PowerPreference.getDefaultFile().putString(Constant.OPENAD, appData.getGoogleAppOpenAds());
@@ -314,6 +315,7 @@ public class SplashActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putDouble(Constant.DialogTimeInSec, appData.getDialogTimeInSec());
 
                                     PowerPreference.getDefaultFile().putBoolean(Constant.VpnOnOff, appData.getVpnOnOff());
+                                    PowerPreference.getDefaultFile().putBoolean(Constant.VpnAuto, appData.getVpnAuto());
                                     PowerPreference.getDefaultFile().putString(Constant.VpnUrl, appData.getVpnUrl());
 
                                     PowerPreference.getDefaultFile().putInt(Constant.AD_CLICK_COUNT, appData.getAdsCloseCount());

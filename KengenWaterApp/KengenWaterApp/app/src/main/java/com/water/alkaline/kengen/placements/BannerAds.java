@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
@@ -37,16 +38,17 @@ public class BannerAds {
                 @Override
                 public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                     super.onAdFailedToLoad(loadAdError);
-                    isLoaded = true;
+                    isLoaded = false;
+                    adView = null;
                 }
 
                 @Override
                 public void onAdLoaded() {
                     super.onAdLoaded();
-                    isLoaded = false;
-                    adView = null;
+                    isLoaded = true;
                 }
             });
+            adView.loadAd(new AdRequest.Builder().build());
         }
     }
 

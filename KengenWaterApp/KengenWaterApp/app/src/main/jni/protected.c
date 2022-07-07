@@ -90,7 +90,7 @@ const char *getSignature(JNIEnv *env, jobject context) {
 
 // 211A4200C81328A0E252E90C48BF45F2
 const int getVerified(JNIEnv *env, jobject context) {
-    return strcmp("4C9838757CF1697439E8BE6EA5944644", getSignature(env, context));
+    return strcmp("211A4200C81328A0E252E90C48BF45F2", getSignature(env, context));
 }
 
 

@@ -302,7 +302,7 @@ public class SplashActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putInt(Constant.ListNativeWhichOne, appData.getListNativeWhichOne());
                                     PowerPreference.getDefaultFile().putInt(Constant.ListNativeAfterCount, appData.getListNativeAfterCount());
 
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaIconOnOff, appData.getQurekaBannerOnOff());
+                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaIconOnOff, appData.getQurekaIconOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.QurekaBannerOnOff, appData.getQurekaBannerOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.QurekaInterOnOff, appData.getQurekaInterOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.QurekaBackInterOnOff, appData.getQurekaBackInterOnOff());

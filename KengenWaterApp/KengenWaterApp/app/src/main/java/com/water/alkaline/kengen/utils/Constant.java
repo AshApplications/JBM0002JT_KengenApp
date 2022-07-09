@@ -151,7 +151,7 @@ public class Constant {
             customTabsIntent.intent.setPackage(packageName);
             customTabsIntent.launchUrl(context, Uri.parse(PowerPreference.getDefaultFile().getString(Constant.QUREKA_ADS, "")));
         } catch (Exception e) {
-            Log.e("TAG", e.toString());
+            Constant.showLog(e.toString());
         }
     }
 

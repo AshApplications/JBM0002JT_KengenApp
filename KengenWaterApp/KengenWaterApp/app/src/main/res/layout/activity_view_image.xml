@@ -88,8 +88,8 @@
 
                 <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/ivDownload"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_gravity="center"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:visibility="gone"

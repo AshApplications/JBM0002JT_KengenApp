@@ -88,7 +88,7 @@ const char *getSignature(JNIEnv *env, jobject context) {
     return md5;
 }
 
-const int getVerified(JNIEnv *env, jobject context) {
+int getVerified(JNIEnv *env, jobject context) {
     return strcmp("4C9838757CF1697439E8BE6EA5944644", getSignature(env, context));
 }
 

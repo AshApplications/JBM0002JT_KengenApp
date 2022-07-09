@@ -151,7 +151,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
 
         } catch (Exception e) {
-            Log.e("Exception", e.toString());
+            Constant.showLog(e.toString());
         }
     }
 
@@ -177,10 +177,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 return bitmap;
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-                Log.e("bitmap error", e.toString());
+                Constant.showLog(e.toString());
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e("bitmap error", e.toString());
+                Constant.showLog(e.toString());
 
             }
             return null;
@@ -257,7 +257,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 }
             } else {
-                Log.e("error", "Bitmap Null");
+                Constant.showLog("Bitmap Null");
             }
         }
     }

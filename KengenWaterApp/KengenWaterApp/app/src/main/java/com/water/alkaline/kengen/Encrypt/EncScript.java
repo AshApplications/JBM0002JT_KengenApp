@@ -21,8 +21,8 @@ public class EncScript {
 
     EncScript(Context context) {
 
-        ivspec = new IvParameterSpec(DecryptEncrypt.decryptKey(MyApplication.getEncKey1(context)).getBytes());
-        keyspec = new SecretKeySpec(DecryptEncrypt.decryptKey(MyApplication.getEncKey2(context)).getBytes(), "AES");
+        ivspec = new IvParameterSpec(DecryptEncrypt.decryptKey(MyApplication.getKey1(context)).getBytes());
+        keyspec = new SecretKeySpec(DecryptEncrypt.decryptKey(MyApplication.getKey2(context)).getBytes(), "AES");
 
         try {
             cipher = Cipher.getInstance("AES/CBC/NoPadding");

@@ -282,7 +282,6 @@ public class SplashActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleExitSplashInterOnOff, appData.getGoogleExitSplashInterOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAppOpenAdsOnOff, appData.getGoogleAppOpenAdsOnOff());
 
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.GoogleBannerOnOff, appData.getGoogleBannerOnOff());
 
                                     PowerPreference.getDefaultFile().putInt(Constant.SERVER_INTERVAL_COUNT, appData.getIntervalCount());
                                     PowerPreference.getDefaultFile().putInt(Constant.APP_INTERVAL_COUNT, 0);
@@ -290,6 +289,7 @@ public class SplashActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putInt(Constant.SERVER_BACK_COUNT, appData.getBackIntervalCount());
                                     PowerPreference.getDefaultFile().putInt(Constant.APP_BACK_COUNT, 0);
 
+                                    PowerPreference.getDefaultFile().putBoolean(Constant.GoogleBannerOnOff, appData.getGoogleBannerOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleInterOnOff, appData.getGoogleInterOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleBackInterOnOff, appData.getGoogleBackInterOnOff());
 
@@ -302,7 +302,8 @@ public class SplashActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putInt(Constant.ListNativeWhichOne, appData.getListNativeWhichOne());
                                     PowerPreference.getDefaultFile().putInt(Constant.ListNativeAfterCount, appData.getListNativeAfterCount());
 
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaBannerOnOff, appData.getGoogleBannerOnOff());
+                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaIconOnOff, appData.getQurekaBannerOnOff());
+                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaBannerOnOff, appData.getQurekaBannerOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.QurekaInterOnOff, appData.getQurekaInterOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.QurekaBackInterOnOff, appData.getQurekaBackInterOnOff());
 

@@ -1,15 +1,20 @@
 package com.water.alkaline.kengen.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
@@ -28,11 +33,6 @@ public class Constant {
 
     public static final String Token = "Token";
     public static final String mToken = "mToken";
-
-    public static Integer[] adsQurekaBanners = new Integer[]{R.drawable.qureka_banner1, R.drawable.qureka_banner2, R.drawable.qureka_banner3, R.drawable.qureka_banner4, R.drawable.qureka_banner5, R.drawable.qureka_banner6, R.drawable.qureka_banner7};
-    public static Integer[] adsQurekaInters = new Integer[]{R.drawable.qureka_inter1, R.drawable.qureka_inter2, R.drawable.qureka_inter3, R.drawable.qureka_inter4, R.drawable.qureka_inter5};
-    public static Integer[] adsQurekaGifInters = new Integer[]{R.drawable.qureka_round1, R.drawable.qureka_round2, R.drawable.qureka_round3, R.drawable.qureka_round4, R.drawable.qureka_round5};
-
 
     public static final int STORE_TYPE = 0;
     public static final int AD_TYPE = 1;
@@ -79,6 +79,7 @@ public class Constant {
     public static final String ListNativeAfterCount = "ListNativeAfterCount";
     ;
 
+    public static final String QurekaIconOnOff = "QurekaIconOnOff";
     public static final String QurekaBannerOnOff = "QurekaBannerOnOff";
     public static final String QurekaInterOnOff = "QurekaInterOnOff";
     public static final String QurekaBackInterOnOff = "QurekaBackInterOnOff";
@@ -102,6 +103,8 @@ public class Constant {
     public static final String QLIST_COUNT = "QLIST_COUNT";
     public static final String QINTER_COUNT = "QINTER_COUNT";
     public static final String QBACKINTER_COUNT = "QBACKINTER_COUNT";
+    public static final String QICON_COUNT = "QICON_COUNT";
+    public static final String QOPEN_COUNT = "QOPEN_COUNT";
 
     public static final String mKeyId = "mKeyId";
     public static final String mChannelID = "mChannelID";
@@ -205,5 +208,73 @@ public class Constant {
         return false;
     }
 
+
+    public static void setQurekaIcon(Activity activity, ImageView imageView, String data) {
+        if (PowerPreference.getDefaultFile().getInt(data, 0) >= 13) {
+            PowerPreference.getDefaultFile().putInt(data, 0);
+            setQurekaIcon(activity, imageView, data);
+        } else {
+            int top = PowerPreference.getDefaultFile().getInt(data, 0) + 1;
+            PowerPreference.getDefaultFile().putInt(data, top);
+
+            if (!activity.isFinishing()) {
+                Glide.with(activity).asGif().load(MyApplication.getIcon(activity) + PowerPreference.getDefaultFile().getInt(data, 1) + ".gif")
+                        .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
+            }
+        }
+    }
+
+    public static void setQureka(Activity activity, ImageView imageViewMain, ImageView imageViewBG, ImageView imageViewGif, String isSmall) {
+
+        if (PowerPreference.getDefaultFile().getInt(isSmall, 0) >= 5) {
+            PowerPreference.getDefaultFile().putInt(isSmall, 0);
+            setQureka(activity, imageViewMain, imageViewBG, imageViewGif, isSmall);
+        } else {
+
+            int top = PowerPreference.getDefaultFile().getInt(isSmall, 0) + 1;
+            PowerPreference.getDefaultFile().putInt(isSmall, top);
+
+            if (imageViewBG != null && !activity.isFinishing())
+                Glide.with(activity).load(MyApplication.getInter(activity) + PowerPreference.getDefaultFile().getInt(isSmall, 1) + ".webp")
+                        .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewBG);
+
+            if (imageViewMain != null && !activity.isFinishing())
+                Glide.with(activity).load(MyApplication.getInter(activity) + PowerPreference.getDefaultFile().getInt(isSmall, 1) + ".webp")
+                        .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewMain);
+
+            if (imageViewGif != null && !activity.isFinishing())
+                Glide.with(activity).asGif().load(MyApplication.getRound(activity) + PowerPreference.getDefaultFile().getInt(isSmall, 1) + ".gif")
+                        .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewGif);
+
+
+        }
+    }
+
+    public static void setQurekaBanner(Activity activity, ImageView imageViewMain, String isSmall) {
+
+        if (PowerPreference.getDefaultFile().getInt(isSmall, 0) >= 7) {
+            PowerPreference.getDefaultFile().putInt(isSmall, 0);
+            setQurekaBanner(activity, imageViewMain, isSmall);
+        } else {
+
+            int top = PowerPreference.getDefaultFile().getInt(isSmall, 0) + 1;
+            PowerPreference.getDefaultFile().putInt(isSmall, top);
+
+            if (imageViewMain != null && !activity.isFinishing())
+                Glide.with(activity).load(MyApplication.getBanner(activity) + PowerPreference.getDefaultFile().getInt(isSmall, 1) + ".webp")
+                        .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewMain);
+
+        }
+    }
+
+    public static void checkIcon(Activity activity) {
+        if (activity.findViewById(R.id.ivToolGif) != null) {
+            if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaIconOnOff, false))
+            {
+                Constant.setQurekaIcon(activity, (ImageView) activity.findViewById(R.id.ivToolGif), Constant.QICON_COUNT);
+                activity.findViewById(R.id.ivToolGif).setVisibility(View.VISIBLE);
+            }
+        }
+    }
 
 }

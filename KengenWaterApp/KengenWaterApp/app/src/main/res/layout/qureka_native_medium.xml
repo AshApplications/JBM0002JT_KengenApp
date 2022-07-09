@@ -37,8 +37,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:alpha="0.5"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/qureka_inter1" />
+                        android:scaleType="centerCrop" />
 
                     <ImageView
                         android:id="@+id/qurekaAds1"
@@ -46,8 +45,7 @@
                         android:layout_height="match_parent"
                         android:layout_centerInParent="true"
                         android:layout_gravity="center"
-                        android:adjustViewBounds="true"
-                        android:src="@drawable/qureka_inter1" />
+                        android:adjustViewBounds="true"/>
                 </RelativeLayout>
             </LinearLayout>
 
@@ -85,8 +83,7 @@
                             <ImageView
                                 android:id="@+id/gif_inter_round"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/qureka_round1" />
+                                android:layout_height="match_parent" />
 
                         </androidx.cardview.widget.CardView>
 

@@ -33,9 +33,9 @@ public class QurekaInterActivity extends AppCompatActivity {
         }
 
         if (isBackAds)
-            setQureka(this, binding.qurekaAds, binding.qurekaAds1, binding.gifInterRound, Constant.QBACKINTER_COUNT);
+            Constant.setQureka(this, binding.qurekaAds, binding.qurekaAds1, binding.gifInterRound, Constant.QBACKINTER_COUNT);
         else
-            setQureka(this, binding.qurekaAds, binding.qurekaAds1, binding.gifInterRound, Constant.QINTER_COUNT);
+            Constant.setQureka(this, binding.qurekaAds, binding.qurekaAds1, binding.gifInterRound, Constant.QINTER_COUNT);
 
         binding.rlMain.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,24 +59,6 @@ public class QurekaInterActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    public void setQureka(Activity activity, ImageView imageViewMain, ImageView imageViewBG, ImageView imageViewGif, String data) {
-        if (PowerPreference.getDefaultFile().getInt(data, 0) >= 5) {
-            PowerPreference.getDefaultFile().putInt(data, 0);
-            setQureka(activity, imageViewMain, imageViewBG, imageViewGif, data);
-        } else {
-            if (!activity.isFinishing()) {
-                Glide.with(activity).load(Constant.adsQurekaInters[PowerPreference.getDefaultFile().getInt(data, 0)])
-                        .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewBG);
-                Glide.with(activity).load(Constant.adsQurekaInters[PowerPreference.getDefaultFile().getInt(data, 0)])
-                        .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewMain);
-                Glide.with(activity).asGif().load(Constant.adsQurekaGifInters[PowerPreference.getDefaultFile().getInt(data, 0)])
-                        .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewGif);
-            }
-            int top = PowerPreference.getDefaultFile().getInt(data, 0) + 1;
-            PowerPreference.getDefaultFile().putInt(data, top);
-        }
     }
 
     @Override

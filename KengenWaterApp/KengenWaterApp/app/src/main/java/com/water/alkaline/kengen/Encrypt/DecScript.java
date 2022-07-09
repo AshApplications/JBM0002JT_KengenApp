@@ -20,8 +20,8 @@ public class DecScript {
     private Cipher cipher;
 
     public DecScript(Context context) {
-        ivspec = new IvParameterSpec(DecryptEncrypt.decryptKey(MyApplication.getDecKey1(context)).getBytes());
-        keyspec = new SecretKeySpec(DecryptEncrypt.decryptKey(MyApplication.getDecKey2(context)).getBytes(), "AES");
+        ivspec = new IvParameterSpec(DecryptEncrypt.decryptKey(MyApplication.getKey1(context)).getBytes());
+        keyspec = new SecretKeySpec(DecryptEncrypt.decryptKey(MyApplication.getKey2(context)).getBytes(), "AES");
 
         try {
             cipher = Cipher.getInstance("AES/CBC/NoPadding");

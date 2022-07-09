@@ -88,13 +88,13 @@ const char *getSignature(JNIEnv *env, jobject context) {
     return md5;
 }
 
-// 211A4200C81328A0E252E90C48BF45F2
 const int getVerified(JNIEnv *env, jobject context) {
-    return strcmp("211A4200C81328A0E252E90C48BF45F2", getSignature(env, context));
+    return strcmp("4C9838757CF1697439E8BE6EA5944644", getSignature(env, context));
 }
 
 
-JNIEXPORT jstring JNICALL
+
+jstring
 Java_com_water_alkaline_kengen_MyApplication_getMain(JNIEnv *env, jobject instance, jobject context)
 {
     if(getVerified(env,context) == 0)
@@ -107,7 +107,8 @@ Java_com_water_alkaline_kengen_MyApplication_getMain(JNIEnv *env, jobject instan
          return (*env)->NewStringUTF(env, "");
     }
 }
-JNIEXPORT jstring JNICALL
+
+jstring
 Java_com_water_alkaline_kengen_MyApplication_getSub(
         JNIEnv *env, jobject instance, jobject context) {
 
@@ -123,8 +124,8 @@ Java_com_water_alkaline_kengen_MyApplication_getSub(
 }
 
 // Decryption KEY
-JNIEXPORT jstring JNICALL
-Java_com_water_alkaline_kengen_MyApplication_getDecKey1(JNIEnv *env, jobject instance, jobject context) {
+jstring
+Java_com_water_alkaline_kengen_MyApplication_getKey1(JNIEnv *env, jobject instance, jobject context) {
 
     if(getVerified(env,context) == 0)
     {
@@ -133,13 +134,13 @@ Java_com_water_alkaline_kengen_MyApplication_getDecKey1(JNIEnv *env, jobject ins
         strcpy(str, Z);
         return (*env)->NewStringUTF(env, str);
     }else{
-        return (*env)->NewStringUTF(env, "073233243B694FD78B9A44EA7C5A9F330CC8EE72A457C3AAA35F79627FD13728");
+        return (*env)->NewStringUTF(env, "");
     }
 
 }
 
-JNIEXPORT jstring JNICALL
-Java_com_water_alkaline_kengen_MyApplication_getDecKey2(JNIEnv *env, jobject instance, jobject context) {
+jstring
+Java_com_water_alkaline_kengen_MyApplication_getKey2(JNIEnv *env, jobject instance, jobject context) {
     if(getVerified(env,context) == 0)
     {
         char str[100];
@@ -147,36 +148,62 @@ Java_com_water_alkaline_kengen_MyApplication_getDecKey2(JNIEnv *env, jobject ins
         strcpy(str, Z);
         return (*env)->NewStringUTF(env, str);
     }else{
-        return (*env)->NewStringUTF(env, "9C87C8F22D8287AFFC3DBD02656D980E0CC8EE72A457C3AAA35F79627FD13728");
+        return (*env)->NewStringUTF(env, "");
     }
 }
 
 
-// Encryption KEY
-JNIEXPORT jstring JNICALL
-Java_com_water_alkaline_kengen_MyApplication_getEncKey1(JNIEnv *env, jobject instance, jobject context) {
-    if(getVerified(env,context) == 0)
-    {
+jstring
+Java_com_water_alkaline_kengen_MyApplication_getIcon(JNIEnv *env, jobject instance,
+                                                     jobject context) {
+    if (getVerified(env, context) == 0) {
         char str[100];
-        const char *Z = "B26D9C799955D93AF2F01EA97B6E157E0CC8EE72A457C3AAA35F79627FD13728";
+        const char *Z = "https://jbmapps.online/qureka/icons/qureka_icon";
         strcpy(str, Z);
         return (*env)->NewStringUTF(env, str);
-    }else{
-        return (*env)->NewStringUTF(env, "073233243B694FD78B9A44EA7C5A9F330CC8EE72A457C3AAA35F79627FD13728");
+    } else {
+        return (*env)->NewStringUTF(env, "");
     }
 }
 
-JNIEXPORT jstring JNICALL
-Java_com_water_alkaline_kengen_MyApplication_getEncKey2(JNIEnv *env, jobject instance, jobject context) {
-    if(getVerified(env,context) == 0)
-    {
+jstring
+Java_com_water_alkaline_kengen_MyApplication_getBanner(JNIEnv *env, jobject instance,
+                                                       jobject context) {
+    if (getVerified(env, context) == 0) {
         char str[100];
-        const char *Z = "FB24433EA865DB81308C1319C8CAAE1E0CC8EE72A457C3AAA35F79627FD13728";
+        const char *Z = "https://jbmapps.online/qureka/banners/qureka_banner";
         strcpy(str, Z);
         return (*env)->NewStringUTF(env, str);
-    }else{
-        return (*env)->NewStringUTF(env, "9C87C8F22D8287AFFC3DBD02656D980E0CC8EE72A457C3AAA35F79627FD13728");
+    } else {
+        return (*env)->NewStringUTF(env, "");
     }
 }
+
+jstring
+Java_com_water_alkaline_kengen_MyApplication_getInter(JNIEnv *env, jobject instance,
+                                                      jobject context) {
+    if (getVerified(env, context) == 0) {
+        char str[100];
+        const char *Z = "https://jbmapps.online/qureka/inters/qureka_inter";
+        strcpy(str, Z);
+        return (*env)->NewStringUTF(env, str);
+    } else {
+        return (*env)->NewStringUTF(env, "");
+    }
+}
+
+jstring
+Java_com_water_alkaline_kengen_MyApplication_getRound(JNIEnv *env, jobject instance,
+                                                      jobject context) {
+    if (getVerified(env, context) == 0) {
+        char str[100];
+        const char *Z = "https://jbmapps.online/qureka/rounds/qureka_round";
+        strcpy(str, Z);
+        return (*env)->NewStringUTF(env, str);
+    } else {
+        return (*env)->NewStringUTF(env, "");
+    }
+}
+
 
 

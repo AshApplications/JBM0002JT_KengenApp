@@ -47,6 +47,18 @@ public class BannerAds {
                     super.onAdLoaded();
                     isLoaded = true;
                 }
+
+                @Override
+                public void onAdClicked() {
+                    super.onAdClicked();
+                    int clickCOunt = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
+                    PowerPreference.getDefaultFile().putInt(Constant.APP_CLICK_COUNT, clickCOunt + 1);
+                    int clickCOunt2 = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
+
+                    if (clickCOunt2 >= PowerPreference.getDefaultFile().getInt(Constant.AD_CLICK_COUNT, 3)) {
+                        PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff,false );
+                    }
+                }
             });
             adView.loadAd(new AdRequest.Builder().build());
         }
@@ -73,7 +85,7 @@ public class BannerAds {
                     LinearLayout inflate = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_banner, null);
 
                     ImageView imageViewMain = inflate.findViewById(R.id.imageView);
-                    setQureka(activity, imageViewMain, Constant.QBANNER_COUNT);
+                    Constant.setQurekaBanner(activity, imageViewMain, Constant.QBANNER_COUNT);
                     inflate.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -96,21 +108,6 @@ public class BannerAds {
         } else {
             nativeAd.setVisibility(View.GONE);
             adSpace.setVisibility(View.GONE);
-        }
-    }
-
-    public void setQureka(Activity activity, ImageView imageViewMain, String isSmall) {
-
-        if (PowerPreference.getDefaultFile().getInt(isSmall, 0) >= 5) {
-            PowerPreference.getDefaultFile().putInt(isSmall, 0);
-            setQureka(activity, imageViewMain, isSmall);
-        } else {
-            if (imageViewMain != null && !activity.isFinishing())
-                Glide.with(activity).load(Constant.adsQurekaBanners[PowerPreference.getDefaultFile().getInt(isSmall, 0)])
-                        .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewMain);
-
-            int top = PowerPreference.getDefaultFile().getInt(isSmall, 0) + 1;
-            PowerPreference.getDefaultFile().putInt(isSmall, top);
         }
     }
 }

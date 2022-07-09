@@ -81,6 +81,7 @@ public class PreviewActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Constant.checkIcon(this);
         new LargeNativeAds().showNativeAds(this, null);
     }
     @Override

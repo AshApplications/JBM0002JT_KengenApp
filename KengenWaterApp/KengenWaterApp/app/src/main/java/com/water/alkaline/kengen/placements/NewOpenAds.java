@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.ads.AdError;
@@ -136,6 +137,11 @@ public class NewOpenAds {
             mDialog.setCancelable(false);
             mDialog.setCanceledOnTouchOutside(false);
             mDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+            ImageView imageView = mDialog.findViewById(R.id.qurekaAds);
+            ImageView imageView1 = mDialog.findViewById(R.id.gif_inter_round);
+            Constant.setQureka(activity,imageView,null,imageView1,Constant.QOPEN_COUNT);
+
 
             LinearLayout qurekaAdLayout = mDialog.findViewById(R.id.qurekaAdLayout);
             LinearLayout qurekaAdsClose = mDialog.findViewById(R.id.qurekaAdsClose);

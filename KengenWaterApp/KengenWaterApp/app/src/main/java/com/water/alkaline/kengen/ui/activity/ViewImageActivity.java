@@ -67,6 +67,7 @@ public class ViewImageActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Constant.checkIcon(this);
         new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
     }
 

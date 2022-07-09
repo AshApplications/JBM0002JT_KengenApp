@@ -18,7 +18,7 @@ public class MyApplication extends Application {
     public AppViewModel viewModel;
 
     static {
-        System.loadLibrary("protected");
+        System.loadLibrary("native-lib");
     }
 
     public static MyApplication getInstance() {
@@ -53,14 +53,14 @@ public class MyApplication extends Application {
     }
 
     public static native String getMain(Context context);
-
     public static native String getSub(Context context);
 
-    public static native String getDecKey1(Context context);
+    public static native String getKey1(Context context);
+    public static native String getKey2(Context context);
 
-    public static native String getDecKey2(Context context);
+    public static native String getIcon(Context context);
+    public static native String getBanner(Context context);
+    public static native String getInter(Context context);
+    public static native String getRound(Context context);
 
-    public static native String getEncKey1(Context context);
-
-    public static native String getEncKey2(Context context);
 }

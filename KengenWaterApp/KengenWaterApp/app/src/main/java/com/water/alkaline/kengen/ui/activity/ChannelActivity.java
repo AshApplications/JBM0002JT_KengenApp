@@ -92,6 +92,7 @@ public class ChannelActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Constant.checkIcon(this);
         new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
     }
 
@@ -473,7 +474,6 @@ public class ChannelActivity extends AppCompatActivity {
         binding.txtRetry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 binding.includedProgress.cvProError.setVisibility(View.VISIBLE);
                 binding.cvIerror.setVisibility(View.GONE);
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
@@ -511,13 +511,13 @@ public class ChannelActivity extends AppCompatActivity {
             }
 
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance(this).getApi().refreshApi(DecryptEncrypt.EncryptStr(ChannelActivity.this,deviceId), DecryptEncrypt.EncryptStr(ChannelActivity.this,token), DecryptEncrypt.EncryptStr(ChannelActivity.this,getPackageName()), VERSION, DecryptEncrypt.EncryptStr(ChannelActivity.this,"refresh"))
+            RetroClient.getInstance(this).getApi().refreshApi(DecryptEncrypt.EncryptStr(ChannelActivity.this, deviceId), DecryptEncrypt.EncryptStr(ChannelActivity.this, token), DecryptEncrypt.EncryptStr(ChannelActivity.this, getPackageName()), VERSION, DecryptEncrypt.EncryptStr(ChannelActivity.this, "refresh"))
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
-                           try {
+                            try {
                                 PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, false);
-                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(ChannelActivity.this,response.body())), UpdateResponse.class);
+                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(ChannelActivity.this, response.body())), UpdateResponse.class);
 
                                 if (updateResponse.getFlag()) {
                                     AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);

@@ -15,7 +15,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:alpha="0.5"
-            android:background="@drawable/qureka_inter1"
             android:scaleType="centerCrop" />
 
         <LinearLayout
@@ -144,8 +143,7 @@
                 android:id="@+id/qurekaAds1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/qureka_inter1" />
+                android:scaleType="centerCrop" />
 
         </androidx.cardview.widget.CardView>
     </RelativeLayout>

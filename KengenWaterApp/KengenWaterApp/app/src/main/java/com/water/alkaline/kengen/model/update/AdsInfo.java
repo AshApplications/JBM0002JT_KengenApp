@@ -75,6 +75,9 @@ public class AdsInfo {
     @SerializedName("ListNativeAfterCount")
     @Expose
     private Integer listNativeAfterCount;
+    @SerializedName("QurekaIconOnOff")
+    @Expose
+    private Boolean QurekaIconOnOff;
     @SerializedName("QurekaBannerOnOff")
     @Expose
     private Boolean QurekaBannerOnOff;
@@ -252,6 +255,14 @@ public class AdsInfo {
         this.listNativeAfterCount = listNativeAfterCount;
     }
 
+
+    public Boolean getQurekaIconOnOff() {
+        return QurekaIconOnOff;
+    }
+
+    public void setQurekaIconOnOff(Boolean qurekaIconOnOff) {
+        QurekaIconOnOff = qurekaIconOnOff;
+    }
 
     public Boolean getQurekaMiniNativeOnOff() {
         return qurekaMiniNativeOnOff;

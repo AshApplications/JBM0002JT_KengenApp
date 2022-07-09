@@ -138,7 +138,7 @@ public class LargeNativeAds {
                     ImageView imageViewBG = adView.findViewById(R.id.qurekaAds);
                     ImageView imageViewGif = adView.findViewById(R.id.gif_inter_round);
 
-                    setQureka(activity, imageViewMain, imageViewBG, imageViewGif, Constant.QLARGE_COUNT);
+                    Constant.setQureka(activity, imageViewMain, imageViewBG, imageViewGif, Constant.QLARGE_COUNT);
 
                     adView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -198,7 +198,7 @@ public class LargeNativeAds {
                     ImageView imageViewBG = adView.findViewById(R.id.qurekaAds);
                     ImageView imageViewGif = adView.findViewById(R.id.gif_inter_round);
 
-                    setQureka(activity, imageViewMain, imageViewBG, imageViewGif, Constant.QLARGE_COUNT);
+                    Constant.setQureka(activity, imageViewMain, imageViewBG, imageViewGif, Constant.QLARGE_COUNT);
 
                     adView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -223,31 +223,6 @@ public class LargeNativeAds {
             adSpace.setVisibility(View.GONE);
         }
     }
-
-    public void setQureka(Activity activity, ImageView imageViewMain, ImageView imageViewBG, ImageView imageViewGif, String isSmall) {
-
-        if (PowerPreference.getDefaultFile().getInt(isSmall, 0) >= 5) {
-            PowerPreference.getDefaultFile().putInt(isSmall, 0);
-            setQureka(activity, imageViewMain, imageViewBG, imageViewGif, isSmall);
-        } else {
-            if (imageViewBG != null && !activity.isFinishing())
-                Glide.with(activity).load(Constant.adsQurekaInters[PowerPreference.getDefaultFile().getInt(isSmall, 0)])
-                        .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewBG);
-
-            if (imageViewMain != null && !activity.isFinishing())
-                Glide.with(activity).load(Constant.adsQurekaInters[PowerPreference.getDefaultFile().getInt(isSmall, 0)])
-                        .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewMain);
-
-            if (imageViewGif != null && !activity.isFinishing())
-                Glide.with(activity).asGif().load(Constant.adsQurekaGifInters[PowerPreference.getDefaultFile().getInt(isSmall, 0)])
-                        .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageViewGif);
-
-
-            int top = PowerPreference.getDefaultFile().getInt(isSmall, 0) + 1;
-            PowerPreference.getDefaultFile().putInt(isSmall, top);
-        }
-    }
-
 
     public void populateUnifiedNativeAdView(NativeAd nativeAd, NativeAdView adView) {
 

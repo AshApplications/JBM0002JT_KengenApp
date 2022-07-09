@@ -3,6 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/bg_splash.xml" value="0.123" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/bg_splashlogo.xml" value="0.123" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/bgback.xml" value="0.123" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/btn_ad.xml" value="0.123" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/btn_color.xml" value="0.123" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/ic_back.xml" value="0.123" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/ic_menu.xml" value="0.123" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/qureka_inter_bg.xml" value="0.123" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/rounded_allborders.xml" value="0.123" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/text_shape.xml" value="0.123" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/layout/activity_channel.xml" value="0.32864583333333336" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/layout/activity_download.xml" value="0.32864583333333336" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/layout/activity_exit.xml" value="0.32864583333333336" />

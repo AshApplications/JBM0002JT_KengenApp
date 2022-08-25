@@ -171,7 +171,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (Constant.isVpnConnected()) {
+                if (Constant.isVpnConnected() && PowerPreference.getDefaultFile().getBoolean(Constant.isRunning, false)) {
                     network_dialog("VPN is Connected Please Turn it Off & Try Again !")
                             .txtRetry.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -527,6 +527,10 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
         } else {
             requestPermissions();
         }
+    }
+
+    private boolean checkPermissions() {
+        return ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }    public Handler handler = new Handler(Looper.getMainLooper()) {
         public void handleMessage(Message msg) {
             if (!SplashActivity.this.isFinishing()) {
@@ -552,10 +556,6 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
             }
         }
     };
-
-    private boolean checkPermissions() {
-        return ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
 
     private void requestPermissions() {
         ActivityCompat.requestPermissions(SplashActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS);

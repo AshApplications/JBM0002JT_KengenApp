@@ -35,14 +35,17 @@ public class LargeNativeAds {
     private static ArrayList<NativeAd> gNativeAd = new ArrayList<>();
     private static String ad_type;
 
+    public static boolean isLoading = false;
+
     public void loadNativeAds(Activity activity) {
         if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleLargeNativeOnOff, false)) {
             final String nativeAdstr = PowerPreference.getDefaultFile().getString(Constant.NATIVEID, "123");
-
+            isLoading = true;
             AdLoader.Builder builder = new AdLoader.Builder(activity, nativeAdstr);
             builder.forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
                 @Override
                 public void onNativeAdLoaded(@NonNull NativeAd natives) {
+                    isLoading = false;
                     gNativeAd.clear();
                     gNativeAd.add(natives);
                 }
@@ -62,7 +65,7 @@ public class LargeNativeAds {
                 @Override
                 public void onAdFailedToLoad(LoadAdError errorCode) {
                     Constant.showLog("loadNativeAds failed" + errorCode.toString());
-                    gNativeAd.clear();
+                    isLoading = false;
                 }
 
                 @Override
@@ -101,10 +104,15 @@ public class LargeNativeAds {
     }
 
 
-    public void showNativeAds(Activity activity, Dialog dialog) {
+    public void showNativeAds(Activity activity, Dialog dialog, FrameLayout nativeAdLayout, TextView adSpace) {
 
-        FrameLayout nativeAdLayout = getFrameLayout(activity, dialog);
-        TextView adSpace = getTextLayout(activity, dialog);
+        if (nativeAdLayout == null || adSpace == null) {
+            nativeAdLayout = getFrameLayout(activity, dialog);
+            adSpace = getTextLayout(activity, dialog);
+        }
+
+        if (nativeAdLayout == null || adSpace == null)
+            return;
 
         LinearLayout adView = null;
 
@@ -124,11 +132,13 @@ public class LargeNativeAds {
                 adSpace.setVisibility(View.GONE);
                 nativeAdLayout.setVisibility(View.VISIBLE);
 
-                loadNativeAds(activity);
+                if (!isLoading)
+                    loadNativeAds(activity);
 
             } else {
 
-                loadNativeAds(activity);
+                if (!isLoading)
+                    loadNativeAds(activity);
 
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaLargeNativeOnOff, true)) {
 
@@ -160,66 +170,6 @@ public class LargeNativeAds {
             }
         } else {
             nativeAdLayout.setVisibility(View.GONE);
-            adSpace.setVisibility(View.GONE);
-        }
-    }
-
-    public void showNativeAds(Activity activity, FrameLayout nativeAd, TextView adSpace) {
-
-        LinearLayout adView = null;
-
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, true)) {
-
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff,false ) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleLargeNativeOnOff, true) && gNativeAd.size() > 0) {
-
-                adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_large, null);
-
-                NativeAd lovalNative = gNativeAd.get(0);
-
-                populateUnifiedNativeAdView(lovalNative, adView.findViewById(R.id.uadview));
-
-                nativeAd.removeAllViews();
-                nativeAd.addView(adView);
-
-                adSpace.setVisibility(View.GONE);
-                nativeAd.setVisibility(View.VISIBLE);
-
-                loadNativeAds(activity);
-
-            } else {
-
-                loadNativeAds(activity);
-
-                if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaLargeNativeOnOff, true)) {
-
-                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_large, null);
-
-                    ImageView imageViewMain = adView.findViewById(R.id.qurekaAds1);
-                    ImageView imageViewBG = adView.findViewById(R.id.qurekaAds);
-                    ImageView imageViewGif = adView.findViewById(R.id.gif_inter_round);
-
-                    Constant.setQureka(activity, imageViewMain, imageViewBG, imageViewGif, Constant.QLARGE_COUNT);
-
-                    adView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Constant.gotoAds(activity);
-                        }
-                    });
-
-                    nativeAd.removeAllViews();
-                    nativeAd.addView(adView);
-
-                    adSpace.setVisibility(View.GONE);
-                    nativeAd.setVisibility(View.VISIBLE);
-
-                } else {
-                    nativeAd.setVisibility(View.GONE);
-                    adSpace.setVisibility(View.GONE);
-                }
-            }
-        } else {
-            nativeAd.setVisibility(View.GONE);
             adSpace.setVisibility(View.GONE);
         }
     }

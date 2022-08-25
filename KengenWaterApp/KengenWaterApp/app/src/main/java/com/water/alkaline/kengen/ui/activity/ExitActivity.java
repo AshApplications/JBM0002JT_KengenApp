@@ -23,7 +23,6 @@ public class ExitActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                PowerPreference.getDefaultFile().putBoolean(Constant.isRunning,false);
                 try {
                     System.exit(0);
                 }catch (Exception e)

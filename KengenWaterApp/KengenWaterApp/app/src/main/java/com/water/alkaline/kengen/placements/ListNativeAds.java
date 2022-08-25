@@ -31,17 +31,22 @@ import java.util.Objects;
 public class ListNativeAds {
 
     private static ArrayList<NativeAd> gNativeAd = new ArrayList<>();
-    private static String ad_type;
+    public static boolean isLoading = false;
 
     public void loadNativeAds(Activity activity) {
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff,false ) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleListNativeOnOff, false)) {
+        if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleListNativeOnOff, false)) {
+
             final String nativeAdstr = PowerPreference.getDefaultFile().getString(Constant.NATIVEID, "123");
 
+            if (gNativeAd.size() >= 5)
+                return;
+
+            isLoading = true;
             AdLoader.Builder builder = new AdLoader.Builder(activity, nativeAdstr);
             builder.forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
                 @Override
                 public void onNativeAdLoaded(@NonNull NativeAd natives) {
-                    gNativeAd.clear();
+                    isLoading = false;
                     gNativeAd.add(natives);
                 }
             });
@@ -60,7 +65,7 @@ public class ListNativeAds {
                 @Override
                 public void onAdFailedToLoad(LoadAdError errorCode) {
                     Constant.showLog("loadNativeAds failed" + errorCode.toString());
-                    gNativeAd.clear();
+                    isLoading = false;
                 }
 
                 @Override
@@ -71,7 +76,7 @@ public class ListNativeAds {
                     int clickCOunt2 = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
 
                     if (clickCOunt2 >= PowerPreference.getDefaultFile().getInt(Constant.AD_CLICK_COUNT, 3)) {
-                        PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff,false );
+                        PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, false);
                     }
                 }
             }).build();
@@ -99,7 +104,7 @@ public class ListNativeAds {
 
         if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, true)) {
 
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff,false ) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleListNativeOnOff, true) && gNativeAd.size() > 0) {
+            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleListNativeOnOff, true) && gNativeAd.size() > 0) {
 
                 adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_large, null);
 
@@ -113,11 +118,13 @@ public class ListNativeAds {
                 adSpace.setVisibility(View.GONE);
                 nativeAd.setVisibility(View.VISIBLE);
 
-                loadNativeAds(activity);
+                if (!isLoading)
+                    loadNativeAds(activity);
 
             } else {
 
-                loadNativeAds(activity);
+                if (!isLoading)
+                    loadNativeAds(activity);
 
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaListNativeOnOff, true)) {
 
@@ -159,7 +166,7 @@ public class ListNativeAds {
 
         if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, true)) {
 
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff,false ) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleListNativeOnOff, true) &&
+            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleListNativeOnOff, true) &&
                     gNativeAd.size() > 0) {
 
                 adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_medium, null);

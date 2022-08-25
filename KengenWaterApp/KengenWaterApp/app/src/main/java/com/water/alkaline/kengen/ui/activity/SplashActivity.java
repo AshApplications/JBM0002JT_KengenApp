@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -28,7 +27,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +40,6 @@ import com.google.gson.GsonBuilder;
 import com.water.alkaline.kengen.BuildConfig;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
 import com.water.alkaline.kengen.MyApplication;
-import com.water.alkaline.kengen.MyService;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.data.network.RetroClient;
@@ -66,8 +63,6 @@ import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -76,6 +71,7 @@ import retrofit2.Response;
 
 public class SplashActivity extends AppCompatActivity {
 
+    public static SplashActivity activity;
     ActivitySplashBinding binding;
 
     int REQUEST_PERMISSIONS = 200;
@@ -86,10 +82,15 @@ public class SplashActivity extends AppCompatActivity {
 
     public Dialog dialog;
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        activity = null;
+    }
+
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
     }
-
 
     public Handler handler = new Handler(Looper.getMainLooper()) {
         public void handleMessage(Message msg) {
@@ -139,22 +140,14 @@ public class SplashActivity extends AppCompatActivity {
         return binding;
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        activity = this;
         PowerPreference.getDefaultFile().putInt(Constant.mIsDuration, 1);
-        PowerPreference.getDefaultFile().putBoolean(Constant.isRunning, true);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isMyServiceRunning(MyService.class))
-                    startService(new Intent(SplashActivity.this, MyService.class));
-            }
-        }, 2000);
 
         ViewAnimator.animate(binding.ivLogo)
                 .scale(0f, 1f)
@@ -169,8 +162,6 @@ public class SplashActivity extends AppCompatActivity {
                         checkVpn();
                     }
                 }).start();
-
-
     }
 
     public void checkVpn() {
@@ -181,20 +172,20 @@ public class SplashActivity extends AppCompatActivity {
                 if (Constant.isVpnConnected()) {
                     network_dialog("VPN is Connected Please Turn it Off & Try Again !")
                             .txtRetry.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dismiss_dialog();
-                            checkVpn();
-                        }
-                    });
+                                @Override
+                                public void onClick(View v) {
+                                    dismiss_dialog();
+                                    checkVpn();
+                                }
+                            });
                 } else if (MyApplication.getMain(SplashActivity.this).equalsIgnoreCase("")) {
                     network_dialog("Something Went Wrong\nPlease Try Again Later !")
                             .txtRetry.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dismiss_dialog();
-                        }
-                    });
+                                @Override
+                                public void onClick(View v) {
+                                    dismiss_dialog();
+                                }
+                            });
                 } else {
                     getToken();
                 }
@@ -258,6 +249,7 @@ public class SplashActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putString(Constant.INTERID, appData.getGoogleInterAds());
                                     PowerPreference.getDefaultFile().putString(Constant.NATIVEID, appData.getGoogleNativeAds());
                                     PowerPreference.getDefaultFile().putString(Constant.OPENAD, appData.getGoogleAppOpenAds());
+
 
                                     try {
                                         ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
@@ -452,7 +444,7 @@ public class SplashActivity extends AppCompatActivity {
 
     public void mainAPI() {
         if (Constant.checkInternet(SplashActivity.this)) {
-             RetroClient.getInstance(this).getApi().dataApi(DecryptEncrypt.EncryptStr(SplashActivity.this, PowerPreference.getDefaultFile().getString(Constant.mToken,"123"))).enqueue(new Callback<String>() {
+            RetroClient.getInstance(this).getApi().dataApi(DecryptEncrypt.EncryptStr(SplashActivity.this, PowerPreference.getDefaultFile().getString(Constant.mToken, "123"))).enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     try {
@@ -602,16 +594,6 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-    private boolean isMyServiceRunning(Class<?> cls) {
-        for (ActivityManager.RunningServiceInfo runningServiceInfo : ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE)).getRunningServices(Integer.MAX_VALUE)) {
-            if (cls.getName().equals(runningServiceInfo.service.getClassName())) {
-                Log.e("ServiceStatus", "Running");
-                return true;
-            }
-        }
-        Log.e("ServiceStatus", "Not running");
-        return false;
-    }
 
 
 }

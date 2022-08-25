@@ -40,6 +40,9 @@ public class OpenAds implements LifecycleObserver, android.app.Application.Activ
     private static final String LOG_TAG = "AppOpenManager";
     private AppOpenAd appOpenAd1 = null;
 
+
+    public static boolean isLoading = false;
+
     Dialog mDialog = null;
     private final MyApplication Application = MyApplication.getInstance();
     private Activity currentActivity;
@@ -60,15 +63,19 @@ public class OpenAds implements LifecycleObserver, android.app.Application.Activ
 
     public void loadOpenAd() {
         if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAppOpenAdsOnOff, false)) {
+            isLoading = true;
             AppOpenAd.AppOpenAdLoadCallback loadCallback1 = new AppOpenAd.AppOpenAdLoadCallback() {
                 @Override
                 public void onAdLoaded(AppOpenAd ad) {
                     OpenAds.this.appOpenAd1 = ad;
+                    isLoading = false;
+
                 }
 
                 @Override
                 public void onAdFailedToLoad(LoadAdError loadAdError) {
                     OpenAds.this.appOpenAd1 = null;
+                    isLoading = false;
                 }
             };
 
@@ -133,7 +140,8 @@ public class OpenAds implements LifecycleObserver, android.app.Application.Activ
 
 
         } else if (!isShowingAd) {
-            loadOpenAd();
+            if (!isLoading)
+                loadOpenAd();
             showQurekaDialog(currentActivity, null);
         }
     }
@@ -154,7 +162,7 @@ public class OpenAds implements LifecycleObserver, android.app.Application.Activ
 
                 ImageView imageView = mDialog.findViewById(R.id.qurekaAds);
                 ImageView imageView1 = mDialog.findViewById(R.id.gif_inter_round);
-                Constant.setQureka(activity,imageView,null,imageView1,Constant.QOPEN_COUNT);
+                Constant.setQureka(activity, imageView, null, imageView1, Constant.QOPEN_COUNT);
 
                 LinearLayout qurekaAdLayout = mDialog.findViewById(R.id.qurekaAdLayout);
                 LinearLayout qurekaAdsClose = mDialog.findViewById(R.id.qurekaAdsClose);

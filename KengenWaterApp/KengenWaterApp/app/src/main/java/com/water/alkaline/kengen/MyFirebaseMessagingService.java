@@ -25,7 +25,6 @@ import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -66,8 +65,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if (remoteMessage.getData().containsKey("reply")) {
                 PendingIntent contentIntent;
 
-                if (isAppIsInBackground(context)) {
-
+                if (SplashActivity.activity == null) {
                     Intent intent;
                     intent = new Intent(this, SplashActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -86,7 +84,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setContentTitle(title)
                         .setContentText(text)
                         .setAutoCancel(true).
-                                setContentIntent(contentIntent);
+                        setContentIntent(contentIntent);
                 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     NotificationChannel channel = new NotificationChannel(CHANNEL_ID, title, NotificationManager.IMPORTANCE_DEFAULT);
@@ -97,7 +95,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 PendingIntent contentIntent;
 
-                if (isAppIsInBackground(context)) {
+                if (SplashActivity.activity == null) {
 
                     Intent intent;
                     intent = new Intent(this, SplashActivity.class);
@@ -119,7 +117,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setContentTitle(title)
                         .setContentText(text)
                         .setAutoCancel(true).
-                                setContentIntent(contentIntent);
+                        setContentIntent(contentIntent);
                 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     NotificationChannel channel = new NotificationChannel(CHANNEL_ID, title, NotificationManager.IMPORTANCE_DEFAULT);
@@ -140,7 +138,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_logo)
                         .setSound(defaultSoundUri).
-                                setContentTitle(title)
+                        setContentTitle(title)
                         .setContentText(text).setAutoCancel(true).setContentIntent(contentIntent);
                 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -156,7 +154,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     public void startnotify() {
-        new sendNotification().execute();
+        new sendNotification().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -200,7 +198,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 if (!checkurl && checkicon) {
 
-                    if (isAppIsInBackground(context)) {
+                    if (SplashActivity.activity == null) {
                         Intent intent;
                         intent = new Intent(context, SplashActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -261,11 +259,5 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
         }
     }
-
-
-    private boolean isAppIsInBackground(Context context) {
-        return !PowerPreference.getDefaultFile().getBoolean(Constant.isRunning, false);
-    }
-
 
 }

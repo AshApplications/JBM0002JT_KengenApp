@@ -115,9 +115,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service
-            android:name="com.water.alkaline.kengen.MyService"
-            android:enabled="true" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

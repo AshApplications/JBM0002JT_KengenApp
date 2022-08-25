@@ -32,16 +32,17 @@ import java.util.Objects;
 public class MiniNativeAds {
 
     private static ArrayList<NativeAd> gNativeAd = new ArrayList<>();
-    private static String ad_type;
+    public static boolean isLoading = false;
 
     public void loadNativeAds(Activity activity) {
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff,false ) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleMiniNativeOnOff, false)) {
+        if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleMiniNativeOnOff, false)) {
             final String nativeAdstr = PowerPreference.getDefaultFile().getString(Constant.NATIVEID, "123");
 
             AdLoader.Builder builder = new AdLoader.Builder(activity, nativeAdstr);
             builder.forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
                 @Override
                 public void onNativeAdLoaded(@NonNull NativeAd natives) {
+                    isLoading = false;
                     gNativeAd.clear();
                     gNativeAd.add(natives);
                 }
@@ -61,7 +62,7 @@ public class MiniNativeAds {
                 @Override
                 public void onAdFailedToLoad(LoadAdError errorCode) {
                     Constant.showLog("loadNativeAds failed" + errorCode.toString());
-                    gNativeAd.clear();
+                    isLoading = false;
                 }
 
                 @Override
@@ -72,7 +73,7 @@ public class MiniNativeAds {
                     int clickCOunt2 = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
 
                     if (clickCOunt2 >= PowerPreference.getDefaultFile().getInt(Constant.AD_CLICK_COUNT, 3)) {
-                        PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff,false );
+                        PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, false);
                     }
                 }
             }).build();
@@ -100,15 +101,21 @@ public class MiniNativeAds {
     }
 
 
-    public void showNativeAds(Activity activity, Dialog dialog) {
+    public void showNativeAds(Activity activity, Dialog dialog, FrameLayout nativeAdLayout, TextView adSpace) {
 
-        FrameLayout nativeAdLayout = getFrameLayout(activity, dialog);
-        TextView adSpace = getTextLayout(activity, dialog);
+        if (nativeAdLayout == null || adSpace == null) {
+            nativeAdLayout = getFrameLayout(activity, dialog);
+            adSpace = getTextLayout(activity, dialog);
+        }
+
+        if (nativeAdLayout == null || adSpace == null)
+            return;
+
         LinearLayout adView = null;
 
         if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, true)) {
 
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff,false ) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleMiniNativeOnOff, true) &&
+            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleMiniNativeOnOff, true) &&
                     gNativeAd.size() > 0) {
 
                 adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_mini, null);
@@ -124,11 +131,13 @@ public class MiniNativeAds {
                 adSpace.setVisibility(View.GONE);
                 nativeAdLayout.setVisibility(View.VISIBLE);
 
-                loadNativeAds(activity);
+                if (!isLoading)
+                    loadNativeAds(activity);
 
             } else {
 
-                loadNativeAds(activity);
+                if (!isLoading)
+                    loadNativeAds(activity);
 
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaMiniNativeOnOff, true)) {
 
@@ -164,69 +173,6 @@ public class MiniNativeAds {
             adSpace.setVisibility(View.GONE);
         }
     }
-
-    public void showNativeAds(Activity activity, FrameLayout nativeAd, TextView adSpace) {
-
-        LinearLayout adView = null;
-
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, true)) {
-
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff,false ) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleMiniNativeOnOff, true) &&
-                    gNativeAd.size() > 0) {
-
-                adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_mini, null);
-
-                NativeAd lovalNative = gNativeAd.get(0);
-
-                populateUnifiedNativeAdView(lovalNative, adView.findViewById(R.id.uadview));
-
-                nativeAd.removeAllViews();
-                nativeAd.addView(adView);
-
-                adSpace.setVisibility(View.GONE);
-                nativeAd.setVisibility(View.VISIBLE);
-
-                loadNativeAds(activity);
-
-            } else {
-
-                loadNativeAds(activity);
-
-                if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaMiniNativeOnOff, true)) {
-
-                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_mini, null);
-
-                    ImageView imageViewMain = adView.findViewById(R.id.qurekaAds1);
-                    ImageView imageViewBG = adView.findViewById(R.id.qurekaAds);
-                    ImageView imageViewGif = adView.findViewById(R.id.gif_inter_round);
-
-                    Constant.setQureka(activity, imageViewMain, imageViewBG, imageViewGif, Constant.QMINI_COUNT);
-
-                    adView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Constant.gotoAds(activity);
-                        }
-                    });
-
-                    nativeAd.removeAllViews();
-                    nativeAd.addView(adView);
-
-                    adSpace.setVisibility(View.GONE);
-                    nativeAd.setVisibility(View.VISIBLE);
-
-                } else {
-                    nativeAd.setVisibility(View.GONE);
-                    adSpace.setVisibility(View.GONE);
-                }
-            }
-        } else {
-            nativeAd.setVisibility(View.GONE);
-            adSpace.setVisibility(View.GONE);
-        }
-    }
-
-
 
     public void populateUnifiedNativeAdView(NativeAd nativeAd, NativeAdView adView) {
 

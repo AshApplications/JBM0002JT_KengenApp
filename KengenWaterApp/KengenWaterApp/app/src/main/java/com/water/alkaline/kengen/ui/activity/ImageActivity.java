@@ -81,7 +81,7 @@ public class ImageActivity extends AppCompatActivity {
         downloadDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-                new LargeNativeAds().showNativeAds(ImageActivity.this, downloadDialog);
+                new LargeNativeAds().showNativeAds(ImageActivity.this, downloadDialog, null, null);
             }
         });
         downloadDialog.show();
@@ -214,25 +214,25 @@ public class ImageActivity extends AppCompatActivity {
                         downloadBinding.txtvlu.setText("Downloading " + (int) (((double) progress.currentBytes / progress.totalBytes) * 100.0) + " %");
                     }
                 }).start(new OnDownloadListener() {
-            @Override
-            public void onDownloadComplete() {
-                dismiss_download_dialog();
-                Constant.showToast(ImageActivity.this, "Download Completes");
-                DownloadEntity entity = new DownloadEntity(banner.getName(), Constant.getImagedisc() + "/" + filename, Constant.getImagedisc() + "/" + filename, banner.getUrl(), Constant.TYPE_IMAGE);
-                viewModel.insertDownloads(entity);
-                checkDownload();
-                if (isShare) {
-                    shareImage(Constant.getImagedisc() + "/" + filename);
-                }
-            }
+                    @Override
+                    public void onDownloadComplete() {
+                        dismiss_download_dialog();
+                        Constant.showToast(ImageActivity.this, "Download Completes");
+                        DownloadEntity entity = new DownloadEntity(banner.getName(), Constant.getImagedisc() + "/" + filename, Constant.getImagedisc() + "/" + filename, banner.getUrl(), Constant.TYPE_IMAGE);
+                        viewModel.insertDownloads(entity);
+                        checkDownload();
+                        if (isShare) {
+                            shareImage(Constant.getImagedisc() + "/" + filename);
+                        }
+                    }
 
-            @Override
-            public void onError(Error error) {
-                Log.e("TAG", error.toString());
-                Constant.showToast(ImageActivity.this, "Something went wrong");
-                dismiss_download_dialog();
-            }
-        });
+                    @Override
+                    public void onError(Error error) {
+                        Log.e("TAG", error.toString());
+                        Constant.showToast(ImageActivity.this, "Something went wrong");
+                        dismiss_download_dialog();
+                    }
+                });
 
         downloadBinding.txtCancel.setOnClickListener(new View.OnClickListener() {
             @Override

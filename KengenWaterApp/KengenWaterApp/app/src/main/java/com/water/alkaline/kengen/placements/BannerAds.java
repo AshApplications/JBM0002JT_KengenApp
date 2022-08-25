@@ -22,30 +22,32 @@ import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.utils.Constant;
 
 
-
 public class BannerAds {
-    public static AdView adView;
-    public static boolean isLoaded = false;
+    public static AdView adViewMain;
+    public static AdView adViewOld;
+    public static boolean isLoading = false;
 
     public void loadBannerAds(Activity activity) {
         if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleBannerOnOff, false)) {
 
+            isLoading = true;
+
             final String Ad = PowerPreference.getDefaultFile().getString(Constant.BANNERID, "123");
-            adView = new AdView(activity);
-            adView.setAdUnitId(Ad);
-            adView.setAdSize(AdSize.SMART_BANNER);
-            adView.setAdListener(new AdListener() {
+            adViewMain = new AdView(activity);
+            adViewMain.setAdUnitId(Ad);
+            adViewMain.setAdSize(AdSize.SMART_BANNER);
+            adViewMain.setAdListener(new AdListener() {
                 @Override
                 public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                     super.onAdFailedToLoad(loadAdError);
-                    isLoaded = false;
-                    adView = null;
+                    isLoading = false;
                 }
 
                 @Override
                 public void onAdLoaded() {
                     super.onAdLoaded();
-                    isLoaded = true;
+                    isLoading = false;
+                    adViewOld = adViewMain;
                 }
 
                 @Override
@@ -56,29 +58,38 @@ public class BannerAds {
                     int clickCOunt2 = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
 
                     if (clickCOunt2 >= PowerPreference.getDefaultFile().getInt(Constant.AD_CLICK_COUNT, 3)) {
-                        PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff,false );
+                        PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, false);
                     }
                 }
             });
-            adView.loadAd(new AdRequest.Builder().build());
+            adViewMain.loadAd(new AdRequest.Builder().build());
         }
     }
 
+
     public void showBannerAds(Activity activity, FrameLayout nativeAd, TextView adSpace) {
         if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, true)) {
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleBannerOnOff, true) &&
-                    adView != null && isLoaded) {
+
+            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleBannerOnOff, true) && adViewOld != null) {
+
+                if (adViewOld.getParent() != null) {
+                    ((FrameLayout) adViewOld.getParent()).removeAllViews();
+                }
 
                 nativeAd.removeAllViews();
-                nativeAd.addView(adView);
+                nativeAd.addView(adViewOld);
 
                 adSpace.setVisibility(View.GONE);
                 nativeAd.setVisibility(View.VISIBLE);
 
-                loadBannerAds(activity);
 
-            }else{
-                loadBannerAds(activity);
+                if (!isLoading)
+                    loadBannerAds(activity);
+
+            } else {
+
+                if (!isLoading)
+                    loadBannerAds(activity);
 
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaBannerOnOff, true)) {
 

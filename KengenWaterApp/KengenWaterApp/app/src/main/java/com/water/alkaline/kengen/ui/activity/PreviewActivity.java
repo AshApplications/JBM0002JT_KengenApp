@@ -38,7 +38,6 @@ import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
 
-
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -57,6 +56,7 @@ public class PreviewActivity extends AppCompatActivity {
         if (loaderDialog != null && loaderDialog.isShowing())
             loaderDialog.dismiss();
     }
+
     @Override
     public void onBackPressed() {
         new BackInterAds().showInterAds(this, new BackInterAds.OnAdClosedListener() {
@@ -82,8 +82,9 @@ public class PreviewActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Constant.checkIcon(this);
-        new LargeNativeAds().showNativeAds(this, null);
+        new LargeNativeAds().showNativeAds(this, null, null, null);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,7 +131,7 @@ public class PreviewActivity extends AppCompatActivity {
                         startActivity(new Intent(PreviewActivity.this, PlayerActivity.class).putExtra(Constant.POSITION, pos));
                     }
                 });
-             }
+            }
         });
 
         binding.btnShare.setOnClickListener(new View.OnClickListener() {
@@ -141,7 +142,6 @@ public class PreviewActivity extends AppCompatActivity {
         });
 
     }
-
 
 
     public void shareVideo() {

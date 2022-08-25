@@ -99,7 +99,7 @@
                         </LinearLayout>
                     </RelativeLayout>
 
-                    <Button
+                    <TextView
                         android:id="@+id/ad_call_to_action"
                         android:layout_width="125dp"
                         android:layout_height="40dp"

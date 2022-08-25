@@ -28,6 +28,8 @@ public class InterAds {
     @SuppressLint("StaticFieldLeak")
     public static Activity mActivity;
 
+    public static boolean isLoading = false;
+
     public static InterstitialAd mInterstitialAd;
     public static OnAdClosedListener mOnAdClosedListener;
 
@@ -69,21 +71,19 @@ public class InterAds {
     }
 
     public void loadInterAds(Activity activity) {
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff,false ) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleInterOnOff, false)) {
+        if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleInterOnOff, false)) {
             final String interAd = PowerPreference.getDefaultFile().getString(Constant.INTERID, "123");
             AdRequest adRequest = new AdRequest.Builder().build();
-
+            isLoading = true;
             InterstitialAd.load(activity, interAd, adRequest, new InterstitialAdLoadCallback() {
                 @Override
                 public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                     super.onAdLoaded(interstitialAd);
                     mInterstitialAd = interstitialAd;
-                    Constant.Log("onAdLoaded");
-
+                    isLoading = false;
                     mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                         @Override
                         public void onAdDismissedFullScreenContent() {
-                            Constant.Log("onAdClosed");
                             loadInterAds(activity);
 
                             if (mOnAdClosedListener != null) {
@@ -99,13 +99,12 @@ public class InterAds {
                             int clickCOunt2 = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
 
                             if (clickCOunt2 >= PowerPreference.getDefaultFile().getInt(Constant.AD_CLICK_COUNT, 3)) {
-                                PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff,false );
+                                PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, false);
                             }
                         }
 
                         @Override
                         public void onAdFailedToShowFullScreenContent(com.google.android.gms.ads.AdError adError) {
-                            Constant.Log("The ad failed to show.");
                             mInterstitialAd = null;
                             loadInterAds(activity);
 
@@ -121,7 +120,7 @@ public class InterAds {
                         @Override
                         public void onAdShowedFullScreenContent() {
                             mInterstitialAd = null;
-                            Constant.Log("The ad was shown.");
+
                         }
                     });
                 }
@@ -130,14 +129,14 @@ public class InterAds {
                 public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                     super.onAdFailedToLoad(loadAdError);
                     mInterstitialAd = null;
-                    Constant.Log("onAdFailedToLoad");
+                    isLoading = false;
+
                 }
             });
         }
     }
 
     public void showInterAds(Activity context, OnAdClosedListener onAdClosedListener) {
-        Constant.Log("showInterAds");
         mActivity = context;
         mOnAdClosedListener = onAdClosedListener;
 
@@ -163,7 +162,7 @@ public class InterAds {
     public void checkInterAds(Activity context, OnAdClosedListener onAdClosedListener) {
         mActivity = context;
         mOnAdClosedListener = onAdClosedListener;
-        if (mInterstitialAd != null && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff,false ) &&  PowerPreference.getDefaultFile().getBoolean(Constant.GoogleInterOnOff, false)) {
+        if (mInterstitialAd != null && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleInterOnOff, false)) {
 
             if (PowerPreference.getDefaultFile().getBoolean(Constant.ShowDialogBeforeAds, true)) {
                 ShowProgress(context);
@@ -188,7 +187,8 @@ public class InterAds {
 
 
         } else {
-            loadInterAds(context);
+            if (!isLoading)
+                loadInterAds(context);
 
             if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaInterOnOff, true)) {
 

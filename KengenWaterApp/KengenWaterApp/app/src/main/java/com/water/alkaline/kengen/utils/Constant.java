@@ -28,6 +28,7 @@ public class Constant {
 
     public static final String notifyKey = "notifyKey";
 
+
     public static final String appShareMsg = "appShareMsg";
     public static final String vidShareMsg = "vidShareMsg";
 
@@ -124,8 +125,6 @@ public class Constant {
     public static final String POSITION = "POSITION";
     public static final String isSaved = "isSaved";
 
-
-    public static String isRunning = "isRunning";
 
     public static int TYPE_PDF = 0;
     public static int TYPE_IMAGE = 1;
@@ -269,10 +268,10 @@ public class Constant {
 
     public static void checkIcon(Activity activity) {
         if (activity.findViewById(R.id.ivToolGif) != null) {
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaIconOnOff, false))
-            {
+            if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaIconOnOff, false)) {
                 Constant.setQurekaIcon(activity, (ImageView) activity.findViewById(R.id.ivToolGif), Constant.QICON_COUNT);
                 activity.findViewById(R.id.ivToolGif).setVisibility(View.VISIBLE);
+                activity.findViewById(R.id.ivToolGif).setOnClickListener(v -> Constant.gotoAds(activity));
             }
         }
     }

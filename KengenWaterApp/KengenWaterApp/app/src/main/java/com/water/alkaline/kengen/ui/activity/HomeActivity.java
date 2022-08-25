@@ -71,7 +71,6 @@ public class HomeActivity extends AppCompatActivity {
 
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-
     }
 
     public void setup(Activity activity, View view) {
@@ -277,7 +276,7 @@ public class HomeActivity extends AppCompatActivity {
             mDialog.setOnShowListener(new DialogInterface.OnShowListener() {
                 @Override
                 public void onShow(DialogInterface dialog) {
-                    new LargeNativeAds().showNativeAds(HomeActivity.this, mDialog);
+                    new LargeNativeAds().showNativeAds(HomeActivity.this, mDialog,null,null);
                 }
             });
 

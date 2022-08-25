@@ -77,12 +77,14 @@ public class PdfActivity extends AppCompatActivity {
         if (dialog != null && dialog.isShowing())
             dialog.dismiss();
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         Constant.checkIcon(this);
         new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
     }
+
     @Override
     public void onBackPressed() {
         new BackInterAds().showInterAds(this, new BackInterAds.OnAdClosedListener() {
@@ -122,7 +124,7 @@ public class PdfActivity extends AppCompatActivity {
         downloadDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-                new LargeNativeAds().showNativeAds(PdfActivity.this, downloadDialog);
+                new LargeNativeAds().showNativeAds(PdfActivity.this, downloadDialog, null, null);
             }
         });
         downloadDialog.show();
@@ -290,7 +292,7 @@ public class PdfActivity extends AppCompatActivity {
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogh) {
-                new LargeNativeAds().showNativeAds(PdfActivity.this, dialog);
+                new LargeNativeAds().showNativeAds(PdfActivity.this, dialog, null, null);
             }
         });
         dialog.show();
@@ -373,31 +375,31 @@ public class PdfActivity extends AppCompatActivity {
                         checkArrow();
                     }
                 }).onLoad(new OnLoadCompleteListener() {
-            @Override
-            public void loadComplete(int nbPages) {
-                isLoaded = true;
-                totPages = nbPages;
-                binding.pdfview.setVisibility(View.VISIBLE);
-                binding.includedProgress.progress.setVisibility(View.GONE);
-                binding.txtPageNumbers.setVisibility(View.VISIBLE);
-                binding.includedProgress.llError.setVisibility(View.GONE);
-                binding.cvBottom.setVisibility(View.VISIBLE);
-                checkArrow();
-            }
-        }).onError(new OnErrorListener() {
-            @Override
-            public void onError(Throwable t) {
-                Constant.showLog(t.getMessage());
-                isLoaded = false;
-                totPages = 0;
-                binding.pdfview.setVisibility(View.GONE);
-                binding.includedProgress.progress.setVisibility(View.GONE);
-                binding.txtPageNumbers.setVisibility(View.GONE);
-                binding.includedProgress.llError.setVisibility(View.VISIBLE);
-                binding.cvBottom.setVisibility(View.GONE);
-                Constant.showToast(PdfActivity.this, "Something went wrong");
-            }
-        }).load();
+                    @Override
+                    public void loadComplete(int nbPages) {
+                        isLoaded = true;
+                        totPages = nbPages;
+                        binding.pdfview.setVisibility(View.VISIBLE);
+                        binding.includedProgress.progress.setVisibility(View.GONE);
+                        binding.txtPageNumbers.setVisibility(View.VISIBLE);
+                        binding.includedProgress.llError.setVisibility(View.GONE);
+                        binding.cvBottom.setVisibility(View.VISIBLE);
+                        checkArrow();
+                    }
+                }).onError(new OnErrorListener() {
+                    @Override
+                    public void onError(Throwable t) {
+                        Constant.showLog(t.getMessage());
+                        isLoaded = false;
+                        totPages = 0;
+                        binding.pdfview.setVisibility(View.GONE);
+                        binding.includedProgress.progress.setVisibility(View.GONE);
+                        binding.txtPageNumbers.setVisibility(View.GONE);
+                        binding.includedProgress.llError.setVisibility(View.VISIBLE);
+                        binding.cvBottom.setVisibility(View.GONE);
+                        Constant.showToast(PdfActivity.this, "Something went wrong");
+                    }
+                }).load();
     }
 
 
@@ -422,31 +424,31 @@ public class PdfActivity extends AppCompatActivity {
                         checkArrow();
                     }
                 }).onLoad(new OnLoadCompleteListener() {
-            @Override
-            public void loadComplete(int nbPages) {
-                isLoaded = true;
-                totPages = nbPages;
-                binding.pdfview.setVisibility(View.VISIBLE);
-                binding.includedProgress.progress.setVisibility(View.GONE);
-                binding.txtPageNumbers.setVisibility(View.VISIBLE);
-                binding.includedProgress.llError.setVisibility(View.GONE);
-                binding.cvBottom.setVisibility(View.VISIBLE);
-                checkArrow();
-            }
-        }).onError(new OnErrorListener() {
-            @Override
-            public void onError(Throwable t) {
-                Constant.showLog(t.getMessage());
-                isLoaded = false;
-                totPages = 0;
-                binding.pdfview.setVisibility(View.GONE);
-                binding.includedProgress.progress.setVisibility(View.GONE);
-                binding.txtPageNumbers.setVisibility(View.GONE);
-                binding.includedProgress.llError.setVisibility(View.VISIBLE);
-                binding.cvBottom.setVisibility(View.GONE);
-                Constant.showToast(PdfActivity.this, "Something went wrong");
-            }
-        }).load();
+                    @Override
+                    public void loadComplete(int nbPages) {
+                        isLoaded = true;
+                        totPages = nbPages;
+                        binding.pdfview.setVisibility(View.VISIBLE);
+                        binding.includedProgress.progress.setVisibility(View.GONE);
+                        binding.txtPageNumbers.setVisibility(View.VISIBLE);
+                        binding.includedProgress.llError.setVisibility(View.GONE);
+                        binding.cvBottom.setVisibility(View.VISIBLE);
+                        checkArrow();
+                    }
+                }).onError(new OnErrorListener() {
+                    @Override
+                    public void onError(Throwable t) {
+                        Constant.showLog(t.getMessage());
+                        isLoaded = false;
+                        totPages = 0;
+                        binding.pdfview.setVisibility(View.GONE);
+                        binding.includedProgress.progress.setVisibility(View.GONE);
+                        binding.txtPageNumbers.setVisibility(View.GONE);
+                        binding.includedProgress.llError.setVisibility(View.VISIBLE);
+                        binding.cvBottom.setVisibility(View.GONE);
+                        Constant.showToast(PdfActivity.this, "Something went wrong");
+                    }
+                }).load();
     }
 
     public void downloadPDF(boolean isShare) {
@@ -467,21 +469,21 @@ public class PdfActivity extends AppCompatActivity {
                         downloadBinding.txtvlu.setText("Downloading " + (int) (((double) progress.currentBytes / progress.totalBytes) * 100.0) + " %");
                     }
                 }).start(new OnDownloadListener() {
-            @Override
-            public void onDownloadComplete() {
-                dismiss_download_dialog();
-                Constant.showToast(PdfActivity.this, "Download Completes");
-                DownloadEntity entity = new DownloadEntity(pdf.getName(), Constant.getPDFdisc() + "/" + filename, pdf.getImage(), pdf.getUrl(), Constant.TYPE_PDF);
-                viewModel.insertDownloads(entity);
-                checkDownload();
-            }
+                    @Override
+                    public void onDownloadComplete() {
+                        dismiss_download_dialog();
+                        Constant.showToast(PdfActivity.this, "Download Completes");
+                        DownloadEntity entity = new DownloadEntity(pdf.getName(), Constant.getPDFdisc() + "/" + filename, pdf.getImage(), pdf.getUrl(), Constant.TYPE_PDF);
+                        viewModel.insertDownloads(entity);
+                        checkDownload();
+                    }
 
-            @Override
-            public void onError(Error error) {
-                Constant.showToast(PdfActivity.this, "Something went wrong");
-                dismiss_download_dialog();
-            }
-        });
+                    @Override
+                    public void onError(Error error) {
+                        Constant.showToast(PdfActivity.this, "Something went wrong");
+                        dismiss_download_dialog();
+                    }
+                });
 
         downloadBinding.txtCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -498,7 +500,7 @@ public class PdfActivity extends AppCompatActivity {
             i.setType("application/pdf");
             i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name));
 
-            String sAux = PowerPreference.getDefaultFile().getString(Constant.vidShareMsg,"");
+            String sAux = PowerPreference.getDefaultFile().getString(Constant.vidShareMsg, "");
 
             String sAux2 = "https://play.google.com/store/apps/details?id=" + getPackageName();
             sAux = sAux + "\n\n" + sAux2;

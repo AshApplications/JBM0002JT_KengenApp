@@ -80,6 +80,7 @@ public class ViewImageActivity extends AppCompatActivity {
             }
         });
     }
+
     public void download_dialog() {
         downloadDialog = new Dialog(this, R.style.NormalDialog);
         downloadBinding = DialogDownloadBinding.inflate(getLayoutInflater());
@@ -91,7 +92,7 @@ public class ViewImageActivity extends AppCompatActivity {
         downloadDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-                new LargeNativeAds().showNativeAds(ViewImageActivity.this, downloadDialog);
+                new LargeNativeAds().showNativeAds(ViewImageActivity.this, downloadDialog, null, null);
             }
         });
         downloadDialog.show();
@@ -241,7 +242,7 @@ public class ViewImageActivity extends AppCompatActivity {
             i.setType("image/*");
             i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name));
 
-            String sAux = PowerPreference.getDefaultFile().getString(Constant.vidShareMsg,"");
+            String sAux = PowerPreference.getDefaultFile().getString(Constant.vidShareMsg, "");
             String sAux2 = "https://play.google.com/store/apps/details?id=" + getPackageName();
             sAux = sAux + "\n\n" + sAux2;
             Uri fileUri = FileProvider.getUriForFile(getApplicationContext(),
@@ -270,25 +271,25 @@ public class ViewImageActivity extends AppCompatActivity {
                         downloadBinding.txtvlu.setText("Downloading " + (int) (((double) progress.currentBytes / progress.totalBytes) * 100.0) + " %");
                     }
                 }).start(new OnDownloadListener() {
-            @Override
-            public void onDownloadComplete() {
-                dismiss_download_dialog();
-                Constant.showToast(ViewImageActivity.this, "Download Completes");
-                DownloadEntity entity = new DownloadEntity(banner.getName(), Constant.getImagedisc() + "/" + filename, Constant.getImagedisc() + "/" + filename, banner.getUrl(), Constant.TYPE_IMAGE);
-                viewModel.insertDownloads(entity);
-                checkDownloadIcon(binding.viewpager.getCurrentItem());
-                if (isShare) {
-                    shareImage(Constant.getImagedisc() + "/" + filename);
-                }
-            }
+                    @Override
+                    public void onDownloadComplete() {
+                        dismiss_download_dialog();
+                        Constant.showToast(ViewImageActivity.this, "Download Completes");
+                        DownloadEntity entity = new DownloadEntity(banner.getName(), Constant.getImagedisc() + "/" + filename, Constant.getImagedisc() + "/" + filename, banner.getUrl(), Constant.TYPE_IMAGE);
+                        viewModel.insertDownloads(entity);
+                        checkDownloadIcon(binding.viewpager.getCurrentItem());
+                        if (isShare) {
+                            shareImage(Constant.getImagedisc() + "/" + filename);
+                        }
+                    }
 
-            @Override
-            public void onError(Error error) {
-                Log.e("TAG", error.toString());
-                Constant.showToast(ViewImageActivity.this, "Something went wrong");
-                dismiss_download_dialog();
-            }
-        });
+                    @Override
+                    public void onError(Error error) {
+                        Log.e("TAG", error.toString());
+                        Constant.showToast(ViewImageActivity.this, "Something went wrong");
+                        dismiss_download_dialog();
+                    }
+                });
 
         downloadBinding.txtCancel.setOnClickListener(new View.OnClickListener() {
             @Override

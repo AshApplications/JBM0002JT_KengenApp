@@ -1,0 +1,70 @@
+plugins {
+    id("com.android.application")
+    id("com.google.android.gms.oss-licenses-plugin")
+    kotlin("android")
+    id("kotlin-parcelize")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
+}
+
+setupApp()
+
+android {
+
+    viewBinding.isEnabled = true
+    externalNativeBuild.cmake.path("CMakeLists.txt")
+    defaultConfig {
+        proguardFiles("proguard-rules.pro")
+    }
+}
+android.defaultConfig.applicationId = "com.water.alkaline.kengen"
+
+dependencies {
+    implementation("androidx.appcompat:appcompat:1.4.2")
+
+    implementation(files("libs/power-preference-lib-2.0.0.aar"))
+    implementation(files("libs/YouTubeAndroidPlayerApi.jar"))
+
+    implementation("com.google.android.material:material:1.4.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.1")
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
+
+    implementation("com.intuit.sdp:sdp-android:1.0.6")
+    implementation("com.intuit.ssp:ssp-android:1.0.6")
+
+    implementation("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
+
+    implementation("com.squareup.okhttp3:logging-interceptor:4.4.1")
+    implementation("com.airbnb.android:lottie:4.1.0")
+    implementation("com.jsibbold:zoomage:1.3.1")
+
+    implementation("com.github.barteksc:pdfium-android:1.9.0")
+    implementation("androidx.browser:browser:1.4.0")
+
+    implementation(platform("com.google.firebase:firebase-bom:28.4.2"))
+    implementation("com.google.firebase:firebase-messaging")
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
+
+    implementation("com.google.android.gms:play-services-ads:20.5.0")
+
+    implementation("android.arch.lifecycle:extensions:1.1.0")
+    implementation("androidx.lifecycle:lifecycle-extensions:2.0.0")
+
+
+    implementation("com.github.skydoves:elasticviews:2.1.0")
+    implementation("androidx.work:work-runtime:2.7.0")
+
+
+    implementation("androidx.room:room-runtime:2.4.2")
+    annotationProcessor("androidx.room:room-compiler:2.4.2")
+    annotationProcessor("android.arch.persistence.room:compiler:1.1.1")
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation("org.jsoup:jsoup:1.15.1")
+
+
+}

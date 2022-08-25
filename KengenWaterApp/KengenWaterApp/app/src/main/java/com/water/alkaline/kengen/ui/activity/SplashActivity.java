@@ -40,6 +40,7 @@ import com.google.gson.GsonBuilder;
 import com.water.alkaline.kengen.BuildConfig;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
 import com.water.alkaline.kengen.MyApplication;
+import com.water.alkaline.kengen.utils.MyService;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.data.network.RetroClient;
@@ -63,6 +64,10 @@ import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.io.IOException;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -71,7 +76,6 @@ import retrofit2.Response;
 
 public class SplashActivity extends AppCompatActivity {
 
-    public static SplashActivity activity;
     ActivitySplashBinding binding;
 
     int REQUEST_PERMISSIONS = 200;
@@ -81,41 +85,33 @@ public class SplashActivity extends AppCompatActivity {
     int VERSION = 0;
 
     public Dialog dialog;
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        activity = null;
-    }
+    public static SplashActivity activity;
 
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
     }
 
+
     public Handler handler = new Handler(Looper.getMainLooper()) {
         public void handleMessage(Message msg) {
             if (!SplashActivity.this.isFinishing()) {
-                if (msg.what == 1000) {
-                    network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dismiss_dialog();
-                            if (Constant.checkInternet(SplashActivity.this)) {
+                network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dismiss_dialog();
+                        if (Constant.checkInternet(SplashActivity.this)) {
+                            if (msg.what == 1000) {
                                 updateAPI();
-                            } else dialog.show();
-                        }
-                    });
-                } else if (msg.what == 1001) {
-                    network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dismiss_dialog();
-                            if (Constant.checkInternet(SplashActivity.this)) {
+                            } else if (msg.what == 1001) {
                                 mainAPI();
-                            } else dialog.show();
-                        }
-                    });
-                }
+                            } else if (msg.what == 998) {
+                                getToken();
+                            } else {
+                                callAPI();
+                            }
+                        } else dialog.show();
+                    }
+                });
             } else {
                 Log.e("TAG", "Something went wrong");
             }
@@ -140,6 +136,11 @@ public class SplashActivity extends AppCompatActivity {
         return binding;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        activity = null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +149,15 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         activity = this;
         PowerPreference.getDefaultFile().putInt(Constant.mIsDuration, 1);
+        PowerPreference.getDefaultFile().putBoolean(Constant.isRunning, true);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!isMyServiceRunning(MyService.class))
+                    startService(new Intent(SplashActivity.this, MyService.class));
+            }
+        }, 2000);
 
         ViewAnimator.animate(binding.ivLogo)
                 .scale(0f, 1f)
@@ -162,13 +172,14 @@ public class SplashActivity extends AppCompatActivity {
                         checkVpn();
                     }
                 }).start();
+
+
     }
 
     public void checkVpn() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
                 if (Constant.isVpnConnected()) {
                     network_dialog("VPN is Connected Please Turn it Off & Try Again !")
                             .txtRetry.setOnClickListener(new View.OnClickListener() {
@@ -194,24 +205,47 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     public void getToken() {
+        if (Constant.checkInternet(SplashActivity.this)) {
+            FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
+                @Override
+                public void onSuccess(@NonNull String s) {
+                    PowerPreference.getDefaultFile().putString(Constant.Token, s);
+                    callAPI();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    PowerPreference.getDefaultFile().putString(Constant.Token, "123");
+                    callAPI();
+                }
+            });
+        } else {
+            handler.sendEmptyMessage(998);
+        }
+    }
 
-        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
-            @Override
-            public void onSuccess(@NonNull String s) {
-                PowerPreference.getDefaultFile().putString(Constant.Token, s);
-                updateAPI();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        getToken();
+    public void callAPI() {
+        if (Constant.checkInternet(SplashActivity.this)) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Document doc = Jsoup.connect(MyApplication.getBase(SplashActivity.this)).get();
+                        PowerPreference.getDefaultFile().putString(Constant.apiKey, doc.select("strong").get(0).text());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                updateAPI();
+                            }
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                }, 2000);
-            }
-        });
+                }
+            }).start();
+        } else {
+            handler.sendEmptyMessage(999);
+        }
     }
 
     public void updateAPI() {
@@ -251,12 +285,12 @@ public class SplashActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putString(Constant.OPENAD, appData.getGoogleAppOpenAds());
 
 
+                                    PowerPreference.getDefaultFile().putInt(Constant.AppOpen, appData.getAppOpen());
+
+
                                     try {
                                         ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-                                        Bundle bundle = ai.metaData;
-                                        String myApiKey = bundle.getString("com.google.android.gms.ads.APPLICATION_ID");
-                                        ai.metaData.putString("com.google.android.gms.ads.APPLICATION_ID", appData.getGoogleAppIdAds());//you can replace your key APPLICATION_ID here
-                                        String ApiKey = bundle.getString("com.google.android.gms.ads.APPLICATION_ID");
+                                        ai.metaData.putString("com.google.android.gms.ads.APPLICATION_ID", appData.getGoogleAppIdAds());
                                     } catch (PackageManager.NameNotFoundException e) {
                                         Log.e("TAG", "Failed to load meta-data, NameNotFound: " + e.getMessage());
                                     } catch (NullPointerException e) {
@@ -264,7 +298,6 @@ public class SplashActivity extends AppCompatActivity {
                                     }
 
                                     MobileAds.initialize(SplashActivity.this);
-
 
                                     PowerPreference.getDefaultFile().putBoolean(Constant.AdsOnOff, appData.getAdsOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, appData.getGoogleAdsOnOff());
@@ -576,17 +609,28 @@ public class SplashActivity extends AppCompatActivity {
             }
         });
 
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
-                    new NewOpenAds().showOpenAd(SplashActivity.this, new NewOpenAds.OnAdClosedListener() {
-                        @Override
-                        public void onAdClosed() {
-                            startActivity(new Intent(SplashActivity.this, HomeActivity.class));
-                        }
-                    });
+
+                    if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 1) {
+                        new InterAds().watchAds(SplashActivity.this, new InterAds.OnAdClosedListener() {
+                            @Override
+                            public void onAdClosed() {
+                                startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+                            }
+                        });
+                    } else if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 2) {
+                        new NewOpenAds().showOpenAd(SplashActivity.this, new NewOpenAds.OnAdClosedListener() {
+                            @Override
+                            public void onAdClosed() {
+                                startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+                            }
+                        });
+                    } else {
+                        startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+                    }
                 } else
                     startActivity(new Intent(SplashActivity.this, HomeActivity.class));
             }
@@ -594,6 +638,16 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
+    private boolean isMyServiceRunning(Class<?> cls) {
+        for (ActivityManager.RunningServiceInfo runningServiceInfo : ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE)).getRunningServices(Integer.MAX_VALUE)) {
+            if (cls.getName().equals(runningServiceInfo.service.getClassName())) {
+                Log.e("ServiceStatus", "Running");
+                return true;
+            }
+        }
+        Log.e("ServiceStatus", "Not running");
+        return false;
+    }
 
 
 }

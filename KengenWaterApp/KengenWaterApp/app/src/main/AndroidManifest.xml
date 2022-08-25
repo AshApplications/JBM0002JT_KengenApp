@@ -65,8 +65,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.PlayerActivity"
-            android:exported="false"
-            android:configChanges="keyboardHidden|orientation|screenSize" />
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false" />
         <activity
             android:name="com.water.alkaline.kengen.ui.activity.ImageActivity"
             android:exported="false"
@@ -108,7 +108,7 @@
         </provider>
 
         <service
-            android:name="com.water.alkaline.kengen.MyFirebaseMessagingService"
+            android:name="com.water.alkaline.kengen.utils.MyFirebaseMessagingService"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
@@ -119,12 +119,20 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_logo" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorMain" />
+
+        <service
+            android:name=".utils.MyService"
+            android:enabled="true"
+            android:exported="false"
+            android:launchMode="singleInstance" />
+
     </application>
 
 </manifest>

@@ -89,22 +89,36 @@ const char *getSignature(JNIEnv *env, jobject context) {
 }
 
 int getVerified(JNIEnv *env, jobject context) {
-    return strcmp("211A4200C81328A0E252E90C48BF45F2", getSignature(env, context));
+    return !strcmp("211A4200C81328A0E252E90C48BF45F2", getSignature(env, context));
 }
 
 
+
+jstring
+Java_com_water_alkaline_kengen_MyApplication_getBase(JNIEnv *env, jobject instance, jobject context)
+{
+    if(getVerified(env,context) == 0)
+    {
+        char str[100];
+        const char *Z = "https://sites.google.com/view/jbmapps/home";
+        strcpy(str, Z);
+        return (*env)->NewStringUTF(env, str);
+    }else{
+        return (*env)->NewStringUTF(env, "");
+    }
+}
 
 jstring
 Java_com_water_alkaline_kengen_MyApplication_getMain(JNIEnv *env, jobject instance, jobject context)
 {
     if(getVerified(env,context) == 0)
     {
-         char str[100];
-         const char *Z = "https://jbmapps.online/kangen/api/";
-         strcpy(str, Z);
-         return (*env)->NewStringUTF(env, str);
+        char str[100];
+        const char *Z = "kangen/api/";
+        strcpy(str, Z);
+        return (*env)->NewStringUTF(env, str);
     }else{
-         return (*env)->NewStringUTF(env, "");
+        return (*env)->NewStringUTF(env, "");
     }
 }
 

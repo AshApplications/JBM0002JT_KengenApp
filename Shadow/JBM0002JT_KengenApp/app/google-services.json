@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "594575923103",
+    "project_id": "kangenapp-ab8c7",
+    "storage_bucket": "kangenapp-ab8c7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:594575923103:android:df176327d5dbfca8d40faa",
+        "android_client_info": {
+          "package_name": "com.water.alkaline.kengen"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "594575923103-440ei53j7hltbhgr1o0quhl35rhgf9pb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_M8z8cNf8nxgshozjyLiPxCpuvezbFIs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "594575923103-440ei53j7hltbhgr1o0quhl35rhgf9pb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

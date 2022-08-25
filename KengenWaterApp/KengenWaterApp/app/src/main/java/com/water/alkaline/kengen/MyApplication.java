@@ -52,6 +52,7 @@ public class MyApplication extends Application {
         PRDownloader.initialize(getApplicationContext());
     }
 
+    public static native String getBase(Context context);
     public static native String getMain(Context context);
     public static native String getSub(Context context);
 

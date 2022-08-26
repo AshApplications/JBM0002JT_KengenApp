@@ -15,9 +15,10 @@
 
         <ImageView
             android:id="@+id/imgVideo"
-            android:adjustViewBounds="true"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -31,11 +32,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_25sdp"
                 android:layout_marginHorizontal="@dimen/_10sdp"
+                android:ellipsize="marquee"
                 android:fontFamily="@font/mfont"
                 android:gravity="center"
                 android:paddingHorizontal="@dimen/_2sdp"
                 android:singleLine="true"
-                android:ellipsize="marquee"
                 android:text=""
                 android:textColor="@color/colorWhite"
                 android:textSize="@dimen/_11ssp"

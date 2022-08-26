@@ -1,7 +1,6 @@
 package com.water.alkaline.kengen.data.network;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,16 +8,9 @@ import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.utils.Constant;
 
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Collections;
-
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
 import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -28,24 +20,6 @@ public class RetroClient {
 
     private Retrofit retroMain;
     private Retrofit retrofit2;
-
-    public boolean isConnected() {
-        String iface = "";
-        try {
-            for (NetworkInterface networkInterface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                if (networkInterface.isUp())
-                    iface = networkInterface.getName();
-
-                if (iface.contains("tun") || iface.contains("ppp") || iface.contains("pptp")) {
-                    return true;
-                }
-            }
-        } catch (SocketException e1) {
-            e1.printStackTrace();
-        }
-
-        return false;
-    }
 
     public RetroClient(Context context) {
 
@@ -63,21 +37,11 @@ public class RetroClient {
                 .addInterceptor(
                         chain -> {
                             Request original = chain.request();
-                            if (isConnected() && !original.url().toString().startsWith(MyApplication.getSub(MyApplication.getContext()))) {
-                                return new Response.Builder()
-                                        .code(404)
-                                        .body(ResponseBody.create(null, ""))
-                                        .protocol(Protocol.HTTP_2)
-                                        .message("not-verified").request(chain.request())
-                                        .build();
-                            } else {
+                            Request.Builder requestBuilder = original.newBuilder()
+                                    .method(original.method(), original.body());
 
-                                Request.Builder requestBuilder = original.newBuilder()
-                                        .method(original.method(), original.body());
-
-                                Request request = requestBuilder.build();
-                                return chain.proceed(request);
-                            }
+                            Request request = requestBuilder.build();
+                            return chain.proceed(request);
                         }
                 ).dispatcher(dispatcher).build();
 

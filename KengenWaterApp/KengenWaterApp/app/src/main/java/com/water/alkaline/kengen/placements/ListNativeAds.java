@@ -38,8 +38,10 @@ public class ListNativeAds {
 
             final String nativeAdstr = PowerPreference.getDefaultFile().getString(Constant.NATIVEID, "123");
 
-            if (gNativeAd.size() >= 5)
-                return;
+            if (PowerPreference.getDefaultFile().getBoolean(Constant.isList, false)) {
+                if (gNativeAd.size() >= 5)
+                    return;
+            }
 
             isLoading = true;
             AdLoader.Builder builder = new AdLoader.Builder(activity, nativeAdstr);
@@ -269,7 +271,7 @@ public class ListNativeAds {
             adSpace.setVisibility(View.GONE);
             nativeAd.setVisibility(View.VISIBLE);
 
-        }else{
+        } else {
             adSpace.setVisibility(View.GONE);
             nativeAd.setVisibility(View.GONE);
         }

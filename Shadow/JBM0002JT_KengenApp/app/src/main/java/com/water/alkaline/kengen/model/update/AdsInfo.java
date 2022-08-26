@@ -121,6 +121,18 @@ public class AdsInfo {
     @Expose
     private Integer adsCloseCount;
 
+    @SerializedName("isList")
+    @Expose
+    private Boolean isList;
+
+    public Boolean getList() {
+        return isList;
+    }
+
+    public void setList(Boolean list) {
+        isList = list;
+    }
+
     public Integer getAppOpen() {
         return AppOpen;
     }

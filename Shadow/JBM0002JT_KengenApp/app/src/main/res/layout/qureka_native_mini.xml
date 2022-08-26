@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:cardBackgroundColor="@color/colorBGNativeStart"
-        app:cardCornerRadius="@dimen/_5sdp"
+        app:cardCornerRadius="0dp"
         app:cardElevation="0dp">
 
         <LinearLayout
@@ -27,7 +27,7 @@
                 android:id="@+id/gif_inter_round"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_margin="4dp"/>
+                android:layout_margin="4dp" />
 
             <RelativeLayout
                 android:id="@+id/content"
@@ -51,8 +51,9 @@
                             android:layout_width="18dp"
                             android:layout_height="13.5dp"
                             android:layout_marginStart="4dp"
-                            app:cardBackgroundColor="@color/colorMain"
-                            android:gravity="center">
+                            android:gravity="center"
+                            app:cardBackgroundColor="@color/colorMain">
+
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"

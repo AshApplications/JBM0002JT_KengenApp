@@ -6,7 +6,7 @@
     <TextView
         android:id="@+id/adSpaceMedium"
         android:layout_width="match_parent"
-        android:layout_height="130dp"
+        android:layout_height="135dp"
         android:background="@drawable/bg_native"
         android:gravity="center"
         android:text="Space For Ads"
@@ -15,6 +15,6 @@
     <FrameLayout
         android:id="@+id/frameNativeMedium"
         android:layout_width="match_parent"
-        android:layout_height="130dp" />
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

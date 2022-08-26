@@ -10,8 +10,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
@@ -30,16 +28,18 @@ import java.util.Objects;
 
 public class ListNativeAds {
 
-    private static ArrayList<NativeAd> gNativeAd = new ArrayList<>();
     public static boolean isLoading = false;
+    private static ArrayList<NativeAd> gNativeAd = new ArrayList<>();
 
     public void loadNativeAds(Activity activity) {
         if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleListNativeOnOff, false)) {
 
             final String nativeAdstr = PowerPreference.getDefaultFile().getString(Constant.NATIVEID, "123");
 
-            if (gNativeAd.size() >= 5)
-                return;
+            if (PowerPreference.getDefaultFile().getBoolean(Constant.isList, false)) {
+                if (gNativeAd.size() >= 5)
+                    return;
+            }
 
             isLoading = true;
             AdLoader.Builder builder = new AdLoader.Builder(activity, nativeAdstr);
@@ -269,7 +269,7 @@ public class ListNativeAds {
             adSpace.setVisibility(View.GONE);
             nativeAd.setVisibility(View.VISIBLE);
 
-        }else{
+        } else {
             adSpace.setVisibility(View.GONE);
             nativeAd.setVisibility(View.GONE);
         }

@@ -8,7 +8,7 @@
         android:id="@+id/adSpaceMini"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@drawable/bg_native"
+        android:background="@drawable/bg_banner"
         android:gravity="center"
         android:text="Space For Ads"
         android:textColor="@color/colorBlack" />

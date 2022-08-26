@@ -58,6 +58,7 @@ public class Constant {
     public static final String QurekaOnOff = "QurekaOnOff";
 
     public static final String AppOpen = "AppOpen";
+    public static final String isList = "isList";
 
     public static final String GoogleSplashOpenAdsOnOff = "GoogleSplashOpenAdsOnOff";
     public static final String GoogleExitSplashInterOnOff = "GoogleExitSplashInterOnOff";

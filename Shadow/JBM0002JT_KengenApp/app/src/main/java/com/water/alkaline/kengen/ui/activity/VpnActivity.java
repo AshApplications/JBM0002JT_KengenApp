@@ -1,9 +1,12 @@
 package com.water.alkaline.kengen.ui.activity;
 
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -27,13 +30,23 @@ import com.github.shadowsocks.preference.DataStore;
 import com.github.shadowsocks.preference.OnPreferenceDataStoreChangeListener;
 import com.github.shadowsocks.utils.Key;
 import com.github.shadowsocks.utils.StartService;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.databinding.ActivityVpnBinding;
+import com.water.alkaline.kengen.placements.BackInterAds;
+import com.water.alkaline.kengen.placements.BannerAds;
 import com.water.alkaline.kengen.placements.InterAds;
+import com.water.alkaline.kengen.placements.LargeNativeAds;
+import com.water.alkaline.kengen.placements.ListNativeAds;
+import com.water.alkaline.kengen.placements.MiniNativeAds;
 import com.water.alkaline.kengen.placements.NewOpenAds;
+import com.water.alkaline.kengen.placements.OpenAds;
 import com.water.alkaline.kengen.utils.Constant;
+
+import java.util.Arrays;
 
 import timber.log.Timber;
 
@@ -184,8 +197,38 @@ public class VpnActivity extends AppCompatActivity implements ShadowsocksConnect
     }
 
 
-    public void nextActivity() {
+    public void loadAds() {
+        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("6E27EC40561D1AD0FFC3A47FF91C5D1F")).build());
+        PowerPreference.getDefaultFile().putBoolean(Constant.mIsLoaded, true);
 
+        try {
+            ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+            ai.metaData.putString("com.google.android.gms.ads.APPLICATION_ID", PowerPreference.getDefaultFile().getString(Constant.APPID, "ca-app-pub-3940256099942544~3347511713"));
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("TAG", "Failed to load meta-data, NameNotFound: " + e.getMessage());
+        } catch (NullPointerException e) {
+            Log.e("TAG", "Failed to load meta-data, NullPointer: " + e.getMessage());
+        }
+
+        MobileAds.initialize(VpnActivity.this);
+
+        if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, false)) {
+            new BackInterAds().loadInterAds(VpnActivity.this);
+            new BannerAds().loadBannerAds(VpnActivity.this);
+            new InterAds().loadInterAds(VpnActivity.this);
+            new LargeNativeAds().loadNativeAds(VpnActivity.this);
+            new ListNativeAds().loadNativeAds(VpnActivity.this);
+            new MiniNativeAds().loadNativeAds(VpnActivity.this);
+            new OpenAds().loadOpenAd();
+            new NewOpenAds().loadOpenAd(VpnActivity.this);
+        }
+    }
+
+
+    public void nextActivity() {
+        if (!PowerPreference.getDefaultFile().getBoolean(Constant.mIsLoaded, false)) {
+            loadAds();
+        }
         binding.layLoader.setVisibility(View.VISIBLE);
 
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {

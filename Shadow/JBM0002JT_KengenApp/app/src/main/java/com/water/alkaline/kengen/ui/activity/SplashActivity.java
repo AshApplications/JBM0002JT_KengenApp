@@ -46,6 +46,7 @@ import com.github.shadowsocks.preference.OnPreferenceDataStoreChangeListener;
 import com.github.shadowsocks.utils.Key;
 import com.github.shadowsocks.utils.StartService;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -81,6 +82,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -128,6 +130,8 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         activity = this;
+
+        PowerPreference.getDefaultFile().putBoolean(Constant.mIsLoaded, false);
         PowerPreference.getDefaultFile().putInt(Constant.mIsDuration, 1);
         PowerPreference.getDefaultFile().putBoolean(Constant.isRunning, true);
 
@@ -171,16 +175,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (Constant.isVpnConnected() && PowerPreference.getDefaultFile().getBoolean(Constant.isRunning, false)) {
-                    network_dialog("VPN is Connected Please Turn it Off & Try Again !")
-                            .txtRetry.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    dismiss_dialog();
-                                    checkVpn();
-                                }
-                            });
-                } else if (MyApplication.getMain(SplashActivity.this).equalsIgnoreCase("")) {
+                if (MyApplication.getMain(SplashActivity.this).equalsIgnoreCase("")) {
                     network_dialog("Something Went Wrong\nPlease Try Again Later !")
                             .txtRetry.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -240,7 +235,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
     }
 
     public void loadAds() {
-
+        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("6E27EC40561D1AD0FFC3A47FF91C5D1F")).build());
         PowerPreference.getDefaultFile().putBoolean(Constant.mIsLoaded, true);
 
         try {
@@ -306,6 +301,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
 
 
                                     PowerPreference.getDefaultFile().putInt(Constant.AppOpen, appData.getAppOpen());
+                                    PowerPreference.getDefaultFile().putBoolean(Constant.isList, appData.getList());
 
                                     PowerPreference.getDefaultFile().putBoolean(Constant.AdsOnOff, appData.getAdsOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, appData.getGoogleAdsOnOff());
@@ -377,8 +373,6 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
                                             PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, false);
                                         }
                                     }
-
-                                    loadAds();
 
                                     if (!appInfo.getTitle().equals("")) {
                                         binding.txtName.setText(appInfo.getTitle());
@@ -531,31 +525,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
 
     private boolean checkPermissions() {
         return ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }    public Handler handler = new Handler(Looper.getMainLooper()) {
-        public void handleMessage(Message msg) {
-            if (!SplashActivity.this.isFinishing()) {
-                network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dismiss_dialog();
-                        if (Constant.checkInternet(SplashActivity.this)) {
-                            if (msg.what == 1000) {
-                                updateAPI();
-                            } else if (msg.what == 1001) {
-                                mainAPI();
-                            } else if (msg.what == 998) {
-                                getToken();
-                            } else {
-                                callAPI();
-                            }
-                        } else dialog.show();
-                    }
-                });
-            } else {
-                Log.e("TAG", "Something went wrong");
-            }
-        }
-    };
+    }
 
     private void requestPermissions() {
         ActivityCompat.requestPermissions(SplashActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS);
@@ -615,7 +585,31 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
                 .setPositiveButton("Give Permission", aPackage)
                 .create()
                 .show();
-    }
+    }    public Handler handler = new Handler(Looper.getMainLooper()) {
+        public void handleMessage(Message msg) {
+            if (!SplashActivity.this.isFinishing()) {
+                network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dismiss_dialog();
+                        if (Constant.checkInternet(SplashActivity.this)) {
+                            if (msg.what == 1000) {
+                                updateAPI();
+                            } else if (msg.what == 1001) {
+                                mainAPI();
+                            } else if (msg.what == 998) {
+                                getToken();
+                            } else {
+                                callAPI();
+                            }
+                        } else dialog.show();
+                    }
+                });
+            } else {
+                Log.e("TAG", "Something went wrong");
+            }
+        }
+    };
 
     public void checkVpnApp() {
         if (PowerPreference.getDefaultFile().getBoolean(Constant.VpnOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.VpnAuto, true)) {
@@ -655,7 +649,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
     }
 
     public void nextActivity() {
-
+        loadAds();
         FirebaseMessaging.getInstance().subscribeToTopic(PowerPreference.getDefaultFile().getString(Constant.notifyKey, "kengen")).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

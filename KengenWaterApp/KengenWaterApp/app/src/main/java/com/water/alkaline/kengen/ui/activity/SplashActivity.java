@@ -303,6 +303,8 @@ public class SplashActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, appData.getGoogleAdsOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.QurekaOnOff, appData.getQurekaOnOff());
 
+                                    PowerPreference.getDefaultFile().putBoolean(Constant.isList, appData.getList());
+
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleSplashOpenAdsOnOff, appData.getGoogleSplashOpenAdsOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleExitSplashInterOnOff, appData.getGoogleExitSplashInterOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAppOpenAdsOnOff, appData.getGoogleAppOpenAdsOnOff());

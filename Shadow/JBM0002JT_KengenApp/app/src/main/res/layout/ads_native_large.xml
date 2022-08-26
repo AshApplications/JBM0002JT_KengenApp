@@ -2,20 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="250dp"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvMain"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="250dp"
         app:cardBackgroundColor="@color/colorBGNativeStart"
         app:cardCornerRadius="@dimen/_5sdp"
         app:cardElevation="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginVertical="5dp">
 
             <com.google.android.gms.ads.nativead.NativeAdView
                 android:id="@+id/uadview"
@@ -38,9 +39,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_above="@+id/icone"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginRight="10dp"
                             android:gravity="center"
                             android:orientation="vertical">
 
@@ -57,14 +55,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_alignParentBottom="true"
-                            android:gravity="center"
                             android:orientation="vertical">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginRight="10dp"
                                 android:orientation="horizontal">
 
                                 <androidx.cardview.widget.CardView
@@ -159,12 +154,8 @@
                             <TextView
                                 android:id="@+id/ad_call_to_action"
                                 android:layout_width="match_parent"
-                                android:layout_height="55dp"
+                                android:layout_height="@dimen/_35sdp"
                                 android:layout_gravity="center_vertical"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginTop="4dp"
-                                android:layout_marginRight="10dp"
-                                android:layout_marginBottom="10dp"
                                 android:background="@drawable/bg_button"
                                 android:gravity="center"
                                 android:text="Open"

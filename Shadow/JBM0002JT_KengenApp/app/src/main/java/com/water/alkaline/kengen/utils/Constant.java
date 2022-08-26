@@ -42,6 +42,7 @@ public class Constant {
     public static final String apiKey = "apiKey";
 
     public static final String isRunning = "isRunning";
+    public static final String isList = "isList";
 
     public static final String appShareMsg = "appShareMsg";
     public static final String vidShareMsg = "vidShareMsg";

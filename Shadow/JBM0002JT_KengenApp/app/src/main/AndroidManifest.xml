@@ -42,7 +42,8 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".ui.activity.VpnActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.PreviewActivity"
             android:exported="false"

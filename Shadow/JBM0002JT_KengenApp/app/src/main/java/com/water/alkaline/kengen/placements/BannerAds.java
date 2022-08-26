@@ -11,14 +11,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.utils.Constant;
@@ -118,10 +115,14 @@ public class BannerAds {
 
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaBannerOnOff, true)) {
 
-                    LinearLayout inflate = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_banner, null);
+                    LinearLayout inflate = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_mini, null);
+                    
+                    ImageView imageViewMain = inflate.findViewById(R.id.qurekaAds1);
+                    ImageView imageViewBG = inflate.findViewById(R.id.qurekaAds);
+                    ImageView imageViewGif = inflate.findViewById(R.id.gif_inter_round);
 
-                    ImageView imageViewMain = inflate.findViewById(R.id.imageView);
-                    Constant.setQurekaBanner(activity, imageViewMain, Constant.QBANNER_COUNT);
+                    Constant.setQureka(activity, imageViewMain, imageViewBG, imageViewGif, Constant.QBANNER_COUNT);
+
                     inflate.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

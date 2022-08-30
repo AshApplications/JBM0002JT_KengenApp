@@ -24,11 +24,10 @@ val Project.currentFlavor
 
 fun Project.setupCommon() {
     android.apply {
-        buildToolsVersion("31.0.0")
-        compileSdkVersion(31)
+        compileSdkVersion(32)
         defaultConfig {
             minSdk = 21
-            targetSdk = 31
+            targetSdk = 32
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
         val javaVersion = JavaVersion.VERSION_11
@@ -57,7 +56,7 @@ fun Project.setupCore() {
     android.apply {
         defaultConfig {
             versionCode = 12
-            versionName = "2,2"
+            versionName = "2.2"
         }
         compileOptions.isCoreLibraryDesugaringEnabled = true
         lintOptions {
@@ -98,6 +97,13 @@ fun Project.setupApp() {
                 storePassword = "jbmapps"
                 storeFile = file("G:/aDocs/jbmapps.jks")
             }
+
+            create("releasecloud") {
+                keyAlias = "cloudbrain"
+                keyPassword = "cloudbrain"
+                storePassword = "cloudbrain"
+                storeFile = file("G:/cloudbrain.jks")
+            }
         }
 
         buildTypes {
@@ -105,10 +111,10 @@ fun Project.setupApp() {
                 isPseudoLocalesEnabled = true
             }
             getByName("release") {
-                isDebuggable = true
+                isDebuggable = false
                 isShrinkResources = true
                 isMinifyEnabled = true
-                signingConfig = signingConfigs.getByName("release")
+                signingConfig = signingConfigs.getByName("releasecloud")
                 proguardFiles(
                     getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
                 )

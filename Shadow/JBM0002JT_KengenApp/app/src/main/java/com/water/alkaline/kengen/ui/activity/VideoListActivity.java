@@ -134,7 +134,7 @@ public class VideoListActivity extends AppCompatActivity {
         });
 
         binding.rvVideos.setAdapter(adapter);
-        binding.rvVideos.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvVideos.setItemViewCacheSize(100);
         adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {

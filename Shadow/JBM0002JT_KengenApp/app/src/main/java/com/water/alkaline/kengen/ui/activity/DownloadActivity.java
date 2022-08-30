@@ -101,7 +101,7 @@ public class DownloadActivity extends AppCompatActivity {
         binding.rvDownloads.setLayoutManager(manager);
         binding.rvDownloads.addItemDecoration(new ItemOffsetDecoration(this, R.dimen.item_off_ten));
         binding.rvDownloads.setAdapter(adapter);
-        binding.rvDownloads.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvDownloads.setItemViewCacheSize(100);
         refreshActivity();
     }
 

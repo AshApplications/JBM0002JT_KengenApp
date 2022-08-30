@@ -72,6 +72,9 @@ public class AdsInfo {
     @SerializedName("GoogleListNativeOnOff")
     @Expose
     private Boolean googleListNativeOnOff;
+    @SerializedName("LoaderNativeOnOff")
+    @Expose
+    private Boolean LoaderNativeOnOff;
     @SerializedName("ListNativeWhichOne")
     @Expose
     private Integer listNativeWhichOne;
@@ -121,16 +124,13 @@ public class AdsInfo {
     @Expose
     private Integer adsCloseCount;
 
-    @SerializedName("isList")
-    @Expose
-    private Boolean isList;
 
-    public Boolean getList() {
-        return isList;
+    public Boolean getLoaderNativeOnOff() {
+        return LoaderNativeOnOff;
     }
 
-    public void setList(Boolean list) {
-        isList = list;
+    public void setLoaderNativeOnOff(Boolean loaderNativeOnOff) {
+        LoaderNativeOnOff = loaderNativeOnOff;
     }
 
     public Integer getAppOpen() {

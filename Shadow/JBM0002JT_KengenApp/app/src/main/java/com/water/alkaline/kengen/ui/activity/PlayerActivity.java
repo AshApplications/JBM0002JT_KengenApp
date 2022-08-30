@@ -217,7 +217,7 @@ public class PlayerActivity extends YouTubeBaseActivity {
         binding.rvVideos.setLayoutManager(manager);
         binding.rvVideos.addItemDecoration(new ItemOffsetDecoration(this, R.dimen.item_off_ten));
         binding.rvVideos.setAdapter(videosAdapter);
-        binding.rvVideos.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvVideos.setItemViewCacheSize(100);
         binding.rvVideos.scrollToPosition(position);
 
         refreshActivity();

@@ -28,6 +28,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -235,7 +236,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
     }
 
     public void loadAds() {
-        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("6E27EC40561D1AD0FFC3A47FF91C5D1F")).build());
+        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("6E27EC40561D1AD0FFC3A47FF91C5D1F", "DD54D1B666D3213A83E29EFFA7F3AED4")).build());
         PowerPreference.getDefaultFile().putBoolean(Constant.mIsLoaded, true);
 
         try {
@@ -301,11 +302,11 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
 
 
                                     PowerPreference.getDefaultFile().putInt(Constant.AppOpen, appData.getAppOpen());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.isList, appData.getList());
 
                                     PowerPreference.getDefaultFile().putBoolean(Constant.AdsOnOff, appData.getAdsOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, appData.getGoogleAdsOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.QurekaOnOff, appData.getQurekaOnOff());
+                                    PowerPreference.getDefaultFile().putBoolean(Constant.LoaderNativeOnOff, appData.getLoaderNativeOnOff());
 
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleSplashOpenAdsOnOff, appData.getGoogleSplashOpenAdsOnOff());
                                     PowerPreference.getDefaultFile().putBoolean(Constant.GoogleExitSplashInterOnOff, appData.getGoogleExitSplashInterOnOff());
@@ -516,7 +517,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
 
     public void getPermissions() {
         check = false;
-        if (checkPermissions() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (checkPermissions()) {
             checkVpnApp();
         } else {
             requestPermissions();
@@ -524,13 +525,17 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
     }
 
     private boolean checkPermissions() {
-        return ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return true;
+        } else
+            return ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestPermissions() {
         ActivityCompat.requestPermissions(SplashActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults) {
@@ -585,7 +590,9 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
                 .setPositiveButton("Give Permission", aPackage)
                 .create()
                 .show();
-    }    public Handler handler = new Handler(Looper.getMainLooper()) {
+    }
+
+    public Handler handler = new Handler(Looper.getMainLooper()) {
         public void handleMessage(Message msg) {
             if (!SplashActivity.this.isFinishing()) {
                 network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
@@ -757,8 +764,6 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
         shadowsocksConnection.setBandwidthTimeout(0);
         super.onStop();
     }
-
-
 
 
 }

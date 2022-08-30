@@ -112,7 +112,7 @@ public class SaveActivity extends AppCompatActivity {
             }
         });
         binding.rvSaves.setAdapter(adapter);
-        binding.rvSaves.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvSaves.setItemViewCacheSize(100);
 
         new Handler().postDelayed(new Runnable() {
             @Override

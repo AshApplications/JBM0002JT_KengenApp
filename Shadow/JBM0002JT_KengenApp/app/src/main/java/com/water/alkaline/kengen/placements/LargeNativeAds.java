@@ -118,9 +118,15 @@ public class LargeNativeAds {
 
         if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, true)) {
 
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleLargeNativeOnOff, true) && gNativeAd.size() > 0) {
+            if (dialog != null && !PowerPreference.getDefaultFile().getBoolean(Constant.LoaderNativeOnOff, false)) {
+                nativeAdLayout.setVisibility(View.GONE);
+                adSpace.setVisibility(View.GONE);
+            } else if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleLargeNativeOnOff, true) && gNativeAd.size() > 0) {
 
-                adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_large, null);
+                if (dialog == null)
+                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_large, null);
+                else
+                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_medium, null);
 
                 NativeAd lovalNative = gNativeAd.get(0);
 
@@ -142,7 +148,10 @@ public class LargeNativeAds {
 
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaLargeNativeOnOff, true)) {
 
-                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_large, null);
+                    if (dialog == null)
+                        adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_large, null);
+                    else
+                        adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_medium, null);
 
                     ImageView imageViewMain = adView.findViewById(R.id.qurekaAds1);
                     ImageView imageViewBG = adView.findViewById(R.id.qurekaAds);

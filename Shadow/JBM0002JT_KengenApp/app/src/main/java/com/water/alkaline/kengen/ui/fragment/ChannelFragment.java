@@ -180,7 +180,7 @@ public class ChannelFragment extends Fragment {
         });
 
         binding.rvCats.setAdapter(subcatAdapter);
-        binding.rvCats.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvCats.setItemViewCacheSize(100);
         checkData();
     }
 
@@ -234,7 +234,7 @@ public class ChannelFragment extends Fragment {
         });
 
         binding.rvCats.setAdapter(channelAdapter);
-        binding.rvCats.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvCats.setItemViewCacheSize(100);
 
         checkData();
     }
@@ -297,7 +297,7 @@ public class ChannelFragment extends Fragment {
         });
 
         binding.rvCats.setAdapter(videosAdapter);
-        binding.rvCats.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvCats.setItemViewCacheSize(100);
         videosAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {

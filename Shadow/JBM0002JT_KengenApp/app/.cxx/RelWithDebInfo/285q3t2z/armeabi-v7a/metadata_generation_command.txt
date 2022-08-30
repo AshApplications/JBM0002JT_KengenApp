@@ -1,0 +1,23 @@
+                    Executable : E:\AndroidSdk\cmake\3.10.2.4988404\bin\cmake.exe
+arguments : 
+-HG:\JT\Other\Apps\JBM0002JT_KengenApp\Shadow\JBM0002JT_KengenApp\app
+-DCMAKE_SYSTEM_NAME=Android
+-DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+-DCMAKE_SYSTEM_VERSION=21
+-DANDROID_PLATFORM=android-21
+-DANDROID_ABI=armeabi-v7a
+-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a
+-DANDROID_NDK=E:\AndroidSdk\ndk\21.4.7075529
+-DCMAKE_ANDROID_NDK=E:\AndroidSdk\ndk\21.4.7075529
+-DCMAKE_TOOLCHAIN_FILE=E:\AndroidSdk\ndk\21.4.7075529\build\cmake\android.toolchain.cmake
+-DCMAKE_MAKE_PROGRAM=E:\AndroidSdk\cmake\3.10.2.4988404\bin\ninja.exe
+-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=G:\JT\Other\Apps\JBM0002JT_KengenApp\Shadow\JBM0002JT_KengenApp\app\build\intermediates\cxx\RelWithDebInfo\285q3t2z\obj\armeabi-v7a
+-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=G:\JT\Other\Apps\JBM0002JT_KengenApp\Shadow\JBM0002JT_KengenApp\app\build\intermediates\cxx\RelWithDebInfo\285q3t2z\obj\armeabi-v7a
+-DCMAKE_BUILD_TYPE=RelWithDebInfo
+-BG:\JT\Other\Apps\JBM0002JT_KengenApp\Shadow\JBM0002JT_KengenApp\app\.cxx\RelWithDebInfo\285q3t2z\armeabi-v7a
+-GNinja
+jvmArgs : 
+
+
+                    Build command args: []
+                    Version: 2

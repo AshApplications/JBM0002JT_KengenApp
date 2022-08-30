@@ -24,6 +24,8 @@ import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.utils.Constant;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 public class ListNativeAds {
@@ -36,9 +38,9 @@ public class ListNativeAds {
 
             final String nativeAdstr = PowerPreference.getDefaultFile().getString(Constant.NATIVEID, "123");
 
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.isList, false)) {
-                if (gNativeAd.size() >= 5)
-                    return;
+            if (gNativeAd.size() >= 5) {
+                Collections.shuffle(gNativeAd);
+                return;
             }
 
             isLoading = true;

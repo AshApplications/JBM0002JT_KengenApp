@@ -154,7 +154,7 @@ public class ChannelActivity extends AppCompatActivity {
 
         binding.rvChannels.addItemDecoration(new ItemOffsetDecoration(ChannelActivity.this, R.dimen.item_off_ten));
         binding.rvChannels.setAdapter(channelAdapter);
-        binding.rvChannels.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvChannels.setItemViewCacheSize(100);
         checkData();
     }
 
@@ -225,7 +225,7 @@ public class ChannelActivity extends AppCompatActivity {
         });
 
         binding.rvChannels.setAdapter(videosAdapter);
-        binding.rvChannels.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvChannels.setItemViewCacheSize(100);
         videosAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {

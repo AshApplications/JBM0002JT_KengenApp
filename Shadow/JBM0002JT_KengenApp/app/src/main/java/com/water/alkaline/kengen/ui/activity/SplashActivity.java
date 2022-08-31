@@ -236,7 +236,6 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
     }
 
     public void loadAds() {
-        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("6E27EC40561D1AD0FFC3A47FF91C5D1F", "DD54D1B666D3213A83E29EFFA7F3AED4")).build());
         PowerPreference.getDefaultFile().putBoolean(Constant.mIsLoaded, true);
 
         try {
@@ -488,7 +487,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
                         viewModel.insertPdf(mainResponse.getData().getPdfs());
                         viewModel.insertBanner(mainResponse.getData().getBanners());
 
-                        getPermissions();
+                        checkVpnApp();
 
                     } catch (Exception e) {
                         Constant.showLog(e.toString());
@@ -505,91 +504,6 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
         } else {
             handler.sendEmptyMessage(1001);
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (check) {
-            getPermissions();
-        }
-    }
-
-    public void getPermissions() {
-        check = false;
-        if (checkPermissions()) {
-            checkVpnApp();
-        } else {
-            requestPermissions();
-        }
-    }
-
-    private boolean checkPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return true;
-        } else
-            return ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void requestPermissions() {
-        ActivityCompat.requestPermissions(SplashActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSIONS) {
-            if (grantResults.length > 0) {
-
-                boolean write = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                boolean writeD = shouldShowRequestPermissionRationale(permissions[0]);
-
-                boolean read = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-                boolean readD = shouldShowRequestPermissionRationale(permissions[1]);
-
-                if (write && read) {
-                    checkVpnApp();
-                } else if (!writeD || !readD) {
-                    forcePermissionDialog("You need to allow access to the permissions. Without this permission you can't access your storage. Are you sure deny this permission?",
-                            (dialog, which) -> {
-                                check = true;
-                                Intent intent = new Intent();
-                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                                intent.setData(uri);
-                                startActivity(intent);
-                            });
-                } else {
-                    if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        oKCancelDialog("You need to allow access to the permissions",
-                                (dialog, which) -> {
-                                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-                                            REQUEST_PERMISSIONS);
-                                });
-                    }
-                }
-            }
-        }
-    }
-
-    private void oKCancelDialog(String s, DialogInterface.OnClickListener o) {
-        new AlertDialog.Builder(SplashActivity.this)
-                .setMessage(s)
-                .setPositiveButton("OK", o)
-                .create()
-                .show();
-    }
-
-    private void forcePermissionDialog(String s, DialogInterface.OnClickListener aPackage) {
-        new AlertDialog.Builder(SplashActivity.this)
-                .setTitle("Permission Denied")
-                .setMessage(s)
-                .setPositiveButton("Give Permission", aPackage)
-                .create()
-                .show();
     }
 
     public Handler handler = new Handler(Looper.getMainLooper()) {

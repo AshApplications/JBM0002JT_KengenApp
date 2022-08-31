@@ -1,11 +1,13 @@
 package com.water.alkaline.kengen.utils;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
@@ -18,7 +20,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -29,11 +34,13 @@ import com.water.alkaline.kengen.databinding.DialogExitBinding;
 import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.placements.LargeNativeAds;
 import com.water.alkaline.kengen.ui.activity.ExitActivity;
+import com.water.alkaline.kengen.ui.activity.SplashActivity;
 
 import java.io.File;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class Constant {
@@ -158,49 +165,22 @@ public class Constant {
     }
 
     public static String getPDFdisc() {
-        File dCimDirPath = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+        File myCreationDir = new File(MyApplication.getContext().getFilesDir(), "SavedPDF");
 
-        if (!dCimDirPath.exists())
-            dCimDirPath.mkdir();
-        File myCreationDir = new File(dCimDirPath, MyApplication.getContext().getString(R.string.app_name) + "/SavedPDF");
         if (!myCreationDir.exists())
             myCreationDir.mkdirs();
 
-        return String.valueOf(myCreationDir);
+        return myCreationDir.getAbsolutePath();
     }
 
     public static String getImagedisc() {
-        File dCimDirPath = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+        File myCreationDir = new File(MyApplication.getContext().getFilesDir(),  "SavedIamges");
 
-        if (!dCimDirPath.exists())
-            dCimDirPath.mkdir();
-        File myCreationDir = new File(dCimDirPath, MyApplication.getContext().getString(R.string.app_name) + "/SavedIamges");
         if (!myCreationDir.exists())
             myCreationDir.mkdirs();
 
-        return String.valueOf(myCreationDir);
+        return myCreationDir.getAbsolutePath();
     }
-
-    public static boolean isVpnConnected() {
-        String iface = "";
-        try {
-            for (NetworkInterface networkInterface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                if (networkInterface.isUp())
-                    iface = networkInterface.getName();
-
-                if (iface.contains("tun") || iface.contains("ppp") || iface.contains("pptp")) {
-                    return true;
-                }
-            }
-        } catch (SocketException e1) {
-            e1.printStackTrace();
-        }
-
-        return false;
-    }
-
 
     public static void setQurekaIcon(Activity activity, ImageView imageView, String data) {
         if (PowerPreference.getDefaultFile().getInt(data, 0) >= 13) {
@@ -332,5 +312,4 @@ public class Constant {
             Log.w("Catch", Objects.requireNonNull(e.getMessage()));
         }
     }
-
 }

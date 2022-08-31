@@ -260,6 +260,7 @@ public class ViewImageActivity extends AppCompatActivity {
     }
 
     public void downloadBanner(Banner banner, boolean isShare) {
+
         download_dialog();
         String filename = "file" + System.currentTimeMillis() + ".jpg";
         PRDownloader.download(banner.getUrl(), Constant.getImagedisc(), filename)

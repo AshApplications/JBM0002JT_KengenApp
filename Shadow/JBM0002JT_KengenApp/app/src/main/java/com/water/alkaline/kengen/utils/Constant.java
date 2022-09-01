@@ -27,6 +27,12 @@ import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.permissionx.guolindev.PermissionX;
+import com.permissionx.guolindev.callback.ExplainReasonCallback;
+import com.permissionx.guolindev.callback.ForwardToSettingsCallback;
+import com.permissionx.guolindev.callback.RequestCallback;
+import com.permissionx.guolindev.request.ExplainScope;
+import com.permissionx.guolindev.request.ForwardScope;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
@@ -165,7 +171,8 @@ public class Constant {
     }
 
     public static String getPDFdisc() {
-        File myCreationDir = new File(MyApplication.getContext().getFilesDir(), "SavedPDF");
+        File myCreationDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), MyApplication.getContext().getString(R.string.app_name) + "/SavedPDF");
 
         if (!myCreationDir.exists())
             myCreationDir.mkdirs();
@@ -174,7 +181,8 @@ public class Constant {
     }
 
     public static String getImagedisc() {
-        File myCreationDir = new File(MyApplication.getContext().getFilesDir(),  "SavedIamges");
+        File myCreationDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), MyApplication.getContext().getString(R.string.app_name) + "/SavedIamges");
 
         if (!myCreationDir.exists())
             myCreationDir.mkdirs();
@@ -312,4 +320,32 @@ public class Constant {
             Log.w("Catch", Objects.requireNonNull(e.getMessage()));
         }
     }
+
+    public static void getPermissions(AppCompatActivity activity) {
+        PermissionX.init(activity)
+                .permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .explainReasonBeforeRequest()
+                .onForwardToSettings(new ForwardToSettingsCallback() {
+                    @Override
+                    public void onForwardToSettings(@NonNull ForwardScope scope, @NonNull List<String> deniedList) {
+                        scope.showForwardToSettingsDialog(deniedList, "You need to allow necessary permissions in Settings manually", "OK", "Cancel");
+                    }
+                }).request(new RequestCallback() {
+                    @Override
+                    public void onResult(boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+                        if (allGranted) {
+                            Toast.makeText(activity, "All permissions are granted", Toast.LENGTH_LONG).show();
+                        } else if (deniedList.size() > 0) {
+                            Toast.makeText(activity, "These permissions are denied: " + deniedList.get(0), Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(activity, "permissions are denied", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+    }
+
+    public static boolean checkPermissions() {
+        return ContextCompat.checkSelfPermission(MyApplication.getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
 }

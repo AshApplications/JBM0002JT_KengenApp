@@ -452,6 +452,12 @@ public class PdfActivity extends AppCompatActivity {
     }
 
     public void downloadPDF(boolean isShare) {
+
+        if (!Constant.checkPermissions()) {
+            Constant.getPermissions(this);
+            return;
+        }
+
         download_dialog();
         String filename = "file" + System.currentTimeMillis() + ".pdf";
         String url = "";

@@ -165,14 +165,14 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
                     public void onStop() {
                         binding.progress.setVisibility(View.VISIBLE);
                         setBG();
-                        checkVpn();
+                        startApp();
                     }
                 }).start();
 
 
     }
 
-    public void checkVpn() {
+    public void startApp() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

@@ -65,6 +65,6 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     implementation("org.jsoup:jsoup:1.15.1")
-
+    implementation("com.guolindev.permissionx:permissionx:1.6.4")
 
 }

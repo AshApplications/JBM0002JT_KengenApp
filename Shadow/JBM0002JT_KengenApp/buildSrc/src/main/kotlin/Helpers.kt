@@ -25,6 +25,7 @@ val Project.currentFlavor
 fun Project.setupCommon() {
     android.apply {
         compileSdkVersion(32)
+
         defaultConfig {
             minSdk = 21
             targetSdk = 32

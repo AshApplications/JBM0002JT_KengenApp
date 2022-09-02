@@ -1,0 +1,7 @@
+Executable : E:\AndroidSdk\cmake\3.10.2.4988404\bin\ninja.exe
+arguments : 
+-C
+G:\JT\Other\Apps\JBM0002JT_KengenApp-master\Shadow\JBM0002JT_KengenApp\app\.cxx\RelWithDebInfo\5c4s6u24\armeabi-v7a
+native-lib
+jvmArgs : 
+

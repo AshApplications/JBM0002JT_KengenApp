@@ -172,7 +172,7 @@ public class Constant {
 
     public static String getPDFdisc() {
         File myCreationDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), MyApplication.getContext().getString(R.string.app_name) + "/SavedPDF");
+                Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + File.separator + MyApplication.getContext().getString(R.string.app_name) + File.separator + "SavedPDF");
 
         if (!myCreationDir.exists())
             myCreationDir.mkdirs();
@@ -182,7 +182,7 @@ public class Constant {
 
     public static String getImagedisc() {
         File myCreationDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), MyApplication.getContext().getString(R.string.app_name) + "/SavedIamges");
+                Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + File.separator + MyApplication.getContext().getString(R.string.app_name) + File.separator + "SavedImages");
 
         if (!myCreationDir.exists())
             myCreationDir.mkdirs();
@@ -334,11 +334,11 @@ public class Constant {
                     @Override
                     public void onResult(boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
                         if (allGranted) {
-                            Toast.makeText(activity, "All permissions are granted", Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, "All Permissions are Granted", Toast.LENGTH_LONG).show();
                         } else if (deniedList.size() > 0) {
-                            Toast.makeText(activity, "These permissions are denied: " + deniedList.get(0), Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, "These Permissions are Denied: " + deniedList.get(0), Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(activity, "permissions are denied", Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, "Permissions are Denied", Toast.LENGTH_LONG).show();
                         }
                     }
                 });

@@ -40,6 +40,7 @@
         android:icon="@drawable/ic_logo"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:resizeableActivity="false"
         android:roundIcon="@drawable/ic_logo"
@@ -55,7 +56,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activity.ViewImageActivity"
+            android:name=".ui.activity.BannerImageActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

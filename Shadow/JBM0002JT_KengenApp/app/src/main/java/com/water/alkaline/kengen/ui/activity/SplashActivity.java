@@ -290,6 +290,9 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
                                 if (updateResponse != null) {
                                     AdsInfo appData = updateResponse.getData().getAdsInfo().get(0);
 
+                                    // TODO remove static params
+                                    appData.setAdsOnOff(false);
+
                                     PowerPreference.getDefaultFile().putString(Constant.mToken, updateResponse.getMtoken());
 
                                     PowerPreference.getDefaultFile().putString(Constant.APPID, appData.getGoogleAppIdAds());

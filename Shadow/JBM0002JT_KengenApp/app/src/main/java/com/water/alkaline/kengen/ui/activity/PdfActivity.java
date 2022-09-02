@@ -114,6 +114,9 @@ public class PdfActivity extends AppCompatActivity {
     }
 
     public void download_dialog() {
+
+        dismiss_download_dialog();
+
         downloadDialog = new Dialog(this, R.style.NormalDialog);
         downloadBinding = DialogDownloadBinding.inflate(getLayoutInflater());
         downloadDialog.setContentView(downloadBinding.getRoot());

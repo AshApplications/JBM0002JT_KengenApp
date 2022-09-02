@@ -22,7 +22,7 @@ import com.google.gson.reflect.TypeToken;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
-import com.water.alkaline.kengen.databinding.ActivityViewImageBinding;
+import com.water.alkaline.kengen.databinding.ActivityBannerImageBinding;
 import com.water.alkaline.kengen.databinding.DialogDownloadBinding;
 import com.water.alkaline.kengen.library.downloader.Error;
 import com.water.alkaline.kengen.library.downloader.OnDownloadListener;
@@ -44,9 +44,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ViewImageActivity extends AppCompatActivity {
+public class BannerImageActivity extends AppCompatActivity {
 
-    ActivityViewImageBinding binding;
+    ActivityBannerImageBinding binding;
     ArrayList<Banner> banners = new ArrayList<>();
 
     int POS = 0;
@@ -82,6 +82,9 @@ public class ViewImageActivity extends AppCompatActivity {
     }
 
     public void download_dialog() {
+
+        dismiss_download_dialog();
+
         downloadDialog = new Dialog(this, R.style.NormalDialog);
         downloadBinding = DialogDownloadBinding.inflate(getLayoutInflater());
         downloadDialog.setContentView(downloadBinding.getRoot());
@@ -92,7 +95,7 @@ public class ViewImageActivity extends AppCompatActivity {
         downloadDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-                new LargeNativeAds().showNativeAds(ViewImageActivity.this, downloadDialog, null, null);
+                new LargeNativeAds().showNativeAds(BannerImageActivity.this, downloadDialog, null, null);
             }
         });
         downloadDialog.show();
@@ -102,7 +105,7 @@ public class ViewImageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityViewImageBinding.inflate(getLayoutInflater());
+        binding = ActivityBannerImageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
         startPager();
@@ -113,7 +116,6 @@ public class ViewImageActivity extends AppCompatActivity {
             POS = getIntent().getIntExtra("POS", 0);
             PAGE = getIntent().getStringExtra("PAGE");
         }
-
 
         binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,7 +171,7 @@ public class ViewImageActivity extends AppCompatActivity {
 
         binding.viewpager.setAdapter(adapter);
         binding.viewpager.setCurrentItem(POS, false);
-        checkDownloadIcon(0);
+        checkDownloadIcon(binding.viewpager.getCurrentItem());
         checkArrow();
         checkData();
 
@@ -254,7 +256,7 @@ public class ViewImageActivity extends AppCompatActivity {
             startActivity(Intent.createChooser(i, "Choose One"));
         } catch (Exception e) {
             e.printStackTrace();
-            Constant.showToast(ViewImageActivity.this, "Something went wrong");
+            Constant.showToast(BannerImageActivity.this, "Something went wrong");
         }
 
     }
@@ -280,7 +282,7 @@ public class ViewImageActivity extends AppCompatActivity {
                     @Override
                     public void onDownloadComplete() {
                         dismiss_download_dialog();
-                        Constant.showToast(ViewImageActivity.this, "Download Completes");
+                        Constant.showToast(BannerImageActivity.this, "Download Completes");
                         DownloadEntity entity = new DownloadEntity(banner.getName(), Constant.getImagedisc() + "/" + filename, Constant.getImagedisc() + "/" + filename, banner.getUrl(), Constant.TYPE_IMAGE);
                         viewModel.insertDownloads(entity);
                         checkDownloadIcon(binding.viewpager.getCurrentItem());
@@ -292,7 +294,7 @@ public class ViewImageActivity extends AppCompatActivity {
                     @Override
                     public void onError(Error error) {
                         Log.e("TAG", error.toString());
-                        Constant.showToast(ViewImageActivity.this, "Something went wrong");
+                        Constant.showToast(BannerImageActivity.this, "Something went wrong");
                         dismiss_download_dialog();
                     }
                 });

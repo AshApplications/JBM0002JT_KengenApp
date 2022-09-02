@@ -47,6 +47,7 @@
                         android:layout_height="match_parent"
                         android:fontFamily="@font/mfont_medium"
                         android:gravity="center"
+                        android:textStyle="bold"
                         android:text="@string/title"
                         android:textColor="#FFE400"
                         android:textSize="@dimen/_14ssp" />
@@ -57,6 +58,7 @@
                         android:layout_height="match_parent"
                         android:fontFamily="@font/mfont_medium"
                         android:gravity="center"
+                        android:textStyle="bold"
                         android:text="@string/title_sub"
                         android:textColor="#FFFFFF"
                         android:textSize="@dimen/_14ssp" />

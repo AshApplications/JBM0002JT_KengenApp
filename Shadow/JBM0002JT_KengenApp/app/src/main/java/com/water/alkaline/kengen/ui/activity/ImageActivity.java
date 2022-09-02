@@ -71,6 +71,9 @@ public class ImageActivity extends AppCompatActivity {
     }
 
     public void download_dialog() {
+
+        dismiss_download_dialog();
+
         downloadDialog = new Dialog(this, R.style.NormalDialog);
         downloadBinding = DialogDownloadBinding.inflate(getLayoutInflater());
         downloadDialog.setContentView(downloadBinding.getRoot());
@@ -186,6 +189,7 @@ public class ImageActivity extends AppCompatActivity {
                     DownloadEntity entity = null;
                     if (viewModel.getDownloadbyUrl(banner.getUrl()).size() > 0)
                         entity = viewModel.getDownloadbyUrl(banner.getUrl()).get(0);
+
 
                     if (entity != null) {
                         if (new File(entity.filePath).exists()) {

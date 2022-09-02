@@ -18,6 +18,7 @@
             android:fontFamily="@font/mfont_medium"
             android:gravity="center"
             android:text="@string/title"
+            android:textStyle="bold"
             android:textColor="#FFE400"
             android:textSize="@dimen/_14ssp" />
 
@@ -25,6 +26,7 @@
             android:id="@+id/txtTitle2"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:textStyle="bold"
             android:fontFamily="@font/mfont_medium"
             android:gravity="center"
             android:text="@string/title_sub"

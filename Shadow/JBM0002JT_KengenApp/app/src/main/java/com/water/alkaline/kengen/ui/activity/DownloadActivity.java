@@ -50,7 +50,6 @@ public class DownloadActivity extends AppCompatActivity {
 
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-
         binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

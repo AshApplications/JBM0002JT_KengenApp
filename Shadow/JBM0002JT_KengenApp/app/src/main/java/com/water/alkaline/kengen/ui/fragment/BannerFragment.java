@@ -25,7 +25,7 @@ import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.main.Banner;
 import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.ui.activity.HomeActivity;
-import com.water.alkaline.kengen.ui.activity.ViewImageActivity;
+import com.water.alkaline.kengen.ui.activity.BannerImageActivity;
 import com.water.alkaline.kengen.ui.adapter.BannerAdapter;
 import com.water.alkaline.kengen.ui.listener.OnBannerListerner;
 import com.water.alkaline.kengen.utils.Constant;
@@ -107,7 +107,7 @@ public class BannerFragment extends Fragment {
                             }
 
                             PowerPreference.getDefaultFile().putString(Constant.mBanners, new Gson().toJson(list));
-                            Intent intent = new Intent(activity, ViewImageActivity.class);
+                            Intent intent = new Intent(activity, BannerImageActivity.class);
                             intent.putExtra("POS", pos);
                             intent.putExtra("PAGE", Constant.LIVE);
                             startActivity(intent);

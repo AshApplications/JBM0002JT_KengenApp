@@ -164,7 +164,6 @@ public class ChannelFragment extends Fragment {
             }
         });
         binding.rvCats.setLayoutManager(manager);
-        binding.rvCats.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
 
         subcatAdapter = new SubcatAdapter(activity, subList, new OnSubcatListener() {
             @Override
@@ -217,7 +216,6 @@ public class ChannelFragment extends Fragment {
             }
         });
         binding.rvCats.setLayoutManager(manager);
-        binding.rvCats.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
 
         channelAdapter = new ChannelAdapter(activity, chanList, new OnChannelListener() {
             @Override
@@ -274,7 +272,6 @@ public class ChannelFragment extends Fragment {
             }
         });
         binding.rvCats.setLayoutManager(manager);
-        binding.rvCats.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
 
         videosAdapter = new VideosAdapter(activity, videoList, binding.rvCats, new OnVideoListener() {
             @Override

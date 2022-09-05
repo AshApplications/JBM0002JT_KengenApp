@@ -90,7 +90,6 @@ public class SaveActivity extends AppCompatActivity {
         });
 
         binding.rvSaves.setLayoutManager(manager);
-        binding.rvSaves.addItemDecoration(new ItemOffsetDecoration(this, R.dimen.item_off_ten));
 
         adapter = new VideosAdapter(this, list, null, new OnVideoListener() {
             @Override

@@ -152,7 +152,6 @@ public class ChannelActivity extends AppCompatActivity {
             }
         });
 
-        binding.rvChannels.addItemDecoration(new ItemOffsetDecoration(ChannelActivity.this, R.dimen.item_off_ten));
         binding.rvChannels.setAdapter(channelAdapter);
         binding.rvChannels.setItemViewCacheSize(100);
         checkData();
@@ -201,8 +200,6 @@ public class ChannelActivity extends AppCompatActivity {
         });
 
         binding.rvChannels.setLayoutManager(manager);
-        binding.rvChannels.addItemDecoration(new ItemOffsetDecoration(ChannelActivity.this, R.dimen.item_off_ten));
-
         videosAdapter = new VideosAdapter(ChannelActivity.this, videoList, binding.rvChannels, new OnVideoListener() {
             @Override
             public void onItemClick(int position, SaveEntity item) {

@@ -132,7 +132,6 @@ public class BannerFragment extends Fragment {
                 }
             });
             binding.rvBanners.setLayoutManager(manager);
-            binding.rvBanners.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
             binding.rvBanners.setAdapter(adapter);
             binding.rvBanners.setItemViewCacheSize(100);
             refreshFragment();

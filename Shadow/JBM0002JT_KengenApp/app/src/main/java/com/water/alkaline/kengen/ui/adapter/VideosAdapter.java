@@ -3,6 +3,7 @@ package com.water.alkaline.kengen.ui.adapter;
 
 import android.app.Activity;
 import android.text.Html;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -168,9 +169,13 @@ public class VideosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (holder instanceof LargeAdHolder) {
             LargeAdHolder adHolder = (LargeAdHolder) holder;
             new ListNativeAds().showListNativeAds(activity, adHolder.binding.frameNativeLarge, adHolder.binding.adSpaceLarge);
+            int dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, activity.getResources().getDisplayMetrics());
+            ((LargeAdHolder) holder).binding.adNative.setPadding(0, dp, dp, 0);
         } else if (holder instanceof MediumAdHolder) {
             MediumAdHolder adHolder = (MediumAdHolder) holder;
             new ListNativeAds().showListNativeAds(activity, adHolder.binding.frameNativeMedium, adHolder.binding.adSpaceMedium);
+            int dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, activity.getResources().getDisplayMetrics());
+            ((MediumAdHolder) holder).binding.adNative.setPadding(0, dp, dp, 0);
         } else if (holder instanceof LoadingView) {
 
         } else {

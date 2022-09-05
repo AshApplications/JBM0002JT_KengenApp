@@ -28,10 +28,8 @@ import androidx.core.content.ContextCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.permissionx.guolindev.PermissionX;
-import com.permissionx.guolindev.callback.ExplainReasonCallback;
 import com.permissionx.guolindev.callback.ForwardToSettingsCallback;
 import com.permissionx.guolindev.callback.RequestCallback;
-import com.permissionx.guolindev.request.ExplainScope;
 import com.permissionx.guolindev.request.ForwardScope;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
@@ -40,12 +38,8 @@ import com.water.alkaline.kengen.databinding.DialogExitBinding;
 import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.placements.LargeNativeAds;
 import com.water.alkaline.kengen.ui.activity.ExitActivity;
-import com.water.alkaline.kengen.ui.activity.SplashActivity;
 
 import java.io.File;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -285,7 +279,7 @@ public class Constant {
                 mDialog.dismiss();
                 if (isAds && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false)) {
                     PowerPreference.getDefaultFile().putInt(Constant.APP_INTERVAL_COUNT, 0);
-                    new InterAds().showInterAds(activity, new InterAds.OnAdClosedListener() {
+                    new InterAds().watchAds(activity, new InterAds.OnAdClosedListener() {
                         @Override
                         public void onAdClosed() {
                             Intent intent = new Intent(activity, ExitActivity.class);

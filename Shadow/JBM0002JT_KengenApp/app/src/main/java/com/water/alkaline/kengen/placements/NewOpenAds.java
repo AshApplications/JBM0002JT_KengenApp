@@ -48,7 +48,7 @@ public class NewOpenAds {
     }
 
     public void loadOpenAd(Activity activity) {
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAppOpenAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
+        if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
             currentActivity = activity;
             isLoading = true;
             AppOpenAd.AppOpenAdLoadCallback loadCallback1 = new AppOpenAd.AppOpenAdLoadCallback() {
@@ -76,7 +76,7 @@ public class NewOpenAds {
         currentActivity = activity;
         mOnAdClosedListener = onAdClosedListener;
         if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, true)) {
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAppOpenAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
+            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
                 if (isLoading) {
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -140,7 +140,7 @@ public class NewOpenAds {
     }
 
     public void showQurekaDialog(Activity activity, OnAdClosedListener onAdClosedListener) {
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true)) {
+        if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
 
             try {
 

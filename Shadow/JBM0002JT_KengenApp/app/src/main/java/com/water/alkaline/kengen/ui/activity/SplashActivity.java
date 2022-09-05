@@ -1,12 +1,9 @@
 package com.water.alkaline.kengen.ui.activity;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -14,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,10 +24,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceDataStore;
 
@@ -236,6 +229,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
     }
 
     public void loadAds() {
+        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("A21B6D849DB4931D9ECF8C0E8FE9BB65")).build());
         PowerPreference.getDefaultFile().putBoolean(Constant.mIsLoaded, true);
 
         try {
@@ -290,8 +284,12 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
                                 if (updateResponse != null) {
                                     AdsInfo appData = updateResponse.getData().getAdsInfo().get(0);
 
-                                    // TODO remove static params
-                                    appData.setAdsOnOff(false);
+
+                                    appData.setGoogleBannerAds("ca-app-pub-3940256099942544/6300978111");
+                                    appData.setGoogleNativeAds("ca-app-pub-3940256099942544/2247696110");
+                                    appData.setGoogleInterAds("ca-app-pub-3940256099942544/1033173712");
+                                    appData.setGoogleAppOpenAds("ca-app-pub-3940256099942544/3419835294");
+
 
                                     PowerPreference.getDefaultFile().putString(Constant.mToken, updateResponse.getMtoken());
 
@@ -301,7 +299,6 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
                                     PowerPreference.getDefaultFile().putString(Constant.INTERID, appData.getGoogleInterAds());
                                     PowerPreference.getDefaultFile().putString(Constant.NATIVEID, appData.getGoogleNativeAds());
                                     PowerPreference.getDefaultFile().putString(Constant.OPENAD, appData.getGoogleAppOpenAds());
-
 
                                     PowerPreference.getDefaultFile().putInt(Constant.AppOpen, appData.getAppOpen());
 
@@ -585,7 +582,6 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
             @Override
             public void run() {
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
-
                     if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 1) {
                         new InterAds().watchAds(SplashActivity.this, new InterAds.OnAdClosedListener() {
                             @Override

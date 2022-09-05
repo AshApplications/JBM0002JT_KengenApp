@@ -119,7 +119,6 @@ public class PdfFragment extends Fragment {
                 }
             });
             binding.rvPdfs.setLayoutManager(manager);
-            binding.rvPdfs.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
             binding.rvPdfs.setAdapter(adapter);
             binding.rvPdfs.setItemViewCacheSize(100);
             refreshFragment();

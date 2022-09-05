@@ -81,7 +81,6 @@ public class HistoryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (activity != null) {
-            binding.rvFeeds.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
             GridLayoutManager manager = new GridLayoutManager(activity, 1);
             manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override

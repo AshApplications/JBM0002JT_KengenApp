@@ -198,6 +198,7 @@ public class VpnActivity extends AppCompatActivity implements ShadowsocksConnect
 
 
     public void loadAds() {
+        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("5379121342E4F3AD060A33A1B7B0F189")).build());
         PowerPreference.getDefaultFile().putBoolean(Constant.mIsLoaded, true);
 
         try {

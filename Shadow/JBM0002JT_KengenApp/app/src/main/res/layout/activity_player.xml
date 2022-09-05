@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
-    android:gravity="center">
+    android:gravity="center"
+    android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvToolbar"
@@ -26,9 +26,9 @@
                 android:fontFamily="@font/mfont_medium"
                 android:gravity="center"
                 android:text="@string/title"
-                android:textStyle="bold"
                 android:textColor="#FFE400"
-                android:textSize="@dimen/_14ssp" />
+                android:textSize="@dimen/_14ssp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/txtTitle2"
@@ -37,9 +37,9 @@
                 android:fontFamily="@font/mfont_medium"
                 android:gravity="center"
                 android:text="@string/title_sub"
-                android:textStyle="bold"
                 android:textColor="#FFFFFF"
-                android:textSize="@dimen/_14ssp" />
+                android:textSize="@dimen/_14ssp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -60,8 +60,8 @@
             android:layout_gravity="right|center"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="10dp"
-            app:lottie_colorFilter="@color/colorWhite"
             app:lottie_autoPlay="true"
+            app:lottie_colorFilter="@color/colorWhite"
             app:lottie_loop="true"
             app:lottie_rawRes="@raw/share" />
 
@@ -77,32 +77,42 @@
 
     </androidx.cardview.widget.CardView>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cvVideoCard"
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginTop="@dimen/_10sdp"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="10dp">
+        android:background="@color/colorBGNativeEnd">
 
-        <FrameLayout
-            android:id="@+id/frameContainer"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvVideoCard"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="10dp">
 
-    </androidx.cardview.widget.CardView>
+            <FrameLayout
+                android:id="@+id/frameContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </androidx.cardview.widget.CardView>
+    </RelativeLayout>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:layout_height="0dp">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvVideos"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingStart="10dp"
+            android:paddingEnd="0dp"
+            android:paddingBottom="10dp" />
 
         <include
             android:id="@+id/includedProgress"

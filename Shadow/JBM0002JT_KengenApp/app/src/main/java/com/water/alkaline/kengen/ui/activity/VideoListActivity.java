@@ -111,7 +111,6 @@ public class VideoListActivity extends AppCompatActivity {
             }
         });
         binding.rvVideos.setLayoutManager(manager);
-        binding.rvVideos.addItemDecoration(new ItemOffsetDecoration(this, R.dimen.item_off_ten));
 
         adapter = new VideosAdapter(this, list, binding.rvVideos, new OnVideoListener() {
             @Override

@@ -19,14 +19,11 @@
         <package android:name="com.facebook.katana" />
         <package android:name="com.instagram.android" />
         <package android:name="com.twitter.android" />
+        <package android:name="org.telegram.messenger" />
         <intent>
             <action android:name="com.google.android.youtube.api.service.START" />
         </intent>
     </queries>
-
-    <uses-permission
-        android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
 
     <permission
         android:name="com.water.alkaline.kengen.permission.C2D_MESSAGE"

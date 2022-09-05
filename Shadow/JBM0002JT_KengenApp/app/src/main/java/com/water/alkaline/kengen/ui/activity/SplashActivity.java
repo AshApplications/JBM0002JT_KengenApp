@@ -229,7 +229,6 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
     }
 
     public void loadAds() {
-        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("A21B6D849DB4931D9ECF8C0E8FE9BB65")).build());
         PowerPreference.getDefaultFile().putBoolean(Constant.mIsLoaded, true);
 
         try {
@@ -283,13 +282,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
 
                                 if (updateResponse != null) {
                                     AdsInfo appData = updateResponse.getData().getAdsInfo().get(0);
-
-
-                                    appData.setGoogleBannerAds("ca-app-pub-3940256099942544/6300978111");
-                                    appData.setGoogleNativeAds("ca-app-pub-3940256099942544/2247696110");
-                                    appData.setGoogleInterAds("ca-app-pub-3940256099942544/1033173712");
-                                    appData.setGoogleAppOpenAds("ca-app-pub-3940256099942544/3419835294");
-
+                                    
 
                                     PowerPreference.getDefaultFile().putString(Constant.mToken, updateResponse.getMtoken());
 

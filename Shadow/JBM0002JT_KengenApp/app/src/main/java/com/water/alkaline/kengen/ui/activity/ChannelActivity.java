@@ -14,7 +14,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 
 import com.google.gson.Gson;
@@ -27,7 +26,6 @@ import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.data.network.RetroClient;
 
 import com.water.alkaline.kengen.databinding.ActivityChannelBinding;
-import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.ErrorReponse;
 import com.water.alkaline.kengen.model.SaveEntity;
 import com.water.alkaline.kengen.model.channel.ChannelResponse;
@@ -37,7 +35,7 @@ import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
 import com.water.alkaline.kengen.placements.BackInterAds;
 import com.water.alkaline.kengen.placements.InterAds;
-import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.water.alkaline.kengen.placements.MainAds;
 import com.water.alkaline.kengen.ui.adapter.ChannelAdapter;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnChannelListener;
@@ -93,7 +91,7 @@ public class ChannelActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Constant.checkIcon(this);
-        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
+        new MainAds().showBannerAds(this, null, null);
     }
 
     @Override

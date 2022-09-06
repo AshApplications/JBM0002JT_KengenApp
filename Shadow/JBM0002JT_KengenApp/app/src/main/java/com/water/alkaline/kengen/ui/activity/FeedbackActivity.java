@@ -4,12 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -26,7 +24,7 @@ import com.water.alkaline.kengen.databinding.DialogInternetBinding;
 import com.water.alkaline.kengen.databinding.DialogLoadingBinding;
 import com.water.alkaline.kengen.model.feedback.FeedbackResponse;
 import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.water.alkaline.kengen.placements.MainAds;
 import com.water.alkaline.kengen.ui.adapter.ViewPagerFragmentAdapter;
 import com.water.alkaline.kengen.ui.fragment.FeedbackFragment;
 import com.water.alkaline.kengen.ui.fragment.HistoryFragment;
@@ -49,7 +47,7 @@ public class FeedbackActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
+        new MainAds().showBannerAds(this, null, null);
     }
 
     @Override

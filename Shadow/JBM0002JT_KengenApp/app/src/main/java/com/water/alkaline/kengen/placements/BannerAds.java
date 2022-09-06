@@ -46,7 +46,7 @@ public class BannerAds {
     }
 
     public FrameLayout getFrameLayout(Activity activity) {
-        return activity.findViewById(R.id.frameNativeMini);
+        return activity.findViewById(R.id.adFrameMini);
     }
 
     public void loadBannerAds(Activity activity) {

@@ -14,7 +14,7 @@
         android:textColor="@color/colorBlack" />
 
     <FrameLayout
-        android:id="@+id/frameNativeLarge"
+        android:id="@+id/adFrameLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

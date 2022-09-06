@@ -32,7 +32,7 @@ import com.water.alkaline.kengen.library.toprightmenu.MenuItem;
 import com.water.alkaline.kengen.library.toprightmenu.TopRightMenu;
 import com.water.alkaline.kengen.model.main.Category;
 import com.water.alkaline.kengen.placements.InterAds;
-import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.water.alkaline.kengen.placements.MainAds;
 import com.water.alkaline.kengen.ui.adapter.DrawerCatAdapter;
 import com.water.alkaline.kengen.ui.adapter.ViewPagerFragmentAdapter;
 import com.water.alkaline.kengen.ui.fragment.BannerFragment;
@@ -60,7 +60,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
+        new MainAds().showBannerAds(this, null, null);
     }
 
     public void setBG() {

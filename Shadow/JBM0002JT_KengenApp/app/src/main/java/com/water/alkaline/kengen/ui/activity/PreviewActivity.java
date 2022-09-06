@@ -34,6 +34,7 @@ import com.water.alkaline.kengen.model.SaveEntity;
 import com.water.alkaline.kengen.placements.BackInterAds;
 import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.placements.LargeNativeAds;
+import com.water.alkaline.kengen.placements.MainAds;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
@@ -82,7 +83,7 @@ public class PreviewActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Constant.checkIcon(this);
-        new LargeNativeAds().showNativeAds(this, null, null, null);
+        new MainAds().showNativeAds(this, null, null, null);
     }
 
     @Override

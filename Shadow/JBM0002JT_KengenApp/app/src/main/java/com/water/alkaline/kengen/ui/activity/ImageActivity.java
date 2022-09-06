@@ -30,7 +30,7 @@ import com.water.alkaline.kengen.model.DownloadEntity;
 import com.water.alkaline.kengen.model.main.Banner;
 import com.water.alkaline.kengen.placements.BackInterAds;
 import com.water.alkaline.kengen.placements.LargeNativeAds;
-import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.water.alkaline.kengen.placements.MainAds;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
@@ -57,7 +57,7 @@ public class ImageActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Constant.checkIcon(this);
-        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
+        new MainAds().showBannerAds(this, null, null);
     }
 
     @Override

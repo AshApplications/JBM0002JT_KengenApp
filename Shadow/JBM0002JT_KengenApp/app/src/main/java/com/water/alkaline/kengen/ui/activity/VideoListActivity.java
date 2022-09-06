@@ -22,7 +22,6 @@ import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.data.network.RetroClient;
 import com.water.alkaline.kengen.databinding.ActivityVideoListBinding;
-import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.ErrorReponse;
 import com.water.alkaline.kengen.model.SaveEntity;
 import com.water.alkaline.kengen.model.channel.ChannelResponse;
@@ -31,7 +30,7 @@ import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
 import com.water.alkaline.kengen.placements.BackInterAds;
 import com.water.alkaline.kengen.placements.InterAds;
-import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.water.alkaline.kengen.placements.MainAds;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnLoadMoreListener;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
@@ -56,7 +55,7 @@ public class VideoListActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Constant.checkIcon(this);
-        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
+        new MainAds().showBannerAds(this, null, null);
     }
 
     @Override

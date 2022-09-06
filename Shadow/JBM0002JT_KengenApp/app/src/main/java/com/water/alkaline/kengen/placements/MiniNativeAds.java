@@ -83,33 +83,8 @@ public class MiniNativeAds {
     }
 
 
-    public FrameLayout getFrameLayout(Activity activity, Dialog dialog) {
-        if (dialog != null) {
-            return dialog.findViewById(R.id.frameNativeMini);
-        } else {
-            return activity.findViewById(R.id.frameNativeMini);
-        }
-    }
-
-
-    public TextView getTextLayout(Activity activity, Dialog dialog) {
-        if (dialog != null) {
-            return dialog.findViewById(R.id.adSpaceMini);
-        } else {
-            return activity.findViewById(R.id.adSpaceMini);
-        }
-    }
-
 
     public void showNativeAds(Activity activity, Dialog dialog, FrameLayout nativeAdLayout, TextView adSpace) {
-
-        if (nativeAdLayout == null || adSpace == null) {
-            nativeAdLayout = getFrameLayout(activity, dialog);
-            adSpace = getTextLayout(activity, dialog);
-        }
-
-        if (nativeAdLayout == null || adSpace == null)
-            return;
 
         LinearLayout adView = null;
 

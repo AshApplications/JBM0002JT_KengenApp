@@ -86,33 +86,8 @@ public class LargeNativeAds {
     }
 
 
-    public FrameLayout getFrameLayout(Activity activity, Dialog dialog) {
-        if (dialog != null) {
-            return dialog.findViewById(R.id.frameNativeLarge);
-        } else {
-            return activity.findViewById(R.id.frameNativeLarge);
-        }
-    }
-
-
-    public TextView getTextLayout(Activity activity, Dialog dialog) {
-        if (dialog != null) {
-            return dialog.findViewById(R.id.adSpaceLarge);
-        } else {
-            return activity.findViewById(R.id.adSpaceLarge);
-        }
-    }
-
 
     public void showNativeAds(Activity activity, Dialog dialog, FrameLayout nativeAdLayout, TextView adSpace) {
-
-        if (nativeAdLayout == null || adSpace == null) {
-            nativeAdLayout = getFrameLayout(activity, dialog);
-            adSpace = getTextLayout(activity, dialog);
-        }
-
-        if (nativeAdLayout == null || adSpace == null)
-            return;
 
         LinearLayout adView = null;
 

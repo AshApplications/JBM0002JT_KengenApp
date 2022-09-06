@@ -21,6 +21,7 @@ import com.water.alkaline.kengen.databinding.NativeAdMiniBinding;
 import com.water.alkaline.kengen.model.main.Banner;
 import com.water.alkaline.kengen.model.main.Channel;
 import com.water.alkaline.kengen.placements.ListNativeAds;
+import com.water.alkaline.kengen.placements.MainAds;
 import com.water.alkaline.kengen.ui.listener.OnChannelListener;
 import com.water.alkaline.kengen.ui.viewholder.LargeAdHolder;
 import com.water.alkaline.kengen.ui.viewholder.MediumAdHolder;
@@ -128,12 +129,12 @@ public class ChannelAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             });
         } else if (holder instanceof LargeAdHolder) {
             LargeAdHolder adHolder = (LargeAdHolder) holder;
-            new ListNativeAds().showListNativeAds(activity, adHolder.binding.frameNativeLarge, adHolder.binding.adSpaceLarge);
+            new MainAds().showListNativeAds(activity, adHolder.binding.adFrameLarge, adHolder.binding.adSpaceLarge);
             int dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, activity.getResources().getDisplayMetrics());
             ((LargeAdHolder) holder).binding.adNative.setPadding(0, dp, dp, 0);
         } else if (holder instanceof MediumAdHolder) {
             MediumAdHolder adHolder = (MediumAdHolder) holder;
-            new ListNativeAds().showListNativeAds(activity, adHolder.binding.frameNativeMedium, adHolder.binding.adSpaceMedium);
+            new MainAds().showListNativeAds(activity, adHolder.binding.adFrameMedium, adHolder.binding.adSpaceMedium);
             int dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, activity.getResources().getDisplayMetrics());
             ((MediumAdHolder) holder).binding.adNative.setPadding(0, dp, dp, 0);
         }

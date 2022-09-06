@@ -9,14 +9,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 
-import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.ActivityDownloadBinding;
-import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.DownloadEntity;
 import com.water.alkaline.kengen.placements.BackInterAds;
 import com.water.alkaline.kengen.placements.InterAds;
-import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.water.alkaline.kengen.placements.MainAds;
 import com.water.alkaline.kengen.ui.adapter.DownloadAdapter;
 import com.water.alkaline.kengen.ui.listener.OnDownloadListener;
 import com.water.alkaline.kengen.utils.Constant;
@@ -36,7 +34,7 @@ public class DownloadActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Constant.checkIcon(this);
-        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
+        new MainAds().showBannerAds(this, null, null);
     }
     @Override
     public void onBackPressed() {

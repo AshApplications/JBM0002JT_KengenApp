@@ -31,7 +31,6 @@ import com.github.shadowsocks.preference.OnPreferenceDataStoreChangeListener;
 import com.github.shadowsocks.utils.Key;
 import com.github.shadowsocks.utils.StartService;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.RequestConfiguration;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
@@ -41,12 +40,11 @@ import com.water.alkaline.kengen.placements.BannerAds;
 import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.placements.LargeNativeAds;
 import com.water.alkaline.kengen.placements.ListNativeAds;
+import com.water.alkaline.kengen.placements.MainAds;
 import com.water.alkaline.kengen.placements.MiniNativeAds;
-import com.water.alkaline.kengen.placements.NewOpenAds;
+import com.water.alkaline.kengen.placements.OpenSplashAds;
 import com.water.alkaline.kengen.placements.OpenAds;
 import com.water.alkaline.kengen.utils.Constant;
-
-import java.util.Arrays;
 
 import timber.log.Timber;
 
@@ -210,17 +208,7 @@ public class VpnActivity extends AppCompatActivity implements ShadowsocksConnect
         }
 
         MobileAds.initialize(VpnActivity.this);
-
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, false)) {
-            new BackInterAds().loadInterAds(VpnActivity.this);
-            new BannerAds().loadBannerAds(VpnActivity.this);
-            new InterAds().loadInterAds(VpnActivity.this);
-            new LargeNativeAds().loadNativeAds(VpnActivity.this);
-            new ListNativeAds().loadNativeAds(VpnActivity.this);
-            new MiniNativeAds().loadNativeAds(VpnActivity.this);
-            new OpenAds().loadOpenAd();
-            new NewOpenAds().loadOpenAd(VpnActivity.this);
-        }
+        new MainAds().loadAds(this);
     }
 
 
@@ -236,14 +224,14 @@ public class VpnActivity extends AppCompatActivity implements ShadowsocksConnect
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
 
                     if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 1) {
-                        new InterAds().watchAds(VpnActivity.this, new InterAds.OnAdClosedListener() {
+                        new MainAds().showSplashInterAds(VpnActivity.this, new InterAds.OnAdClosedListener() {
                             @Override
                             public void onAdClosed() {
                                 startActivity(new Intent(VpnActivity.this, HomeActivity.class));
                             }
                         });
                     } else if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 2) {
-                        new NewOpenAds().showOpenAd(VpnActivity.this, new NewOpenAds.OnAdClosedListener() {
+                        new MainAds().showOpenAds(VpnActivity.this, new OpenSplashAds.OnAdClosedListener() {
                             @Override
                             public void onAdClosed() {
                                 startActivity(new Intent(VpnActivity.this, HomeActivity.class));

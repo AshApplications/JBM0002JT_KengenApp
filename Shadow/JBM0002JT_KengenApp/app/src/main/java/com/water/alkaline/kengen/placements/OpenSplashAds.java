@@ -26,7 +26,7 @@ import com.water.alkaline.kengen.utils.Constant;
 
 import java.util.Objects;
 
-public class NewOpenAds {
+public class OpenSplashAds {
 
     @SuppressLint("StaticFieldLeak")
     public static AppOpenAd appOpenAd1 = null;
@@ -40,7 +40,7 @@ public class NewOpenAds {
     public static Dialog mDialog = null;
     public static boolean isLoading = true;
 
-    public NewOpenAds() {
+    public OpenSplashAds() {
     }
 
     private static AdRequest getAdRequest() {
@@ -176,8 +176,8 @@ public class NewOpenAds {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
 
-                        if (NewOpenAds.mOnAdClosedListener != null)
-                            NewOpenAds.mOnAdClosedListener.onAdClosed();
+                        if (OpenSplashAds.mOnAdClosedListener != null)
+                            OpenSplashAds.mOnAdClosedListener.onAdClosed();
                     }
                 });
 

@@ -40,7 +40,6 @@ import com.github.shadowsocks.preference.OnPreferenceDataStoreChangeListener;
 import com.github.shadowsocks.utils.Key;
 import com.github.shadowsocks.utils.StartService;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -66,8 +65,9 @@ import com.water.alkaline.kengen.placements.BannerAds;
 import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.placements.LargeNativeAds;
 import com.water.alkaline.kengen.placements.ListNativeAds;
+import com.water.alkaline.kengen.placements.MainAds;
 import com.water.alkaline.kengen.placements.MiniNativeAds;
-import com.water.alkaline.kengen.placements.NewOpenAds;
+import com.water.alkaline.kengen.placements.OpenSplashAds;
 import com.water.alkaline.kengen.placements.OpenAds;
 import com.water.alkaline.kengen.utils.Constant;
 import com.water.alkaline.kengen.utils.MyService;
@@ -76,7 +76,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -241,17 +240,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
         }
 
         MobileAds.initialize(SplashActivity.this);
-
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, false)) {
-            new BackInterAds().loadInterAds(SplashActivity.this);
-            new BannerAds().loadBannerAds(SplashActivity.this);
-            new InterAds().loadInterAds(SplashActivity.this);
-            new LargeNativeAds().loadNativeAds(SplashActivity.this);
-            new ListNativeAds().loadNativeAds(SplashActivity.this);
-            new MiniNativeAds().loadNativeAds(SplashActivity.this);
-            new OpenAds().loadOpenAd();
-            new NewOpenAds().loadOpenAd(SplashActivity.this);
-        }
+        new MainAds().loadAds(this);
     }
 
     public void updateAPI() {
@@ -282,7 +271,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
 
                                 if (updateResponse != null) {
                                     AdsInfo appData = updateResponse.getData().getAdsInfo().get(0);
-                                    
+
 
                                     PowerPreference.getDefaultFile().putString(Constant.mToken, updateResponse.getMtoken());
 
@@ -576,14 +565,14 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
             public void run() {
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
                     if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 1) {
-                        new InterAds().watchAds(SplashActivity.this, new InterAds.OnAdClosedListener() {
+                        new MainAds().showSplashInterAds(SplashActivity.this, new InterAds.OnAdClosedListener() {
                             @Override
                             public void onAdClosed() {
                                 startActivity(new Intent(SplashActivity.this, HomeActivity.class));
                             }
                         });
                     } else if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 2) {
-                        new NewOpenAds().showOpenAd(SplashActivity.this, new NewOpenAds.OnAdClosedListener() {
+                        new MainAds().showOpenAds(SplashActivity.this, new OpenSplashAds.OnAdClosedListener() {
                             @Override
                             public void onAdClosed() {
                                 startActivity(new Intent(SplashActivity.this, HomeActivity.class));

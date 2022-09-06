@@ -37,6 +37,7 @@ import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.databinding.DialogExitBinding;
 import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.placements.LargeNativeAds;
+import com.water.alkaline.kengen.placements.MainAds;
 import com.water.alkaline.kengen.ui.activity.ExitActivity;
 
 import java.io.File;
@@ -279,7 +280,7 @@ public class Constant {
                 mDialog.dismiss();
                 if (isAds && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false)) {
                     PowerPreference.getDefaultFile().putInt(Constant.APP_INTERVAL_COUNT, 0);
-                    new InterAds().watchAds(activity, new InterAds.OnAdClosedListener() {
+                    new MainAds().showSplashInterAds(activity, new InterAds.OnAdClosedListener() {
                         @Override
                         public void onAdClosed() {
                             Intent intent = new Intent(activity, ExitActivity.class);

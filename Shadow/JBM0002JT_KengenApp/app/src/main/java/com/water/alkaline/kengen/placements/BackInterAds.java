@@ -80,50 +80,7 @@ public class BackInterAds {
                     mInterstitialAd = interstitialAd;
                     isLoading = false;
 
-                    mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                        @Override
-                        public void onAdDismissedFullScreenContent() {
 
-                            loadInterAds(context);
-
-                            if (mOnAdClosedListener != null) {
-                                mOnAdClosedListener.onAdClosed();
-                            }
-                        }
-
-                        @Override
-                        public void onAdClicked() {
-                            super.onAdClicked();
-                            int clickCOunt = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
-                            PowerPreference.getDefaultFile().putInt(Constant.APP_CLICK_COUNT, clickCOunt + 1);
-                            int clickCOunt2 = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
-
-                            if (clickCOunt2 >= PowerPreference.getDefaultFile().getInt(Constant.AD_CLICK_COUNT, 3)) {
-                                PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, false);
-                            }
-                        }
-
-                        @Override
-                        public void onAdFailedToShowFullScreenContent(com.google.android.gms.ads.AdError adError) {
-                            mInterstitialAd = null;
-
-                            Constant.showLog("The ad failed to show.");
-                            loadInterAds(mActivity);
-
-                            if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaBackInterOnOff, false)) {
-                                showQurekaAds(mActivity, mOnAdClosedListener);
-                            } else {
-                                if (mOnAdClosedListener != null)
-                                    mOnAdClosedListener.onAdClosed();
-                            }
-
-                        }
-
-                        @Override
-                        public void onAdShowedFullScreenContent() {
-                            mInterstitialAd = null;
-                        }
-                    });
                 }
 
                 @Override
@@ -136,6 +93,46 @@ public class BackInterAds {
         }
     }
 
+    public void setmOnAdClosedListener(Activity context, OnAdClosedListener onAdClosedListener) {
+        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override
+            public void onAdDismissedFullScreenContent() {
+
+                loadInterAds(context);
+
+                if (mOnAdClosedListener != null) {
+                    mOnAdClosedListener.onAdClosed();
+                }
+            }
+
+            @Override
+            public void onAdClicked() {
+                super.onAdClicked();
+                MainAds.closeGoogleAds();
+            }
+
+            @Override
+            public void onAdFailedToShowFullScreenContent(com.google.android.gms.ads.AdError adError) {
+                mInterstitialAd = null;
+
+                Constant.showLog("The ad failed to show.");
+                loadInterAds(mActivity);
+
+                if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaBackInterOnOff, false)) {
+                    showQurekaAds(mActivity, mOnAdClosedListener);
+                } else {
+                    if (mOnAdClosedListener != null)
+                        mOnAdClosedListener.onAdClosed();
+                }
+
+            }
+
+            @Override
+            public void onAdShowedFullScreenContent() {
+                mInterstitialAd = null;
+            }
+        });
+    }
 
     public void showInterAds(Activity context, OnAdClosedListener onAdClosedListener) {
         mActivity = context;
@@ -164,24 +161,17 @@ public class BackInterAds {
         mActivity = context;
         mOnAdClosedListener = onAdClosedListener;
         if (mInterstitialAd != null && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleBackInterOnOff, false)) {
+            changeCounter();
             if (PowerPreference.getDefaultFile().getBoolean(Constant.ShowDialogBeforeAds, true)) {
                 ShowProgress(context);
                 new Handler().postDelayed(() -> {
-
                     HideProgress(context);
-                    int appGCount = PowerPreference.getDefaultFile().getInt(Constant.APP_BACK_COUNT);
-
-                    appGCount++;
-                    PowerPreference.getDefaultFile().putInt(Constant.APP_BACK_COUNT, appGCount);
+                    setmOnAdClosedListener(context, onAdClosedListener);
                     mInterstitialAd.show(context);
-
                 }, (long) (PowerPreference.getDefaultFile().getDouble(Constant.DialogTimeInSec, 1) * 1000L));
 
             } else {
-                int appGCount = PowerPreference.getDefaultFile().getInt(Constant.APP_BACK_COUNT);
-
-                appGCount++;
-                PowerPreference.getDefaultFile().putInt(Constant.APP_BACK_COUNT, appGCount);
+                setmOnAdClosedListener(context, onAdClosedListener);
                 mInterstitialAd.show(context);
             }
 
@@ -190,26 +180,15 @@ public class BackInterAds {
                 loadInterAds(context);
 
             if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaBackInterOnOff, false)) {
-
+                changeCounter();
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.ShowDialogBeforeAds, true)) {
                     ShowProgress(context);
                     new Handler().postDelayed(() -> {
-
                         HideProgress(context);
-                        int appGCount = PowerPreference.getDefaultFile().getInt(Constant.APP_BACK_COUNT);
-
-                        appGCount++;
-                        PowerPreference.getDefaultFile().putInt(Constant.APP_BACK_COUNT, appGCount);
-
                         showQurekaAds(context, onAdClosedListener);
                     }, (long) (PowerPreference.getDefaultFile().getDouble(Constant.DialogTimeInSec, 1) * 1000L));
 
                 } else {
-                    int appGCount = PowerPreference.getDefaultFile().getInt(Constant.APP_BACK_COUNT);
-
-                    appGCount++;
-                    PowerPreference.getDefaultFile().putInt(Constant.APP_BACK_COUNT, appGCount);
-
                     showQurekaAds(context, onAdClosedListener);
                 }
 
@@ -220,9 +199,16 @@ public class BackInterAds {
         }
     }
 
+    public void changeCounter() {
+        int appGCount = PowerPreference.getDefaultFile().getInt(Constant.APP_BACK_COUNT);
+        appGCount++;
+        PowerPreference.getDefaultFile().putInt(Constant.APP_BACK_COUNT, appGCount);
+    }
+
     public void showQurekaAds(Activity activity, OnAdClosedListener onAdClosedListener) {
         Intent intent = new Intent(activity, QurekaInterActivity.class);
         intent.putExtra(Constant.BACK_ADS, true);
+        intent.putExtra(Constant.SPLASH_ADS, false);
         activity.startActivity(intent);
     }
 }

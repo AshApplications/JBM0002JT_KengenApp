@@ -38,6 +38,7 @@ import com.water.alkaline.kengen.databinding.ActivityVpnBinding;
 import com.water.alkaline.kengen.placements.BackInterAds;
 import com.water.alkaline.kengen.placements.BannerAds;
 import com.water.alkaline.kengen.placements.InterAds;
+import com.water.alkaline.kengen.placements.InterSplashAds;
 import com.water.alkaline.kengen.placements.LargeNativeAds;
 import com.water.alkaline.kengen.placements.ListNativeAds;
 import com.water.alkaline.kengen.placements.MainAds;
@@ -222,16 +223,16 @@ public class VpnActivity extends AppCompatActivity implements ShadowsocksConnect
             @Override
             public void run() {
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
-
                     if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 1) {
-                        new MainAds().showSplashInterAds(VpnActivity.this, new InterAds.OnAdClosedListener() {
+                        new MainAds().showOpenAds(VpnActivity.this, new OpenSplashAds.OnAdClosedListener() {
                             @Override
                             public void onAdClosed() {
                                 startActivity(new Intent(VpnActivity.this, HomeActivity.class));
                             }
                         });
+
                     } else if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 2) {
-                        new MainAds().showOpenAds(VpnActivity.this, new OpenSplashAds.OnAdClosedListener() {
+                        new MainAds().showSplashInterAds(VpnActivity.this, new InterSplashAds.OnAdClosedListener() {
                             @Override
                             public void onAdClosed() {
                                 startActivity(new Intent(VpnActivity.this, HomeActivity.class));

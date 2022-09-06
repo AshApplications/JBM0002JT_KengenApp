@@ -13,11 +13,13 @@ import com.preference.PowerPreference;
 import com.water.alkaline.kengen.databinding.ActivityQurekaInterBinding;
 import com.water.alkaline.kengen.placements.BackInterAds;
 import com.water.alkaline.kengen.placements.InterAds;
+import com.water.alkaline.kengen.placements.InterSplashAds;
 import com.water.alkaline.kengen.utils.Constant;
 
 public class QurekaInterActivity extends AppCompatActivity {
 
     public boolean isBackAds = false;
+    public boolean isSplashAds = false;
     boolean isClicked = false;
 
     ActivityQurekaInterBinding binding;
@@ -32,6 +34,10 @@ public class QurekaInterActivity extends AppCompatActivity {
             isBackAds = getIntent().getBooleanExtra(Constant.BACK_ADS, true);
         }
 
+        if (getIntent() != null && getIntent().hasExtra(Constant.SPLASH_ADS)) {
+            isSplashAds = getIntent().getBooleanExtra(Constant.SPLASH_ADS, true);
+        }
+
         if (isBackAds)
             Constant.setQureka(this, binding.qurekaAds, binding.qurekaAds1, binding.gifInterRound, Constant.QBACKINTER_COUNT);
         else
@@ -40,7 +46,10 @@ public class QurekaInterActivity extends AppCompatActivity {
         binding.rlMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isBackAds) {
+                if (isSplashAds) {
+                    if (InterSplashAds.mOnAdClosedListener != null)
+                        InterSplashAds.mOnAdClosedListener.onAdClosed();
+                } else if (isBackAds) {
                     if (BackInterAds.mOnAdClosedListener != null)
                         BackInterAds.mOnAdClosedListener.onAdClosed();
                 } else {
@@ -63,7 +72,10 @@ public class QurekaInterActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (isBackAds) {
+        if (isSplashAds) {
+            if (InterSplashAds.mOnAdClosedListener != null)
+                InterSplashAds.mOnAdClosedListener.onAdClosed();
+        } else if (isBackAds) {
             if (BackInterAds.mOnAdClosedListener != null)
                 BackInterAds.mOnAdClosedListener.onAdClosed();
         } else {

@@ -3,11 +3,19 @@ package com.water.alkaline.kengen.placements;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 
@@ -18,12 +26,14 @@ import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.R;
+import com.water.alkaline.kengen.databinding.ActivityQurekaInterBinding;
 import com.water.alkaline.kengen.ui.activity.QurekaInterActivity;
+import com.water.alkaline.kengen.ui.activity.SplashActivity;
 import com.water.alkaline.kengen.utils.Constant;
 
 import java.util.Objects;
 
-public class InterAds {
+public class InterSplashAds {
 
     @SuppressLint("StaticFieldLeak")
     public static Activity mActivity;
@@ -34,6 +44,8 @@ public class InterAds {
     public static OnAdClosedListener mOnAdClosedListener;
 
     public Dialog mLoadingDialog;
+
+    public static Dialog mDialog = null;
 
     protected void ShowProgress(Activity activity) {
         if (mLoadingDialog == null && !activity.isFinishing()) {
@@ -71,17 +83,18 @@ public class InterAds {
     }
 
     public void loadInterAds(Activity activity) {
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleInterOnOff, false)) {
+        if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false) || PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false))) {
             final String interAd = PowerPreference.getDefaultFile().getString(Constant.INTERID, "123");
             AdRequest adRequest = new AdRequest.Builder().build();
             isLoading = true;
+
+            Log.e("TAG", "splash load interAds");
             InterstitialAd.load(activity, interAd, adRequest, new InterstitialAdLoadCallback() {
                 @Override
                 public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                     super.onAdLoaded(interstitialAd);
                     mInterstitialAd = interstitialAd;
                     isLoading = false;
-
                 }
 
                 @Override
@@ -98,64 +111,41 @@ public class InterAds {
     public void showInterAds(Activity context, OnAdClosedListener onAdClosedListener) {
         mActivity = context;
         mOnAdClosedListener = onAdClosedListener;
-
         if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, true)) {
-
-            int custGCount = PowerPreference.getDefaultFile().getInt(Constant.SERVER_INTERVAL_COUNT);
-            int appGCount = PowerPreference.getDefaultFile().getInt(Constant.APP_INTERVAL_COUNT);
-
-            if (custGCount != 0 && appGCount % custGCount == 0) {
-                watchAds(context, onAdClosedListener);
+            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false) || PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false))) {
+                if (isLoading) {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            showInterAds(context, onAdClosedListener);
+                        }
+                    }, 2000);
+                } else {
+                    if (mInterstitialAd != null)
+                        showAd(context, onAdClosedListener);
+                    else
+                        showQurekaAds(context, onAdClosedListener);
+                }
             } else {
-                appGCount++;
-                PowerPreference.getDefaultFile().putInt(Constant.APP_INTERVAL_COUNT, appGCount);
-                if (mOnAdClosedListener != null)
-                    mOnAdClosedListener.onAdClosed();
+                showQurekaAds(context, onAdClosedListener);
             }
         } else {
-            if (mOnAdClosedListener != null)
-                mOnAdClosedListener.onAdClosed();
+            if (onAdClosedListener != null)
+                onAdClosedListener.onAdClosed();
         }
     }
 
-    public void watchAds(Activity context, OnAdClosedListener onAdClosedListener) {
-        mActivity = context;
-        mOnAdClosedListener = onAdClosedListener;
-        if (mInterstitialAd != null && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleInterOnOff, false)) {
-
-            changeCounter();
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.ShowDialogBeforeAds, true)) {
-                ShowProgress(context);
-                new Handler().postDelayed(() -> {
-                    HideProgress(context);
-                    setmOnAdClosedListener(context, onAdClosedListener);
-                    mInterstitialAd.show(context);
-                }, (long) (PowerPreference.getDefaultFile().getDouble(Constant.DialogTimeInSec, 1) * 1000L));
-            } else {
+    public void showAd(Activity context, OnAdClosedListener onAdClosedListener) {
+        if (PowerPreference.getDefaultFile().getBoolean(Constant.ShowDialogBeforeAds, true)) {
+            ShowProgress(context);
+            new Handler().postDelayed(() -> {
+                HideProgress(context);
                 setmOnAdClosedListener(context, onAdClosedListener);
                 mInterstitialAd.show(context);
-            }
-
+            }, (long) (PowerPreference.getDefaultFile().getDouble(Constant.DialogTimeInSec, 1) * 1000L));
         } else {
-            if (!isLoading)
-                loadInterAds(context);
-
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaInterOnOff, true)) {
-                changeCounter();
-                if (PowerPreference.getDefaultFile().getBoolean(Constant.ShowDialogBeforeAds, true)) {
-                    ShowProgress(context);
-                    new Handler().postDelayed(() -> {
-                        HideProgress(context);
-                        showQurekaAds(context, onAdClosedListener);
-
-                    }, (long) (PowerPreference.getDefaultFile().getDouble(Constant.DialogTimeInSec, 1) * 1000L));
-                } else {
-                    showQurekaAds(context, onAdClosedListener);
-                }
-            } else {
-                if (mOnAdClosedListener != null)
-                    mOnAdClosedListener.onAdClosed();
-            }
+            setmOnAdClosedListener(context, onAdClosedListener);
+            mInterstitialAd.show(context);
         }
     }
 
@@ -163,7 +153,10 @@ public class InterAds {
         mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
             @Override
             public void onAdDismissedFullScreenContent() {
-                loadInterAds(activity);
+
+                if (mActivity instanceof SplashActivity && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false)) {
+                    loadInterAds(activity);
+                }
 
                 if (mOnAdClosedListener != null) {
                     mOnAdClosedListener.onAdClosed();
@@ -179,9 +172,12 @@ public class InterAds {
             @Override
             public void onAdFailedToShowFullScreenContent(com.google.android.gms.ads.AdError adError) {
                 mInterstitialAd = null;
-                loadInterAds(activity);
 
-                if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaInterOnOff, true)) {
+                if (mActivity instanceof SplashActivity && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false)) {
+                    loadInterAds(activity);
+                }
+
+                if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true)) {
                     showQurekaAds(activity, mOnAdClosedListener);
                 } else {
                     if (mOnAdClosedListener != null)
@@ -198,18 +194,21 @@ public class InterAds {
         });
     }
 
-    public void changeCounter() {
-        int appGCount = PowerPreference.getDefaultFile().getInt(Constant.APP_INTERVAL_COUNT);
-        appGCount++;
-        PowerPreference.getDefaultFile().putInt(Constant.APP_INTERVAL_COUNT, appGCount);
-    }
-
     public void showQurekaAds(Activity activity, OnAdClosedListener onAdClosedListener) {
-        Intent intent = new Intent(activity, QurekaInterActivity.class);
-        intent.putExtra(Constant.BACK_ADS, false);
-        intent.putExtra(Constant.SPLASH_ADS, false);
-        activity.startActivity(intent);
-    }
 
+        if (activity instanceof SplashActivity && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false)) {
+            loadInterAds(activity);
+        }
+
+        if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false) || PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false))) {
+            Intent intent = new Intent(activity, QurekaInterActivity.class);
+            intent.putExtra(Constant.BACK_ADS, false);
+            intent.putExtra(Constant.SPLASH_ADS, true);
+            activity.startActivity(intent);
+        } else {
+            if (mOnAdClosedListener != null)
+                mOnAdClosedListener.onAdClosed();
+        }
+    }
 
 }

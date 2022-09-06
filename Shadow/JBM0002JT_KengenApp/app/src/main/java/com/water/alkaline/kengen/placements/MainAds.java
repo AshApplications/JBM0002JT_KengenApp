@@ -17,20 +17,25 @@ public class MainAds {
 
             new InterAds().loadInterAds(activity);
             new BackInterAds().loadInterAds(activity);
-            new OpenSplashAds().loadOpenAd(activity);
             new OpenAds().loadOpenAd();
 
             loadBannerAds(activity);
             loadNativeAds(activity);
             loadListNativeAds(activity);
+
+            if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 1) {
+                new OpenSplashAds().loadOpenAd(activity);
+            } else if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 2) {
+                new InterSplashAds().loadInterAds(activity);
+            }
         }
     }
 
     // INTER ADS
 
-    public void showSplashInterAds(Activity activity, InterAds.OnAdClosedListener listener) {
+    public void showSplashInterAds(Activity activity, InterSplashAds.OnAdClosedListener listener) {
         PowerPreference.getDefaultFile().putInt(Constant.APP_INTERVAL_COUNT, 0);
-        new InterAds().watchAds(activity, listener);
+        new InterSplashAds().showInterAds(activity, listener);
     }
 
     public void showInterAds(Activity activity, InterAds.OnAdClosedListener listener) {
@@ -142,4 +147,14 @@ public class MainAds {
         }
     }
 
+
+    public static void closeGoogleAds() {
+        int clickCOunt = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
+        PowerPreference.getDefaultFile().putInt(Constant.APP_CLICK_COUNT, clickCOunt + 1);
+        int clickCOunt2 = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
+
+        if (clickCOunt2 >= PowerPreference.getDefaultFile().getInt(Constant.AD_CLICK_COUNT, 3)) {
+            PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, false);
+        }
+    }
 }

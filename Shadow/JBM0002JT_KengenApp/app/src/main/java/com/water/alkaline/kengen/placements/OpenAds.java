@@ -110,13 +110,7 @@ public class OpenAds implements LifecycleObserver, android.app.Application.Activ
                         @Override
                         public void onAdClicked() {
                             super.onAdClicked();
-                            int clickCOunt = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
-                            PowerPreference.getDefaultFile().putInt(Constant.APP_CLICK_COUNT, clickCOunt + 1);
-                            int clickCOunt2 = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
-
-                            if (clickCOunt2 >= PowerPreference.getDefaultFile().getInt(Constant.AD_CLICK_COUNT, 3)) {
-                                PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, false);
-                            }
+                            MainAds.closeGoogleAds();
                         }
 
                         @Override

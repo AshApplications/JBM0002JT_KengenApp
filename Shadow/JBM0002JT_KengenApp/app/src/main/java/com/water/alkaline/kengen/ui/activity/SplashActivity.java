@@ -40,6 +40,7 @@ import com.github.shadowsocks.preference.OnPreferenceDataStoreChangeListener;
 import com.github.shadowsocks.utils.Key;
 import com.github.shadowsocks.utils.StartService;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -63,6 +64,7 @@ import com.water.alkaline.kengen.model.update.UpdateResponse;
 import com.water.alkaline.kengen.placements.BackInterAds;
 import com.water.alkaline.kengen.placements.BannerAds;
 import com.water.alkaline.kengen.placements.InterAds;
+import com.water.alkaline.kengen.placements.InterSplashAds;
 import com.water.alkaline.kengen.placements.LargeNativeAds;
 import com.water.alkaline.kengen.placements.ListNativeAds;
 import com.water.alkaline.kengen.placements.MainAds;
@@ -76,6 +78,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -228,6 +231,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
     }
 
     public void loadAds() {
+        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("DD54D1B666D3213A83E29EFFA7F3AED4")).build());
         PowerPreference.getDefaultFile().putBoolean(Constant.mIsLoaded, true);
 
         try {
@@ -565,14 +569,15 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
             public void run() {
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
                     if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 1) {
-                        new MainAds().showSplashInterAds(SplashActivity.this, new InterAds.OnAdClosedListener() {
+                        new MainAds().showOpenAds(SplashActivity.this, new OpenSplashAds.OnAdClosedListener() {
                             @Override
                             public void onAdClosed() {
                                 startActivity(new Intent(SplashActivity.this, HomeActivity.class));
                             }
                         });
+
                     } else if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 2) {
-                        new MainAds().showOpenAds(SplashActivity.this, new OpenSplashAds.OnAdClosedListener() {
+                        new MainAds().showSplashInterAds(SplashActivity.this, new InterSplashAds.OnAdClosedListener() {
                             @Override
                             public void onAdClosed() {
                                 startActivity(new Intent(SplashActivity.this, HomeActivity.class));

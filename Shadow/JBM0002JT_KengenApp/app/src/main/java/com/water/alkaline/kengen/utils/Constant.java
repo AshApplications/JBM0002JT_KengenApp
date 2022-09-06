@@ -38,7 +38,10 @@ import com.water.alkaline.kengen.databinding.DialogExitBinding;
 import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.placements.LargeNativeAds;
 import com.water.alkaline.kengen.placements.MainAds;
+import com.water.alkaline.kengen.placements.OpenSplashAds;
 import com.water.alkaline.kengen.ui.activity.ExitActivity;
+import com.water.alkaline.kengen.ui.activity.HomeActivity;
+import com.water.alkaline.kengen.ui.activity.SplashActivity;
 
 import java.io.File;
 import java.util.List;
@@ -76,6 +79,7 @@ public class Constant {
     public static final String SERVER_BACK_COUNT = "SERVER_BACK_COUNT";
     public static final String APP_BACK_COUNT = "APP_BACK_COUNT";
     public static final String BACK_ADS = "BACK_ADS";
+    public static final String SPLASH_ADS = "SPLASH_ADS";
     public static final String GoogleBannerOnOff = "GoogleBannerOnOff";
     public static final String GoogleInterOnOff = "GoogleInterOnOff";
     public static final String GoogleBackInterOnOff = "GoogleBackInterOnOff";
@@ -278,23 +282,12 @@ public class Constant {
 
             exitBinding.btnExiy.setOnClickListener(view -> {
                 mDialog.dismiss();
-                if (isAds && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false)) {
-                    PowerPreference.getDefaultFile().putInt(Constant.APP_INTERVAL_COUNT, 0);
-                    new MainAds().showSplashInterAds(activity, new InterAds.OnAdClosedListener() {
-                        @Override
-                        public void onAdClosed() {
-                            Intent intent = new Intent(activity, ExitActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            activity.startActivity(intent);
-                            activity.finish();
-                        }
-                    });
-                } else {
-                    Intent intent = new Intent(activity, ExitActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    activity.startActivity(intent);
-                    activity.finish();
-                }
+                Intent intent = new Intent(activity, ExitActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.putExtra("isAds", isAds);
+                activity.startActivity(intent);
+                activity.finish();
+
             });
 
             exitBinding.btnCancel.setOnClickListener(view -> {
@@ -305,7 +298,7 @@ public class Constant {
                 mDialog.setOnShowListener(new DialogInterface.OnShowListener() {
                     @Override
                     public void onShow(DialogInterface dialog) {
-                        new LargeNativeAds().showNativeAds(activity, mDialog, null, null);
+                        new MainAds().showNativeAds(activity, mDialog, null, null);
                     }
                 });
             }

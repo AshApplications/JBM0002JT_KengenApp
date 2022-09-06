@@ -95,7 +95,7 @@ public class BannerImageActivity extends AppCompatActivity {
         downloadDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-                new LargeNativeAds().showNativeAds(BannerImageActivity.this, downloadDialog, null, null);
+                new MainAds().showNativeAds(BannerImageActivity.this, downloadDialog, null, null);
             }
         });
         downloadDialog.show();

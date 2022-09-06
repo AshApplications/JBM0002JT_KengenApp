@@ -127,7 +127,7 @@ public class PdfActivity extends AppCompatActivity {
         downloadDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-                new LargeNativeAds().showNativeAds(PdfActivity.this, downloadDialog, null, null);
+                new MainAds().showNativeAds(PdfActivity.this, downloadDialog, null, null);
             }
         });
         downloadDialog.show();
@@ -295,7 +295,7 @@ public class PdfActivity extends AppCompatActivity {
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogh) {
-                new LargeNativeAds().showNativeAds(PdfActivity.this, dialog, null, null);
+                new MainAds().showNativeAds(PdfActivity.this, dialog, null, null);
             }
         });
         dialog.show();

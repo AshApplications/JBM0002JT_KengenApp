@@ -22,6 +22,7 @@ import com.google.android.gms.ads.appopen.AppOpenAd;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
+import com.water.alkaline.kengen.ui.activity.SplashActivity;
 import com.water.alkaline.kengen.utils.Constant;
 
 import java.util.Objects;
@@ -48,9 +49,12 @@ public class OpenSplashAds {
     }
 
     public void loadOpenAd(Activity activity) {
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
+        if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false) || PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false))) {
             currentActivity = activity;
             isLoading = true;
+
+            Log.e("TAG", "splash load loadOpenAd");
+
             AppOpenAd.AppOpenAdLoadCallback loadCallback1 = new AppOpenAd.AppOpenAdLoadCallback() {
                 @Override
                 public void onAdLoaded(AppOpenAd ad) {
@@ -76,7 +80,7 @@ public class OpenSplashAds {
         currentActivity = activity;
         mOnAdClosedListener = onAdClosedListener;
         if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, true)) {
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
+            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false) || PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false))) {
                 if (isLoading) {
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -106,6 +110,10 @@ public class OpenSplashAds {
                     public void onAdDismissedFullScreenContent() {
                         appOpenAd1 = null;
 
+                        if (activity instanceof SplashActivity && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false)) {
+                            loadOpenAd(activity);
+                        }
+
                         if (onAdClosedListener != null)
                             onAdClosedListener.onAdClosed();
 
@@ -114,13 +122,7 @@ public class OpenSplashAds {
                     @Override
                     public void onAdClicked() {
                         super.onAdClicked();
-                        int clickCOunt = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
-                        PowerPreference.getDefaultFile().putInt(Constant.APP_CLICK_COUNT, clickCOunt + 1);
-                        int clickCOunt2 = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
-
-                        if (clickCOunt2 >= PowerPreference.getDefaultFile().getInt(Constant.AD_CLICK_COUNT, 3)) {
-                            PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, false);
-                        }
+                        MainAds.closeGoogleAds();
                     }
 
                     @Override
@@ -140,14 +142,19 @@ public class OpenSplashAds {
     }
 
     public void showQurekaDialog(Activity activity, OnAdClosedListener onAdClosedListener) {
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
+
+        if (activity instanceof SplashActivity && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false)) {
+            loadOpenAd(activity);
+        }
+
+        if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false) || PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false))) {
 
             try {
 
                 mDialog = new Dialog(activity);
                 mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 mDialog.setContentView(R.layout.qureka_open);
-                Objects.requireNonNull(mDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 mDialog.setCancelable(false);
                 mDialog.setCanceledOnTouchOutside(false);
                 mDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

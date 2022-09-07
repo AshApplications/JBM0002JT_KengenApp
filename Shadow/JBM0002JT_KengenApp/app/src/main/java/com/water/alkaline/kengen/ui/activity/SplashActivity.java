@@ -111,10 +111,10 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
         dialog = new Dialog(this, R.style.NormalDialog);
         DialogInternetBinding binding = DialogInternetBinding.inflate(getLayoutInflater());
         dialog.setContentView(binding.getRoot());
-        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         dialog.show();
         binding.txtError.setText(text);
         return binding;

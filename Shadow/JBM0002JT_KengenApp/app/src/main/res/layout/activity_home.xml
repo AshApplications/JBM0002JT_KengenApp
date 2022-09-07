@@ -6,11 +6,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/flow"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:constraint_referenced_ids="cvToolbar,rlCenter,includedAd"
+            app:flow_wrapMode="chain"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cvToolbar"
@@ -47,10 +56,10 @@
                         android:layout_height="match_parent"
                         android:fontFamily="@font/mfont_medium"
                         android:gravity="center"
-                        android:textStyle="bold"
                         android:text="@string/title"
                         android:textColor="#FFE400"
-                        android:textSize="@dimen/_14ssp" />
+                        android:textSize="@dimen/_14ssp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/txtTitle2"
@@ -58,10 +67,10 @@
                         android:layout_height="match_parent"
                         android:fontFamily="@font/mfont_medium"
                         android:gravity="center"
-                        android:textStyle="bold"
                         android:text="@string/title_sub"
                         android:textColor="#FFFFFF"
-                        android:textSize="@dimen/_14ssp" />
+                        android:textSize="@dimen/_14ssp"
+                        android:textStyle="bold" />
 
                 </LinearLayout>
 
@@ -99,10 +108,10 @@
 
         </androidx.cardview.widget.CardView>
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/rlCenter"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_height="0dp">
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/vpHome"
@@ -113,14 +122,13 @@
                 android:id="@+id/includedProgress"
                 layout="@layout/layout_pro_error" />
 
-        </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include
             android:id="@+id/includedAd"
-            layout="@layout/native_layout_mini"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+            layout="@layout/native_layout_mini" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.water.alkaline.kengen.library.ArcNavigationView.ArcNavigationView
         android:id="@+id/navView"

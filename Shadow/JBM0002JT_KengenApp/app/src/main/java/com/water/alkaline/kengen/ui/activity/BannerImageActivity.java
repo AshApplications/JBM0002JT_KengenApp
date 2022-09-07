@@ -88,10 +88,11 @@ public class BannerImageActivity extends AppCompatActivity {
         downloadDialog = new Dialog(this, R.style.NormalDialog);
         downloadBinding = DialogDownloadBinding.inflate(getLayoutInflater());
         downloadDialog.setContentView(downloadBinding.getRoot());
-        Objects.requireNonNull(downloadDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
         downloadDialog.setCancelable(false);
         downloadDialog.setCanceledOnTouchOutside(false);
-        downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        downloadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         downloadDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
@@ -217,10 +218,10 @@ public class BannerImageActivity extends AppCompatActivity {
     public void checkData() {
         binding.includedProgress.progress.setVisibility(View.GONE);
         if (binding.viewpager.getAdapter() != null && binding.viewpager.getAdapter().getItemCount() > 0) {
-            binding.cvBottom.setVisibility(View.VISIBLE);
+            binding.llPdfMenu.setVisibility(View.VISIBLE);
             binding.includedProgress.llError.setVisibility(View.GONE);
         } else {
-            binding.cvBottom.setVisibility(View.GONE);
+            binding.llPdfMenu.setVisibility(View.GONE);
         }
     }
 

@@ -150,9 +150,9 @@ public class OpenAds implements LifecycleObserver, android.app.Application.Activ
                 mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 mDialog.setContentView(R.layout.qureka_open);
                 mDialog.setCancelable(false);
-                Objects.requireNonNull(mDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 mDialog.setCanceledOnTouchOutside(false);
                 mDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
                 ImageView imageView = mDialog.findViewById(R.id.qurekaAds);
                 ImageView imageView1 = mDialog.findViewById(R.id.gif_inter_round);

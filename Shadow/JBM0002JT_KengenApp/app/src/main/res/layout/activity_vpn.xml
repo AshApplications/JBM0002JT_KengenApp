@@ -7,6 +7,17 @@
     android:background="@drawable/vpnbg"
     android:orientation="vertical">
 
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/flow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:constraint_referenced_ids="includedToolbar,rlCenter,includedAd"
+        app:flow_wrapMode="chain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tv_note"
         android:layout_width="match_parent"
@@ -117,6 +128,16 @@
                         android:gravity="left"
                         android:orientation="vertical">
 
+                        <TextView
+                            android:id="@+id/code"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_5sdp"
+                            android:layout_marginTop="@dimen/_minus2sdp"
+                            android:fontFamily="@font/mfont"
+                            android:text="US"
+                            android:textSize="@dimen/_10ssp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/vpn_country_name"
@@ -131,17 +152,6 @@
                             android:textSize="@dimen/_12ssp"
                             android:textStyle="bold"
                             tools:ignore="RtlCompat" />
-
-                        <TextView
-                            android:id="@+id/code"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/_5sdp"
-                            android:layout_marginTop="@dimen/_minus2sdp"
-                            android:fontFamily="@font/mfont"
-                            android:text="US"
-                            android:textSize="@dimen/_10ssp"
-                            android:textStyle="bold" />
 
 
                     </LinearLayout>

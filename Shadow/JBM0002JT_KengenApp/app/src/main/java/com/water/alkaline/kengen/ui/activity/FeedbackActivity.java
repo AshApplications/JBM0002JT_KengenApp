@@ -124,10 +124,10 @@ public class FeedbackActivity extends AppCompatActivity {
         loaderDialog = new Dialog(this, R.style.NormalDialog);
         DialogLoadingBinding loadingBinding = DialogLoadingBinding.inflate(getLayoutInflater());
         loaderDialog.setContentView(loadingBinding.getRoot());
-        Objects.requireNonNull(loaderDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         loaderDialog.setCancelable(false);
         loaderDialog.setCanceledOnTouchOutside(false);
-        loaderDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        loaderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        loaderDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         loaderDialog.show();
     }
 
@@ -140,10 +140,10 @@ public class FeedbackActivity extends AppCompatActivity {
         dialog = new Dialog(this, R.style.NormalDialog);
         DialogInternetBinding binding = DialogInternetBinding.inflate(getLayoutInflater());
         dialog.setContentView(binding.getRoot());
-        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.show();
         binding.txtError.setText(text);
         return binding;

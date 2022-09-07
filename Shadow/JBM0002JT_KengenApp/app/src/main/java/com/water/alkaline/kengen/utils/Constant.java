@@ -271,10 +271,10 @@ public class Constant {
             Dialog mDialog = new Dialog(activity, R.style.NormalDialog);
             DialogExitBinding exitBinding = DialogExitBinding.inflate(activity.getLayoutInflater());
             mDialog.setContentView(exitBinding.getRoot());
-            mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             mDialog.setCancelable(false);
             mDialog.setCanceledOnTouchOutside(false);
-            mDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            mDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
             exitBinding.btnRate.setOnClickListener(view -> {
                 mDialog.dismiss();

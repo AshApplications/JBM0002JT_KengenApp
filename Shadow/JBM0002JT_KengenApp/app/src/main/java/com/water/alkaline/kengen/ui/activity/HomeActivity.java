@@ -233,10 +233,10 @@ public class HomeActivity extends AppCompatActivity {
             Dialog mDialog = new Dialog(this, R.style.NormalDialog);
             DialogInfoBinding binding = DialogInfoBinding.inflate(getLayoutInflater());
             mDialog.setContentView(binding.getRoot());
-            mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             mDialog.setCancelable(false);
             mDialog.setCanceledOnTouchOutside(false);
-            mDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            mDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             mDialog.show();
 
             binding.txtError.setText(PowerPreference.getDefaultFile().getString(Constant.mNotice, getResources().getString(R.string.info)));

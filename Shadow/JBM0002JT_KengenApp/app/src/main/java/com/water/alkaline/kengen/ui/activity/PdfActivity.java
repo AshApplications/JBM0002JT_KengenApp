@@ -99,10 +99,10 @@ public class PdfActivity extends AppCompatActivity {
         dialog = new Dialog(this, R.style.NormalDialog);
         DialogInternetBinding binding = DialogInternetBinding.inflate(getLayoutInflater());
         dialog.setContentView(binding.getRoot());
-        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         dialog.show();
         binding.txtError.setText(text);
         return binding;
@@ -120,10 +120,10 @@ public class PdfActivity extends AppCompatActivity {
         downloadDialog = new Dialog(this, R.style.NormalDialog);
         downloadBinding = DialogDownloadBinding.inflate(getLayoutInflater());
         downloadDialog.setContentView(downloadBinding.getRoot());
-        Objects.requireNonNull(downloadDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         downloadDialog.setCancelable(false);
         downloadDialog.setCanceledOnTouchOutside(false);
-        downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        downloadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         downloadDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
@@ -290,7 +290,7 @@ public class PdfActivity extends AppCompatActivity {
         Dialog dialog = new Dialog(PdfActivity.this, R.style.NormalDialog);
         dialog.setContentView(binding.getRoot());
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().setLayout(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setLayout(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         dialog.setCancelable(true);
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
@@ -386,7 +386,7 @@ public class PdfActivity extends AppCompatActivity {
                         binding.includedProgress.progress.setVisibility(View.GONE);
                         binding.txtPageNumbers.setVisibility(View.VISIBLE);
                         binding.includedProgress.llError.setVisibility(View.GONE);
-                        binding.cvBottom.setVisibility(View.VISIBLE);
+                        binding.llPdfMenu.setVisibility(View.VISIBLE);
                         checkArrow();
                     }
                 }).onError(new OnErrorListener() {
@@ -399,7 +399,7 @@ public class PdfActivity extends AppCompatActivity {
                         binding.includedProgress.progress.setVisibility(View.GONE);
                         binding.txtPageNumbers.setVisibility(View.GONE);
                         binding.includedProgress.llError.setVisibility(View.VISIBLE);
-                        binding.cvBottom.setVisibility(View.GONE);
+                        binding.llPdfMenu.setVisibility(View.GONE);
                         Constant.showToast(PdfActivity.this, "Something went wrong");
                     }
                 }).load();
@@ -435,7 +435,7 @@ public class PdfActivity extends AppCompatActivity {
                         binding.includedProgress.progress.setVisibility(View.GONE);
                         binding.txtPageNumbers.setVisibility(View.VISIBLE);
                         binding.includedProgress.llError.setVisibility(View.GONE);
-                        binding.cvBottom.setVisibility(View.VISIBLE);
+                        binding.llPdfMenu.setVisibility(View.VISIBLE);
                         checkArrow();
                     }
                 }).onError(new OnErrorListener() {
@@ -448,7 +448,7 @@ public class PdfActivity extends AppCompatActivity {
                         binding.includedProgress.progress.setVisibility(View.GONE);
                         binding.txtPageNumbers.setVisibility(View.GONE);
                         binding.includedProgress.llError.setVisibility(View.VISIBLE);
-                        binding.cvBottom.setVisibility(View.GONE);
+                        binding.llPdfMenu.setVisibility(View.GONE);
                         Constant.showToast(PdfActivity.this, "Something went wrong");
                     }
                 }).load();

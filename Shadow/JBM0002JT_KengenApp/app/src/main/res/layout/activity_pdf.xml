@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent">
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/flow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:constraint_referenced_ids="includedToolbar,rlCenter,llPdfMenu,includedAd"
+        app:flow_wrapMode="chain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <include
         android:id="@+id/includedToolbar"
         layout="@layout/item_toolbar" />
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rlCenter"
         android:layout_width="match_parent"
-        android:layout_weight="1"
         android:layout_height="0dp">
 
         <com.water.alkaline.kengen.library.pdfviewer.PDFView
@@ -37,133 +46,128 @@
             android:paddingBottom="4dp"
             android:textColor="@android:color/white"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
 
         <include
             android:id="@+id/includedProgress"
             layout="@layout/layout_pro_error" />
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cvBottom"
-        android:visibility="gone"
+
+    <LinearLayout
+        android:id="@+id/llPdfMenu"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:animateLayoutChanges="true"
-        app:cardBackgroundColor="@color/colorMain"
-        app:cardElevation="10dp">
+        android:visibility="gone"
+        android:background="@color/colorMain"
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:id="@+id/llPdfMenu"
+            android:id="@+id/llmenuLeft"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/llmenuLeft"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:gravity="center"
-                android:orientation="vertical">
+            <ImageView
+                android:id="@+id/ivMenuLeft"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:padding="10dp"
+                android:src="@drawable/ic_left"
+                android:tint="@color/colorWhite" />
 
-                <ImageView
-                    android:id="@+id/ivMenuLeft"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_left"
-                    android:tint="@color/colorWhite" />
-
-            </LinearLayout>
-
-            <RelativeLayout
-                android:id="@+id/llmenuShare"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/ivShare"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="10dp"
-                    app:lottie_colorFilter="@color/colorWhite"
-                    android:visibility="gone"
-                    app:lottie_autoPlay="true"
-                    app:lottie_loop="true"
-                    app:lottie_rawRes="@raw/share" />
-
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/ivDownload"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_gravity="center"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:visibility="gone"
-                    app:lottie_autoPlay="true"
-                    app:lottie_loop="true"
-                    app:lottie_rawRes="@raw/download" />
-
-            </RelativeLayout>
-
-            <LinearLayout
-                android:id="@+id/llmenuJump"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/ivMenuJump"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:lottie_colorFilter="@color/colorWhite"
-                    app:lottie_autoPlay="true"
-                    app:lottie_loop="true"
-                    app:lottie_rawRes="@raw/jump" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/llmenuRight"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/ivMenuRight"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_right"
-                    android:tint="@color/colorWhite" />
-
-            </LinearLayout>
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+
+        <RelativeLayout
+            android:id="@+id/llmenuShare"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/ivShare"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="10dp"
+                android:visibility="gone"
+                app:lottie_autoPlay="true"
+                app:lottie_colorFilter="@color/colorWhite"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/share" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/ivDownload"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:visibility="gone"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/download" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/llmenuJump"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/ivMenuJump"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:lottie_autoPlay="true"
+                app:lottie_colorFilter="@color/colorWhite"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/jump" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llmenuRight"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivMenuRight"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:padding="10dp"
+                android:src="@drawable/ic_right"
+                android:tint="@color/colorWhite" />
+
+        </LinearLayout>
+    </LinearLayout>
 
     <include
         android:id="@+id/includedAd"
-        layout="@layout/native_layout_mini"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+        layout="@layout/native_layout_mini" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

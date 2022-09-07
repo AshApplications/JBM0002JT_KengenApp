@@ -154,9 +154,9 @@ public class OpenSplashAds {
                 mDialog = new Dialog(activity);
                 mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 mDialog.setContentView(R.layout.qureka_open);
-                mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 mDialog.setCancelable(false);
                 mDialog.setCanceledOnTouchOutside(false);
+                mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 mDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
                 ImageView imageView = mDialog.findViewById(R.id.qurekaAds);

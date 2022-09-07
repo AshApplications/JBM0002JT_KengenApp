@@ -56,8 +56,8 @@ fun Project.setupCore() {
     setupCommon()
     android.apply {
         defaultConfig {
-            versionCode = 12
-            versionName = "2.2"
+            versionCode = 13
+            versionName = "2.3"
         }
         compileOptions.isCoreLibraryDesugaringEnabled = true
         lintOptions {
@@ -115,7 +115,7 @@ fun Project.setupApp() {
                 isDebuggable = false
                 isShrinkResources = true
                 isMinifyEnabled = true
-                signingConfig = signingConfigs.getByName("releasecloud")
+                // signingConfig = signingConfigs.getByName("release")
                 proguardFiles(
                     getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
                 )

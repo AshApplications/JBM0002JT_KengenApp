@@ -40,7 +40,6 @@ import com.github.shadowsocks.preference.OnPreferenceDataStoreChangeListener;
 import com.github.shadowsocks.utils.Key;
 import com.github.shadowsocks.utils.StartService;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -61,16 +60,9 @@ import com.water.alkaline.kengen.model.main.MainResponse;
 import com.water.alkaline.kengen.model.update.AdsInfo;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
-import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.BannerAds;
-import com.water.alkaline.kengen.placements.InterAds;
 import com.water.alkaline.kengen.placements.InterSplashAds;
-import com.water.alkaline.kengen.placements.LargeNativeAds;
-import com.water.alkaline.kengen.placements.ListNativeAds;
 import com.water.alkaline.kengen.placements.MainAds;
-import com.water.alkaline.kengen.placements.MiniNativeAds;
 import com.water.alkaline.kengen.placements.OpenSplashAds;
-import com.water.alkaline.kengen.placements.OpenAds;
 import com.water.alkaline.kengen.utils.Constant;
 import com.water.alkaline.kengen.utils.MyService;
 
@@ -78,8 +70,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -231,7 +221,6 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
     }
 
     public void loadAds() {
-        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("DD54D1B666D3213A83E29EFFA7F3AED4")).build());
         PowerPreference.getDefaultFile().putBoolean(Constant.mIsLoaded, true);
 
         try {
@@ -493,32 +482,6 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
         }
     }
 
-    public Handler handler = new Handler(Looper.getMainLooper()) {
-        public void handleMessage(Message msg) {
-            if (!SplashActivity.this.isFinishing()) {
-                network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dismiss_dialog();
-                        if (Constant.checkInternet(SplashActivity.this)) {
-                            if (msg.what == 1000) {
-                                updateAPI();
-                            } else if (msg.what == 1001) {
-                                mainAPI();
-                            } else if (msg.what == 998) {
-                                getToken();
-                            } else {
-                                callAPI();
-                            }
-                        } else dialog.show();
-                    }
-                });
-            } else {
-                Log.e("TAG", "Something went wrong");
-            }
-        }
-    };
-
     public void checkVpnApp() {
         if (PowerPreference.getDefaultFile().getBoolean(Constant.VpnOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.VpnAuto, true)) {
             try {
@@ -592,7 +555,31 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
             }
         }, 4000);
 
-    }
+    }    public Handler handler = new Handler(Looper.getMainLooper()) {
+        public void handleMessage(Message msg) {
+            if (!SplashActivity.this.isFinishing()) {
+                network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dismiss_dialog();
+                        if (Constant.checkInternet(SplashActivity.this)) {
+                            if (msg.what == 1000) {
+                                updateAPI();
+                            } else if (msg.what == 1001) {
+                                mainAPI();
+                            } else if (msg.what == 998) {
+                                getToken();
+                            } else {
+                                callAPI();
+                            }
+                        } else dialog.show();
+                    }
+                });
+            } else {
+                Log.e("TAG", "Something went wrong");
+            }
+        }
+    };
 
     private boolean isMyServiceRunning(Class<?> cls) {
         for (ActivityManager.RunningServiceInfo runningServiceInfo : ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE)).getRunningServices(Integer.MAX_VALUE)) {
@@ -665,6 +652,8 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
         shadowsocksConnection.setBandwidthTimeout(0);
         super.onStop();
     }
+
+
 
 
 }

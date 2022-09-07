@@ -1,2 +1,3 @@
 ninja: Entering directory `G:\Android\MainProjects\JBM0002JT_KengenApp\Shadow\JBM0002JT_KengenApp\app\.cxx\RelWithDebInfo\2s1u595l\arm64-v8a'
-ninja: no work to do.
+[1/2] Building C object CMakeFiles/native-lib.dir/src/main/cpp/native-lib.c.o
+[2/2] Linking C shared library ..\..\..\..\build\intermediates\cxx\RelWithDebInfo\2s1u595l\obj\arm64-v8a\libnative-lib.so

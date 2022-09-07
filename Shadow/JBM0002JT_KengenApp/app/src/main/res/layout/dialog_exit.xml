@@ -102,7 +102,7 @@
 
             </LinearLayout>
 
-            <include layout="@layout/native_ad_large"
+            <include layout="@layout/native_layout_large"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"/>

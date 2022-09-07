@@ -11,8 +11,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
@@ -87,7 +85,7 @@ public class MiniNativeAds {
             if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleMiniNativeOnOff, true) &&
                     gNativeAd.size() > 0) {
 
-                adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_mini, null);
+                adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.native_ad_mini, null);
 
                 NativeAd lovalNative = gNativeAd.get(0);
 

@@ -123,7 +123,7 @@
     </androidx.cardview.widget.CardView>
     <include
         android:id="@+id/includedAd"
-        layout="@layout/native_ad_mini"
+        layout="@layout/native_layout_mini"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>

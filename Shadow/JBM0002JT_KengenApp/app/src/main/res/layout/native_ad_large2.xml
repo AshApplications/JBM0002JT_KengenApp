@@ -7,10 +7,11 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvMain"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="250dp"
-        app:cardCornerRadius="@dimen/_5sdp"
+        android:layout_gravity="center_horizontal"
         app:cardBackgroundColor="@color/colorBGNativeStart"
+        app:cardCornerRadius="@dimen/_5sdp"
         app:cardElevation="0dp">
 
         <com.google.android.gms.ads.nativead.NativeAdView
@@ -163,6 +164,6 @@
                 </RelativeLayout>
             </LinearLayout>
         </com.google.android.gms.ads.nativead.NativeAdView>
-
     </androidx.cardview.widget.CardView>
 </LinearLayout>
+

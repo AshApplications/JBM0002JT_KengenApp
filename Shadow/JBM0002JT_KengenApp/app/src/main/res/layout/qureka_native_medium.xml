@@ -9,6 +9,7 @@
         android:id="@+id/cvMain"
         android:layout_width="match_parent"
         android:layout_height="135dp"
+        android:layout_gravity="center_horizontal"
         app:cardBackgroundColor="@color/colorBGNativeStart"
         app:cardCornerRadius="@dimen/_5sdp"
         app:cardElevation="0dp">

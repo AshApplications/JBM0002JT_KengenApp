@@ -314,6 +314,7 @@ public class SplashActivity extends AppCompatActivity implements ShadowsocksConn
 
                                     PowerPreference.getDefaultFile().putInt(Constant.BannerAdWhichOne, appData.getBannerAdWhichOne());
 
+                                    PowerPreference.getDefaultFile().putInt(Constant.LargeNativeWhichOne, appData.getLargeNativeWhichOne());
                                     PowerPreference.getDefaultFile().putInt(Constant.ListNativeWhichOne, appData.getListNativeWhichOne());
                                     PowerPreference.getDefaultFile().putInt(Constant.ListNativeAfterCount, appData.getListNativeAfterCount());
 

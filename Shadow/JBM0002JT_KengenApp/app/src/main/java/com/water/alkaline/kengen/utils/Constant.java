@@ -85,6 +85,7 @@ public class Constant {
     public static final String GoogleBackInterOnOff = "GoogleBackInterOnOff";
     public static final String GoogleMiniNativeOnOff = "GoogleMiniNativeOnOff";
     public static final String GoogleLargeNativeOnOff = "GoogleLargeNativeOnOff";
+    public static final String LargeNativeWhichOne = "LargeNativeWhichOne";
     public static final String GoogleListNativeOnOff = "GoogleListNativeOnOff";
     public static final String BannerAdWhichOne = "BannerAdWhichOne";
     public static final String ListNativeWhichOne = "ListNativeWhichOne";

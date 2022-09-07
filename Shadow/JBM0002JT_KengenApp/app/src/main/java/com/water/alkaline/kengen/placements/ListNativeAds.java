@@ -24,7 +24,6 @@ import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.utils.Constant;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -83,18 +82,14 @@ public class ListNativeAds {
 
     public void showListNativeAds(Activity activity, FrameLayout nativeAd, TextView adSpace) {
         if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, true)) {
-            if (PowerPreference.getDefaultFile().getInt(Constant.ListNativeWhichOne, 0) == 0) {
-                showLargeNativeAds(activity, nativeAd, adSpace);
-            } else {
-                showMiniNativeAds(activity, nativeAd, adSpace);
-            }
+            showNativeAds(activity, nativeAd, adSpace );
         } else {
             nativeAd.setVisibility(View.GONE);
             adSpace.setVisibility(View.GONE);
         }
     }
 
-    public void showLargeNativeAds(Activity activity, FrameLayout nativeAd, TextView adSpace) {
+    public void showNativeAds(Activity activity, FrameLayout nativeAd, TextView adSpace) {
 
         LinearLayout adView = null;
 
@@ -102,7 +97,12 @@ public class ListNativeAds {
 
             if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleListNativeOnOff, true) && gNativeAd.size() > 0) {
 
-                adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_large, null);
+                if (PowerPreference.getDefaultFile().getInt(Constant.ListNativeWhichOne, 0) == 0)
+                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.native_ad_large, null);
+                else if (PowerPreference.getDefaultFile().getInt(Constant.ListNativeWhichOne, 0) == 1)
+                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.native_ad_medium, null);
+                else
+                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.native_ad_large2, null);
 
                 NativeAd lovalNative = gNativeAd.get(0);
 
@@ -124,7 +124,12 @@ public class ListNativeAds {
 
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaListNativeOnOff, true)) {
 
-                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_large, null);
+                    if (PowerPreference.getDefaultFile().getInt(Constant.ListNativeWhichOne, 0) == 0)
+                        adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_large, null);
+                    else if (PowerPreference.getDefaultFile().getInt(Constant.ListNativeWhichOne, 0) == 1)
+                        adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_medium, null);
+                    else
+                        adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_large2, null);
 
                     ImageView imageViewMain = adView.findViewById(R.id.qurekaAds1);
                     ImageView imageViewBG = adView.findViewById(R.id.qurekaAds);
@@ -153,121 +158,6 @@ public class ListNativeAds {
         } else {
             nativeAd.setVisibility(View.GONE);
             adSpace.setVisibility(View.GONE);
-        }
-    }
-
-    public void showMiniNativeAds(Activity activity, FrameLayout nativeAd, TextView adSpace) {
-
-        LinearLayout adView = null;
-
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, true)) {
-
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleListNativeOnOff, true) &&
-                    gNativeAd.size() > 0) {
-
-                adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_medium, null);
-
-                NativeAd lovalNative = gNativeAd.get(0);
-
-                populateUnifiedNativeAdView(lovalNative, adView.findViewById(R.id.uadview));
-
-                nativeAd.removeAllViews();
-                nativeAd.addView(adView);
-
-                adSpace.setVisibility(View.GONE);
-                nativeAd.setVisibility(View.VISIBLE);
-
-                loadNativeAds(activity);
-
-            } else {
-
-                loadNativeAds(activity);
-
-                if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaListNativeOnOff, true)) {
-
-                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_medium, null);
-
-                    ImageView imageViewMain = adView.findViewById(R.id.qurekaAds1);
-                    ImageView imageViewBG = adView.findViewById(R.id.qurekaAds);
-                    ImageView imageViewGif = adView.findViewById(R.id.gif_inter_round);
-
-                    Constant.setQureka(activity, imageViewMain, imageViewBG, imageViewGif, Constant.QLIST_COUNT);
-
-                    adView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Constant.gotoAds(activity);
-                        }
-                    });
-
-                    nativeAd.removeAllViews();
-                    nativeAd.addView(adView);
-
-                    adSpace.setVisibility(View.GONE);
-                    nativeAd.setVisibility(View.VISIBLE);
-
-                } else {
-                    nativeAd.setVisibility(View.GONE);
-                    adSpace.setVisibility(View.GONE);
-                }
-            }
-        } else {
-            nativeAd.setVisibility(View.GONE);
-            adSpace.setVisibility(View.GONE);
-        }
-    }
-
-    public void showQurekaAds(Activity activity, FrameLayout nativeAd, TextView adSpace) {
-        LinearLayout adView = null;
-
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getInt(Constant.ListNativeWhichOne, 0) == 0) {
-
-            adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_large, null);
-
-            ImageView imageViewMain = adView.findViewById(R.id.qurekaAds1);
-            ImageView imageViewBG = adView.findViewById(R.id.qurekaAds);
-            ImageView imageViewGif = adView.findViewById(R.id.gif_inter_round);
-
-            Constant.setQureka(activity, imageViewMain, imageViewBG, imageViewGif, Constant.QLIST_COUNT);
-
-            adView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Constant.gotoAds(activity);
-                }
-            });
-
-            nativeAd.removeAllViews();
-            nativeAd.addView(adView);
-
-            adSpace.setVisibility(View.GONE);
-            nativeAd.setVisibility(View.VISIBLE);
-
-        } else if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getInt(Constant.ListNativeWhichOne, 1) == 1) {
-            adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_medium, null);
-
-            ImageView imageViewMain = adView.findViewById(R.id.qurekaAds1);
-            ImageView imageViewBG = adView.findViewById(R.id.qurekaAds);
-            ImageView imageViewGif = adView.findViewById(R.id.gif_inter_round);
-
-            Constant.setQureka(activity, imageViewMain, imageViewBG, imageViewGif, Constant.QLIST_COUNT);
-
-            adView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Constant.gotoAds(activity);
-                }
-            });
-
-            nativeAd.removeAllViews();
-            nativeAd.addView(adView);
-
-            adSpace.setVisibility(View.GONE);
-            nativeAd.setVisibility(View.VISIBLE);
-
-        } else {
-            adSpace.setVisibility(View.GONE);
-            nativeAd.setVisibility(View.GONE);
         }
     }
 

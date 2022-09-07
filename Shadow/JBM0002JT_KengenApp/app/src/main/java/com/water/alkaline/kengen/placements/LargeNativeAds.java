@@ -2,7 +2,6 @@ package com.water.alkaline.kengen.placements;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -12,8 +11,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
@@ -80,7 +77,6 @@ public class LargeNativeAds {
     }
 
 
-
     public void showNativeAds(Activity activity, Dialog dialog, FrameLayout nativeAdLayout, TextView adSpace) {
 
         LinearLayout adView = null;
@@ -92,10 +88,16 @@ public class LargeNativeAds {
                 adSpace.setVisibility(View.GONE);
             } else if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleAdsOnOff, false) && PowerPreference.getDefaultFile().getBoolean(Constant.GoogleLargeNativeOnOff, true) && gNativeAd.size() > 0) {
 
-                if (dialog == null)
-                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_large, null);
-                else
-                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.ads_native_medium, null);
+                if (dialog == null) {
+                    if (PowerPreference.getDefaultFile().getInt(Constant.LargeNativeWhichOne, 0) == 0)
+                        adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.native_ad_large, null);
+                    else if (PowerPreference.getDefaultFile().getInt(Constant.LargeNativeWhichOne, 0) == 1)
+                        adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.native_ad_medium, null);
+                    else
+                        adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.native_ad_large2, null);
+
+                } else
+                    adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.native_ad_medium, null);
 
                 NativeAd lovalNative = gNativeAd.get(0);
 
@@ -117,9 +119,14 @@ public class LargeNativeAds {
 
                 if (PowerPreference.getDefaultFile().getBoolean(Constant.QurekaOnOff, true) && PowerPreference.getDefaultFile().getBoolean(Constant.QurekaLargeNativeOnOff, true)) {
 
-                    if (dialog == null)
-                        adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_large, null);
-                    else
+                    if (dialog == null) {
+                        if (PowerPreference.getDefaultFile().getInt(Constant.LargeNativeWhichOne, 0) == 0)
+                            adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_large, null);
+                        else if (PowerPreference.getDefaultFile().getInt(Constant.LargeNativeWhichOne, 0) == 1)
+                            adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_medium, null);
+                        else
+                            adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_large2, null);
+                    } else
                         adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_medium, null);
 
                     ImageView imageViewMain = adView.findViewById(R.id.qurekaAds1);

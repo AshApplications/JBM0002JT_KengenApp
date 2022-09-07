@@ -19,6 +19,8 @@ import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.databinding.NativeAdLargeBinding;
 import com.water.alkaline.kengen.databinding.NativeAdMediumBinding;
 import com.water.alkaline.kengen.databinding.NativeAdMiniBinding;
+import com.water.alkaline.kengen.databinding.NativeLayoutLargeBinding;
+import com.water.alkaline.kengen.databinding.NativeLayoutMediumBinding;
 import com.water.alkaline.kengen.model.DownloadEntity;
 import com.water.alkaline.kengen.placements.ListNativeAds;
 import com.water.alkaline.kengen.placements.MainAds;
@@ -98,9 +100,11 @@ public class DownloadAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             return new ViewHolder(ItemImageBinding.inflate(LayoutInflater.from(activity), parent, false));
         else {
             if (PowerPreference.getDefaultFile().getInt(Constant.ListNativeWhichOne, 0) == 0)
-                return new LargeAdHolder(NativeAdLargeBinding.inflate(LayoutInflater.from(activity), parent, false));
+                return new LargeAdHolder(NativeLayoutLargeBinding.inflate(LayoutInflater.from(activity), parent, false));
+            else if(PowerPreference.getDefaultFile().getInt(Constant.ListNativeWhichOne, 0) == 1)
+                return new MediumAdHolder(NativeLayoutMediumBinding.inflate(LayoutInflater.from(activity), parent, false));
             else
-                return new MediumAdHolder(NativeAdMediumBinding.inflate(LayoutInflater.from(activity), parent, false));
+                return new LargeAdHolder(NativeLayoutLargeBinding.inflate(LayoutInflater.from(activity), parent, false));
         }
     }
 

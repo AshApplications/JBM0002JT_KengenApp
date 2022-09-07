@@ -69,6 +69,9 @@ public class AdsInfo {
     @SerializedName("GoogleLargeNativeOnOff")
     @Expose
     private Boolean googleLargeNativeOnOff;
+    @SerializedName("LargeNativeWhichOne")
+    @Expose
+    private Integer LargeNativeWhichOne;
     @SerializedName("GoogleListNativeOnOff")
     @Expose
     private Boolean googleListNativeOnOff;
@@ -124,6 +127,14 @@ public class AdsInfo {
     @Expose
     private Integer adsCloseCount;
 
+
+    public Integer getLargeNativeWhichOne() {
+        return LargeNativeWhichOne;
+    }
+
+    public void setLargeNativeWhichOne(Integer largeNativeWhichOne) {
+        LargeNativeWhichOne = largeNativeWhichOne;
+    }
 
     public Boolean getLoaderNativeOnOff() {
         return LoaderNativeOnOff;

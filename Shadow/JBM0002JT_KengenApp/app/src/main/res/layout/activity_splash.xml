@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <include
-        layout="@layout/native_ad_mini"
+        layout="@layout/native_layout_mini"
         android:visibility="gone" />
 
     <ImageView

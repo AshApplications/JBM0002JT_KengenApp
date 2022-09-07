@@ -96,7 +96,7 @@ public class DownloadActivity extends AppCompatActivity {
             }
         });
         binding.rvDownloads.setLayoutManager(manager);
-       binding.rvDownloads.setAdapter(adapter);
+        binding.rvDownloads.setAdapter(adapter);
         binding.rvDownloads.setItemViewCacheSize(100);
         refreshActivity();
     }

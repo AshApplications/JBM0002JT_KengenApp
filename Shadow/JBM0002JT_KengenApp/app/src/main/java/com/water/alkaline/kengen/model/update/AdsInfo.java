@@ -1,4 +1,3 @@
-
 package com.water.alkaline.kengen.model.update;
 
 import com.google.gson.annotations.Expose;
@@ -9,6 +8,14 @@ public class AdsInfo {
     @SerializedName("id")
     @Expose
     private String id;
+    @SerializedName("AppOpen")
+    @Expose
+    private Integer AppOpen;
+    @SerializedName("LoaderNativeOnOff")
+    @Expose
+    private Boolean LoaderNativeOnOff;
+
+
     @SerializedName("GoogleBannerAds")
     @Expose
     private String GoogleBannerAds;
@@ -24,6 +31,8 @@ public class AdsInfo {
     @SerializedName("GoogleAppIdAds")
     @Expose
     private String googleAppIdAds;
+
+
     @SerializedName("AdsOnOff")
     @Expose
     private Boolean adsOnOff;
@@ -33,6 +42,8 @@ public class AdsInfo {
     @SerializedName("QurekaOnOff")
     @Expose
     private Boolean qurekaOnOff;
+
+
     @SerializedName("GoogleSplashOpenAdsOnOff")
     @Expose
     private Boolean googleSplashOpenAdsOnOff;
@@ -42,21 +53,24 @@ public class AdsInfo {
     @SerializedName("GoogleAppOpenAdsOnOff")
     @Expose
     private Boolean googleAppOpenAdsOnOff;
+
+
     @SerializedName("GoogleBannerOnOff")
     @Expose
     private Boolean GoogleBannerOnOff;
     @SerializedName("BannerAdWhichOne")
     @Expose
     private Integer BannerAdWhichOne;
-    @SerializedName("AppOpen")
-    @Expose
-    private Integer AppOpen;
+
+
     @SerializedName("IntervalCount")
     @Expose
     private Integer IntervalCount;
     @SerializedName("BackIntervalCount")
     @Expose
     private Integer BackIntervalCount;
+
+    
     @SerializedName("GoogleInterOnOff")
     @Expose
     private Boolean GoogleInterOnOff;
@@ -75,9 +89,7 @@ public class AdsInfo {
     @SerializedName("GoogleListNativeOnOff")
     @Expose
     private Boolean googleListNativeOnOff;
-    @SerializedName("LoaderNativeOnOff")
-    @Expose
-    private Boolean LoaderNativeOnOff;
+
     @SerializedName("ListNativeWhichOne")
     @Expose
     private Integer listNativeWhichOne;

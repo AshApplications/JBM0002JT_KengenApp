@@ -15,11 +15,6 @@ import com.preference.PowerPreference;
 
 public class AdUtils {
 
-    public static String DEF_VALUE = "#02adff";
-    public static String DEF_BUTTON_VALUE = "#000000";
-    public static String DEF_BUTTON_TEXT = "#FFFFFF";
-    public static String DEF_TEXT = "#000000";
-
     public static final String activitySplash = "activitySplash";
 
     public static Integer[] adsQurekaInters = new Integer[]{R.drawable.qureka_inter1, R.drawable.qureka_inter2, R.drawable.qureka_inter3, R.drawable.qureka_inter4, R.drawable.qureka_inter5};

@@ -1,19 +1,9 @@
 package com.water.alkaline.kengen.ui.activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProvider;
-
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -21,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -31,17 +20,25 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.preference.PowerPreference;
 import com.water.alkaline.kengen.BuildConfig;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
 import com.water.alkaline.kengen.MyApplication;
-import com.water.alkaline.kengen.utils.MyService;
 import com.water.alkaline.kengen.R;
+import com.google.gms.ads.AdUtils;
+import com.google.gms.ads.InterAds;
+import com.google.gms.ads.MainAds;
+import com.google.gms.ads.OpenAds;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.data.network.RetroClient;
 import com.water.alkaline.kengen.databinding.ActivitySplashBinding;
@@ -52,23 +49,13 @@ import com.water.alkaline.kengen.model.main.MainResponse;
 import com.water.alkaline.kengen.model.update.AdsInfo;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
-import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.BannerAds;
-import com.water.alkaline.kengen.placements.InterAds;
-import com.water.alkaline.kengen.placements.LargeNativeAds;
-import com.water.alkaline.kengen.placements.ListNativeAds;
-import com.water.alkaline.kengen.placements.MiniNativeAds;
-import com.water.alkaline.kengen.placements.NewOpenAds;
-import com.water.alkaline.kengen.placements.OpenAds;
 import com.water.alkaline.kengen.utils.Constant;
-import com.preference.PowerPreference;
-
+import com.water.alkaline.kengen.utils.MyService;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -76,47 +63,18 @@ import retrofit2.Response;
 
 public class SplashActivity extends AppCompatActivity {
 
-    ActivitySplashBinding binding;
+    public static SplashActivity activity;
+    public AppViewModel viewModel;
+    public Dialog dialog;
 
+    ActivitySplashBinding binding;
     int REQUEST_PERMISSIONS = 200;
     boolean check = false;
-    public AppViewModel viewModel;
-
     int VERSION = 0;
-
-    public Dialog dialog;
-    public static SplashActivity activity;
 
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
     }
-
-
-    public Handler handler = new Handler(Looper.getMainLooper()) {
-        public void handleMessage(Message msg) {
-            if (!SplashActivity.this.isFinishing()) {
-                network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dismiss_dialog();
-                        if (Constant.checkInternet(SplashActivity.this)) {
-                            if (msg.what == 1000) {
-                                updateAPI();
-                            } else if (msg.what == 1001) {
-                                mainAPI();
-                            } else if (msg.what == 998) {
-                                getToken();
-                            } else {
-                                callAPI();
-                            }
-                        } else dialog.show();
-                    }
-                });
-            } else {
-                Log.e("TAG", "Something went wrong");
-            }
-        }
-    };
 
     public void dismiss_dialog() {
         if (dialog != null && dialog.isShowing())
@@ -127,19 +85,13 @@ public class SplashActivity extends AppCompatActivity {
         dialog = new Dialog(this, R.style.NormalDialog);
         DialogInternetBinding binding = DialogInternetBinding.inflate(getLayoutInflater());
         dialog.setContentView(binding.getRoot());
-        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         dialog.show();
         binding.txtError.setText(text);
         return binding;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        activity = null;
     }
 
     @Override
@@ -148,6 +100,10 @@ public class SplashActivity extends AppCompatActivity {
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         activity = this;
+
+        PowerPreference.getDefaultFile().putString(AdUtils.activitySplash, SplashActivity.class.getName());
+
+        PowerPreference.getDefaultFile().putBoolean(Constant.mIsLoaded, false);
         PowerPreference.getDefaultFile().putInt(Constant.mIsDuration, 1);
         PowerPreference.getDefaultFile().putBoolean(Constant.isRunning, true);
 
@@ -169,27 +125,18 @@ public class SplashActivity extends AppCompatActivity {
                     public void onStop() {
                         binding.progress.setVisibility(View.VISIBLE);
                         setBG();
-                        checkVpn();
+                        startApp();
                     }
                 }).start();
 
 
     }
 
-    public void checkVpn() {
+    public void startApp() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (Constant.isVpnConnected()) {
-                    network_dialog("VPN is Connected Please Turn it Off & Try Again !")
-                            .txtRetry.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    dismiss_dialog();
-                                    checkVpn();
-                                }
-                            });
-                } else if (MyApplication.getMain(SplashActivity.this).equalsIgnoreCase("")) {
+                if (MyApplication.getMain(SplashActivity.this).equalsIgnoreCase("")) {
                     network_dialog("Something Went Wrong\nPlease Try Again Later !")
                             .txtRetry.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -248,6 +195,21 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
+    public void loadAds() {
+        PowerPreference.getDefaultFile().putBoolean(Constant.mIsLoaded, true);
+        try {
+            ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+            ai.metaData.putString("com.google.android.gms.ads.APPLICATION_ID", PowerPreference.getDefaultFile().getString(AdUtils.APPID, "ca-app-pub-3940256099942544~3347511713"));
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("TAG", "Failed to load meta-data, NameNotFound: " + e.getMessage());
+        } catch (NullPointerException e) {
+            Log.e("TAG", "Failed to load meta-data, NullPointer: " + e.getMessage());
+        }
+
+        MobileAds.initialize(SplashActivity.this);
+        new MainAds().loadAds(this);
+    }
+
     public void updateAPI() {
 
         if (Constant.checkInternet(SplashActivity.this)) {
@@ -279,74 +241,38 @@ public class SplashActivity extends AppCompatActivity {
 
                                     PowerPreference.getDefaultFile().putString(Constant.mToken, updateResponse.getMtoken());
 
-                                    PowerPreference.getDefaultFile().putString(Constant.BANNERID, appData.getGoogleBannerAds());
-                                    PowerPreference.getDefaultFile().putString(Constant.INTERID, appData.getGoogleInterAds());
-                                    PowerPreference.getDefaultFile().putString(Constant.NATIVEID, appData.getGoogleNativeAds());
-                                    PowerPreference.getDefaultFile().putString(Constant.OPENAD, appData.getGoogleAppOpenAds());
+                                    PowerPreference.getDefaultFile().putString(AdUtils.APPID, appData.getGoogleAppIdAds());
 
+                                    PowerPreference.getDefaultFile().putString(AdUtils.BANNERID, appData.getGoogleBannerAds());
+                                    PowerPreference.getDefaultFile().putString(AdUtils.INTERID, appData.getGoogleInterAds());
+                                    PowerPreference.getDefaultFile().putString(AdUtils.NATIVEID, appData.getGoogleNativeAds());
+                                    PowerPreference.getDefaultFile().putString(AdUtils.OPENAD, appData.getGoogleAppOpenAds());
 
-                                    PowerPreference.getDefaultFile().putInt(Constant.AppOpen, appData.getAppOpen());
+                                    PowerPreference.getDefaultFile().putInt(AdUtils.AppOpenTime, appData.getAppOpenTime());
 
+                                    PowerPreference.getDefaultFile().putBoolean(AdUtils.AdsOnOff, appData.getAdsOnOff());
+                                    PowerPreference.getDefaultFile().putBoolean(AdUtils.GoogleAdsOnOff, appData.getGoogleAdsOnOff());
+                                    PowerPreference.getDefaultFile().putBoolean(AdUtils.QurekaOnOff, appData.getQurekaOnOff());
 
-                                    try {
-                                        ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-                                        ai.metaData.putString("com.google.android.gms.ads.APPLICATION_ID", appData.getGoogleAppIdAds());
-                                    } catch (PackageManager.NameNotFoundException e) {
-                                        Log.e("TAG", "Failed to load meta-data, NameNotFound: " + e.getMessage());
-                                    } catch (NullPointerException e) {
-                                        Log.e("TAG", "Failed to load meta-data, NullPointer: " + e.getMessage());
-                                    }
+                                    PowerPreference.getDefaultFile().putBoolean(AdUtils.LoaderNativeOnOff, appData.getLoaderNativeOnOff());
+                                    PowerPreference.getDefaultFile().putBoolean(AdUtils.ExitDialogNativeOnOff, true);
 
-                                    MobileAds.initialize(SplashActivity.this);
+                                    PowerPreference.getDefaultFile().putInt(AdUtils.SERVER_INTERVAL_COUNT, appData.getInterIntervalCount());
+                                    PowerPreference.getDefaultFile().putInt(AdUtils.APP_INTERVAL_COUNT, 0);
 
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.AdsOnOff, appData.getAdsOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, appData.getGoogleAdsOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaOnOff, appData.getQurekaOnOff());
+                                    PowerPreference.getDefaultFile().putInt(AdUtils.SERVER_BACK_COUNT, appData.getBackInterIntervalCount());
+                                    PowerPreference.getDefaultFile().putInt(AdUtils.APP_BACK_COUNT, 0);
 
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.isList, appData.getList());
+                                    PowerPreference.getDefaultFile().putInt(AdUtils.WhichOneSplashAppOpen, appData.getWhichOneSplashAppOpen());
+                                    PowerPreference.getDefaultFile().putInt(AdUtils.WhichOneBannerNative, appData.getWhichOneBannerNative());
+                                    PowerPreference.getDefaultFile().putInt(AdUtils.WhichOneAllNative, appData.getWhichOneAllNative());
+                                    PowerPreference.getDefaultFile().putInt(AdUtils.WhichOneListNative, appData.getWhichOneListNative());
+                                    PowerPreference.getDefaultFile().putInt(AdUtils.ListNativeAfterCount, appData.getListNativeAfterCount());
 
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.GoogleSplashOpenAdsOnOff, appData.getGoogleSplashOpenAdsOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.GoogleExitSplashInterOnOff, appData.getGoogleExitSplashInterOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAppOpenAdsOnOff, appData.getGoogleAppOpenAdsOnOff());
+                                    PowerPreference.getDefaultFile().putBoolean(AdUtils.ShowDialogBeforeAds, appData.getShowDialogBeforeAds());
+                                    PowerPreference.getDefaultFile().putDouble(AdUtils.DialogTimeInSec, appData.getDialogTimeInSec());
 
-
-                                    PowerPreference.getDefaultFile().putInt(Constant.SERVER_INTERVAL_COUNT, appData.getIntervalCount());
-                                    PowerPreference.getDefaultFile().putInt(Constant.APP_INTERVAL_COUNT, 0);
-
-                                    PowerPreference.getDefaultFile().putInt(Constant.SERVER_BACK_COUNT, appData.getBackIntervalCount());
-                                    PowerPreference.getDefaultFile().putInt(Constant.APP_BACK_COUNT, 0);
-
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.GoogleBannerOnOff, appData.getGoogleBannerOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.GoogleInterOnOff, appData.getGoogleInterOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.GoogleBackInterOnOff, appData.getGoogleBackInterOnOff());
-
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.GoogleMiniNativeOnOff, appData.getGoogleMiniNativeOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.GoogleLargeNativeOnOff, appData.getGoogleLargeNativeOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.GoogleListNativeOnOff, appData.getGoogleListNativeOnOff());
-
-                                    PowerPreference.getDefaultFile().putInt(Constant.BannerAdWhichOne, appData.getBannerAdWhichOne());
-
-                                    PowerPreference.getDefaultFile().putInt(Constant.ListNativeWhichOne, appData.getListNativeWhichOne());
-                                    PowerPreference.getDefaultFile().putInt(Constant.ListNativeAfterCount, appData.getListNativeAfterCount());
-
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaIconOnOff, appData.getQurekaIconOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaBannerOnOff, appData.getQurekaBannerOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaInterOnOff, appData.getQurekaInterOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaBackInterOnOff, appData.getQurekaBackInterOnOff());
-
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaMiniNativeOnOff, appData.getQurekaMiniNativeOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaLargeNativeOnOff, appData.getQurekaLargeNativeOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaListNativeOnOff, appData.getQurekaListNativeOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.QurekaAppOpenOnOff, appData.getQurekaAppOpenOnOff());
-
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.ShowDialogBeforeAds, appData.getShowDialogBeforeAds());
-                                    PowerPreference.getDefaultFile().putDouble(Constant.DialogTimeInSec, appData.getDialogTimeInSec());
-
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.VpnOnOff, appData.getVpnOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(Constant.VpnAuto, appData.getVpnAuto());
-                                    PowerPreference.getDefaultFile().putString(Constant.VpnUrl, appData.getVpnUrl());
-
-                                    PowerPreference.getDefaultFile().putInt(Constant.AD_CLICK_COUNT, appData.getAdsCloseCount());
+                                    PowerPreference.getDefaultFile().putInt(AdUtils.AD_CLICK_COUNT, appData.getAdsCloseCount());
 
                                     if (updateResponse.getFeedbacks() != null) {
                                         PowerPreference.getDefaultFile().putString(Constant.mFeeds, new Gson().toJson(updateResponse.getFeedbacks()));
@@ -357,31 +283,22 @@ public class SplashActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putString(Constant.mNotice, appInfo.getAppNotice());
 
                                     PowerPreference.getDefaultFile().putString(Constant.notifyKey, appInfo.getNotifyKey());
-                                    PowerPreference.getDefaultFile().putString(Constant.QUREKA_ADS, appInfo.getQureka());
+                                    PowerPreference.getDefaultFile().putString(AdUtils.QUREKA_ADS, appInfo.getQureka());
 
                                     PowerPreference.getDefaultFile().putString(Constant.appShareMsg, appInfo.getAppShareMsg());
                                     PowerPreference.getDefaultFile().putString(Constant.vidShareMsg, appInfo.getVidShareMsg());
 
                                     if (!PowerPreference.getDefaultFile().getString(Constant.T_DATE, "not").equalsIgnoreCase(appInfo.getTodayDate())) {
                                         PowerPreference.getDefaultFile().putString(Constant.T_DATE, appInfo.getTodayDate());
-                                        PowerPreference.getDefaultFile().putInt(Constant.APP_CLICK_COUNT, 0);
+                                        PowerPreference.getDefaultFile().putInt(AdUtils.APP_CLICK_COUNT, 0);
                                     } else {
-                                        int clickCOunt2 = PowerPreference.getDefaultFile().getInt(Constant.APP_CLICK_COUNT, 0);
-                                        if (clickCOunt2 >= PowerPreference.getDefaultFile().getInt(Constant.AD_CLICK_COUNT, 3)) {
-                                            PowerPreference.getDefaultFile().putBoolean(Constant.GoogleAdsOnOff, false);
+                                        int clickCOunt2 = PowerPreference.getDefaultFile().getInt(AdUtils.APP_CLICK_COUNT, 0);
+                                        if (clickCOunt2 >= PowerPreference.getDefaultFile().getInt(AdUtils.AD_CLICK_COUNT, 3)) {
+                                            PowerPreference.getDefaultFile().putBoolean(AdUtils.GoogleAdsOnOff, false);
                                         }
                                     }
 
-                                    if (PowerPreference.getDefaultFile().getBoolean(Constant.AdsOnOff, false)) {
-                                        new BackInterAds().loadInterAds(SplashActivity.this);
-                                        new BannerAds().loadBannerAds(SplashActivity.this);
-                                        new InterAds().loadInterAds(SplashActivity.this);
-                                        new LargeNativeAds().loadNativeAds(SplashActivity.this);
-                                        new ListNativeAds().loadNativeAds(SplashActivity.this);
-                                        new MiniNativeAds().loadNativeAds(SplashActivity.this);
-                                        new OpenAds().loadOpenAd();
-                                        new NewOpenAds().loadOpenAd(SplashActivity.this);
-                                    }
+                                    loadAds();
 
                                     if (!appInfo.getTitle().equals("")) {
                                         binding.txtName.setText(appInfo.getTitle());
@@ -476,7 +393,6 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
-
     public void mainAPI() {
         if (Constant.checkInternet(SplashActivity.this)) {
             RetroClient.getInstance(this).getApi().dataApi(DecryptEncrypt.EncryptStr(SplashActivity.this, PowerPreference.getDefaultFile().getString(Constant.mToken, "123"))).enqueue(new Callback<String>() {
@@ -497,7 +413,7 @@ public class SplashActivity extends AppCompatActivity {
                         viewModel.insertPdf(mainResponse.getData().getPdfs());
                         viewModel.insertBanner(mainResponse.getData().getBanners());
 
-                        getPermissions();
+                        nextActivity();
 
                     } catch (Exception e) {
                         Constant.showLog(e.toString());
@@ -516,94 +432,7 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (check) {
-            getPermissions();
-        }
-    }
-
-    public void getPermissions() {
-        check = false;
-        if (checkPermissions()) {
-            nextActivity();
-        } else {
-            requestPermissions();
-        }
-    }
-
-    private boolean checkPermissions() {
-        return ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void requestPermissions() {
-        ActivityCompat.requestPermissions(SplashActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSIONS) {
-            if (grantResults.length > 0) {
-
-                boolean write = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                boolean writeD = shouldShowRequestPermissionRationale(permissions[0]);
-
-                boolean read = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-                boolean readD = shouldShowRequestPermissionRationale(permissions[1]);
-
-                if (write && read) {
-                    nextActivity();
-                } else if (!writeD || !readD) {
-                    forcePermissionDialog("You need to allow access to the permissions. Without this permission you can't access your storage. Are you sure deny this permission?",
-                            (dialog, which) -> {
-                                check = true;
-                                Intent intent = new Intent();
-                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                                intent.setData(uri);
-                                startActivity(intent);
-                            });
-                } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-                        if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                            oKCancelDialog("You need to allow access to the permissions",
-                                    (dialog, which) -> {
-                                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-                                                REQUEST_PERMISSIONS);
-                                    });
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void oKCancelDialog(String s, DialogInterface.OnClickListener o) {
-        new AlertDialog.Builder(SplashActivity.this)
-                .setMessage(s)
-                .setPositiveButton("OK", o)
-                .create()
-                .show();
-    }
-
-    private void forcePermissionDialog(String s, DialogInterface.OnClickListener aPackage) {
-        new AlertDialog.Builder(SplashActivity.this)
-                .setTitle("Permission Denied")
-                .setMessage(s)
-                .setPositiveButton("Give Permission", aPackage)
-                .create()
-                .show();
-    }
-
-
     public void nextActivity() {
-
         FirebaseMessaging.getInstance().subscribeToTopic(PowerPreference.getDefaultFile().getString(Constant.notifyKey, "kengen")).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -614,31 +443,53 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleSplashOpenAdsOnOff, false)) {
-
-                    if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 1) {
-                        new InterAds().watchAds(SplashActivity.this, new InterAds.OnAdClosedListener() {
-                            @Override
-                            public void onAdClosed() {
-                                startActivity(new Intent(SplashActivity.this, HomeActivity.class));
-                            }
-                        });
-                    } else if (PowerPreference.getDefaultFile().getInt(Constant.AppOpen, 1) == 2) {
-                        new NewOpenAds().showOpenAd(SplashActivity.this, new NewOpenAds.OnAdClosedListener() {
-                            @Override
-                            public void onAdClosed() {
-                                startActivity(new Intent(SplashActivity.this, HomeActivity.class));
-                            }
-                        });
-                    } else {
-                        startActivity(new Intent(SplashActivity.this, HomeActivity.class));
-                    }
-                } else
+                if (PowerPreference.getDefaultFile().getInt(AdUtils.WhichOneSplashAppOpen, 0) == 1) {
+                    new MainAds().showSplashInterAds(SplashActivity.this, new InterAds.OnAdClosedListener() {
+                        @Override
+                        public void onAdClosed() {
+                            startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+                        }
+                    });
+                } else if (PowerPreference.getDefaultFile().getInt(AdUtils.WhichOneSplashAppOpen, 0) == 2) {
+                    new MainAds().showOpenAds(SplashActivity.this, new OpenAds.OnAdClosedListener() {
+                        @Override
+                        public void onAdClosed() {
+                            startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+                        }
+                    });
+                } else {
                     startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+                }
             }
         }, 4000);
 
     }
+
+    public Handler handler = new Handler(Looper.getMainLooper()) {
+        public void handleMessage(Message msg) {
+            if (!SplashActivity.this.isFinishing()) {
+                network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dismiss_dialog();
+                        if (Constant.checkInternet(SplashActivity.this)) {
+                            if (msg.what == 1000) {
+                                updateAPI();
+                            } else if (msg.what == 1001) {
+                                mainAPI();
+                            } else if (msg.what == 998) {
+                                getToken();
+                            } else {
+                                callAPI();
+                            }
+                        } else dialog.show();
+                    }
+                });
+            } else {
+                Log.e("TAG", "Something went wrong");
+            }
+        }
+    };
 
     private boolean isMyServiceRunning(Class<?> cls) {
         for (ActivityManager.RunningServiceInfo runningServiceInfo : ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE)).getRunningServices(Integer.MAX_VALUE)) {
@@ -650,6 +501,4 @@ public class SplashActivity extends AppCompatActivity {
         Log.e("ServiceStatus", "Not running");
         return false;
     }
-
-
 }

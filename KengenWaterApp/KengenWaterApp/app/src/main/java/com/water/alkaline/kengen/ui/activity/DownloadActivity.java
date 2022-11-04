@@ -9,14 +9,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 
-import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.ActivityDownloadBinding;
-import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.DownloadEntity;
-import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.InterAds;
-import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.google.gms.ads.BackInterAds;
+import com.google.gms.ads.InterAds;
+import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.ui.adapter.DownloadAdapter;
 import com.water.alkaline.kengen.ui.listener.OnDownloadListener;
 import com.water.alkaline.kengen.utils.Constant;
@@ -35,22 +33,16 @@ public class DownloadActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Constant.checkIcon(this);
-        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
+        new MainAds().showBannerAds(this, binding.includedAd.adFrameMini, binding.includedAd.adSpaceMini);
     }
+
     @Override
     public void onBackPressed() {
-        new BackInterAds().showInterAds(this, new BackInterAds.OnAdClosedListener() {
-            @Override
-            public void onAdClosed() {
-                finish();
-            }
-        });
+        new MainAds().showBackInterAds(this, this::finish);
     }
 
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-
         binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,9 +91,8 @@ public class DownloadActivity extends AppCompatActivity {
             }
         });
         binding.rvDownloads.setLayoutManager(manager);
-        binding.rvDownloads.addItemDecoration(new ItemOffsetDecoration(this, R.dimen.item_off_ten));
         binding.rvDownloads.setAdapter(adapter);
-        binding.rvDownloads.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvDownloads.setItemViewCacheSize(100);
         refreshActivity();
     }
 

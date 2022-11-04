@@ -22,16 +22,15 @@ import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.data.network.RetroClient;
 import com.water.alkaline.kengen.databinding.ActivityVideoListBinding;
-import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.ErrorReponse;
 import com.water.alkaline.kengen.model.SaveEntity;
 import com.water.alkaline.kengen.model.channel.ChannelResponse;
 import com.water.alkaline.kengen.model.channel.PlaylistResponse;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
-import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.InterAds;
-import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.google.gms.ads.BackInterAds;
+import com.google.gms.ads.InterAds;
+import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnLoadMoreListener;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
@@ -55,18 +54,12 @@ public class VideoListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Constant.checkIcon(this);
-        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
+        new MainAds().showBannerAds(this, binding.includedAd.adFrameMini, binding.includedAd.adSpaceMini);
     }
 
     @Override
     public void onBackPressed() {
-        new BackInterAds().showInterAds(this, new BackInterAds.OnAdClosedListener() {
-            @Override
-            public void onAdClosed() {
-                finish();
-            }
-        });
+        new MainAds().showBackInterAds(this, this::finish);
     }
 
     public void setBG() {
@@ -111,7 +104,6 @@ public class VideoListActivity extends AppCompatActivity {
             }
         });
         binding.rvVideos.setLayoutManager(manager);
-        binding.rvVideos.addItemDecoration(new ItemOffsetDecoration(this, R.dimen.item_off_ten));
 
         adapter = new VideosAdapter(this, list, binding.rvVideos, new OnVideoListener() {
             @Override
@@ -134,7 +126,7 @@ public class VideoListActivity extends AppCompatActivity {
         });
 
         binding.rvVideos.setAdapter(adapter);
-        binding.rvVideos.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvVideos.setItemViewCacheSize(100);
         adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {

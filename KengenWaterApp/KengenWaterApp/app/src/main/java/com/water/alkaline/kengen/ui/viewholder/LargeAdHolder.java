@@ -5,15 +5,13 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.water.alkaline.kengen.databinding.AdsNativeLargeBinding;
-import com.water.alkaline.kengen.databinding.NativeAdLargeBinding;
-
+import com.google.gms.ads.databinding.LayoutAdLargeBinding;
 
 
 public class LargeAdHolder extends RecyclerView.ViewHolder {
-    public NativeAdLargeBinding binding;
+    public LayoutAdLargeBinding binding;
 
-    public LargeAdHolder(@NonNull NativeAdLargeBinding itemView) {
+    public LargeAdHolder(@NonNull LayoutAdLargeBinding itemView) {
         super(itemView.getRoot());
         this.binding = itemView;
     }

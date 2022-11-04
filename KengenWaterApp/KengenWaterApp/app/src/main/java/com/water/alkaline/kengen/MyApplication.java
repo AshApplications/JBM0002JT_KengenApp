@@ -5,32 +5,26 @@ import android.content.Context;
 
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
+import com.google.gms.ads.CustomApplication;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.library.downloader.PRDownloader;
 
 import java.util.ArrayList;
 
-public class MyApplication extends Application {
+public class MyApplication extends CustomApplication {
 
     public static ArrayList<Integer> arrayList = new ArrayList<>();
 
     private static MyApplication instance;
-    public AppViewModel viewModel;
 
     static {
         System.loadLibrary("native-lib");
     }
 
-    public static MyApplication getInstance() {
-        if (instance == null)
-            instance = new MyApplication();
-        return instance;
-    }
+    public AppViewModel viewModel;
 
-    public AppViewModel getViewModel() {
-        if (viewModel == null)
-            viewModel = new AppViewModel(this);
-        return viewModel;
+    public static MyApplication getInstance() {
+        return instance;
     }
 
     public static Context getContext() {
@@ -45,23 +39,37 @@ public class MyApplication extends Application {
         return circularProgressDrawable;
     }
 
+    public static native String getBase(Context context);
+
+    public static native String getMain(Context context);
+
+    public static native String getSub(Context context);
+
+    public static native String getKey1(Context context);
+
+    public static native String getKey2(Context context);
+
+    public static native String getIcon(Context context);
+
+    public static native String getBanner(Context context);
+
+    public static native String getInter(Context context);
+
+    public static native String getRound(Context context);
+
+    public static native String getFlag(Context context);
+
+    public AppViewModel getViewModel() {
+        if (viewModel == null)
+            viewModel = new AppViewModel(this);
+        return viewModel;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         instance = this;
         PRDownloader.initialize(getApplicationContext());
     }
-
-    public static native String getBase(Context context);
-    public static native String getMain(Context context);
-    public static native String getSub(Context context);
-
-    public static native String getKey1(Context context);
-    public static native String getKey2(Context context);
-
-    public static native String getIcon(Context context);
-    public static native String getBanner(Context context);
-    public static native String getInter(Context context);
-    public static native String getRound(Context context);
 
 }

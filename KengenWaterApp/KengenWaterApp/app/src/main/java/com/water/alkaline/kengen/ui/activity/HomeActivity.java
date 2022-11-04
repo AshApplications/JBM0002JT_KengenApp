@@ -1,16 +1,9 @@
 package com.water.alkaline.kengen.ui.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.viewpager2.widget.ViewPager2;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -21,28 +14,31 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.preference.PowerPreference;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.ActivityHomeBinding;
-import com.water.alkaline.kengen.databinding.DialogExitBinding;
 import com.water.alkaline.kengen.databinding.DialogInfoBinding;
 import com.water.alkaline.kengen.library.toprightmenu.MenuItem;
 import com.water.alkaline.kengen.library.toprightmenu.TopRightMenu;
 import com.water.alkaline.kengen.model.main.Category;
-import com.water.alkaline.kengen.placements.InterAds;
-import com.water.alkaline.kengen.placements.LargeNativeAds;
-import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.google.gms.ads.InterAds;
+import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.ui.adapter.DrawerCatAdapter;
 import com.water.alkaline.kengen.ui.adapter.ViewPagerFragmentAdapter;
 import com.water.alkaline.kengen.ui.fragment.BannerFragment;
 import com.water.alkaline.kengen.ui.fragment.ChannelFragment;
 import com.water.alkaline.kengen.ui.fragment.PdfFragment;
 import com.water.alkaline.kengen.utils.Constant;
-import com.preference.PowerPreference;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,22 +47,20 @@ import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
 
+    public TopRightMenu menu;
+    public List<MenuItem> menuItems;
+    public AppViewModel viewModel;
     ActivityHomeBinding binding;
     String[] strings = new String[100];
-
     DrawerCatAdapter adapter;
     boolean isOpen = false;
     ViewPagerFragmentAdapter pagerFragmentAdapter;
     Bundle savedState;
 
-    public TopRightMenu menu;
-    public List<MenuItem> menuItems;
-    public AppViewModel viewModel;
-
     @Override
     protected void onResume() {
         super.onResume();
-        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
+        new MainAds().showBannerAds(this, binding.includedAd.adFrameMini, binding.includedAd.adSpaceMini);
     }
 
     public void setBG() {
@@ -230,72 +224,19 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        showRateDialog();
+        Constant.showRateDialog(this, true);
     }
 
-    public void showRateDialog() {
-        try {
-            Dialog mDialog = new Dialog(this, R.style.NormalDialog);
-            DialogExitBinding exitBinding = DialogExitBinding.inflate(getLayoutInflater());
-            mDialog.setContentView(exitBinding.getRoot());
-            mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            mDialog.setCancelable(false);
-            mDialog.setCanceledOnTouchOutside(false);
-            mDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-            exitBinding.btnRate.setOnClickListener(view -> {
-                mDialog.dismiss();
-                rateApp();
-            });
-
-            exitBinding.btnExiy.setOnClickListener(view -> {
-                mDialog.dismiss();
-                if (PowerPreference.getDefaultFile().getBoolean(Constant.GoogleExitSplashInterOnOff, false)) {
-                    PowerPreference.getDefaultFile().putInt(Constant.APP_INTERVAL_COUNT, 0);
-                    new InterAds().showInterAds(HomeActivity.this, new InterAds.OnAdClosedListener() {
-                        @Override
-                        public void onAdClosed() {
-                            Intent intent = new Intent(HomeActivity.this, ExitActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
-                } else {
-                    Intent intent = new Intent(HomeActivity.this, ExitActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
-                }
-            });
-
-            exitBinding.btnCancel.setOnClickListener(view -> {
-                mDialog.dismiss();
-            });
-
-            mDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                @Override
-                public void onShow(DialogInterface dialog) {
-                    new LargeNativeAds().showNativeAds(HomeActivity.this, mDialog,null,null);
-                }
-            });
-
-            mDialog.show();
-
-        } catch (Exception e) {
-            Log.w("Catch", Objects.requireNonNull(e.getMessage()));
-        }
-    }
 
     public void showInfoDialog() {
         try {
             Dialog mDialog = new Dialog(this, R.style.NormalDialog);
             DialogInfoBinding binding = DialogInfoBinding.inflate(getLayoutInflater());
             mDialog.setContentView(binding.getRoot());
-            mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             mDialog.setCancelable(false);
             mDialog.setCanceledOnTouchOutside(false);
-            mDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            mDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             mDialog.show();
 
             binding.txtError.setText(PowerPreference.getDefaultFile().getString(Constant.mNotice, getResources().getString(R.string.info)));
@@ -312,9 +253,6 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public void rateApp() {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
-    }
 
     public void setTabs() {
         List<Category> categories = viewModel.getAllCategory();

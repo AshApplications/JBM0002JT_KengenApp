@@ -10,14 +10,12 @@ import android.os.Handler;
 import android.view.View;
 
 import com.google.gson.Gson;
-import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.ActivitySaveBinding;
-import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.SaveEntity;
-import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.InterAds;
-import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.google.gms.ads.BackInterAds;
+import com.google.gms.ads.InterAds;
+import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
 import com.water.alkaline.kengen.utils.Constant;
@@ -38,19 +36,14 @@ public class SaveActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Constant.checkIcon(this);
-        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
+        new MainAds().showBannerAds(this, binding.includedAd.adFrameMini, binding.includedAd.adSpaceMini);
     }
 
     @Override
     public void onBackPressed() {
-        new BackInterAds().showInterAds(this, new BackInterAds.OnAdClosedListener() {
-            @Override
-            public void onAdClosed() {
-                finish();
-            }
-        });
+        new MainAds().showBackInterAds(this, this::finish);
     }
+
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
 
@@ -90,7 +83,6 @@ public class SaveActivity extends AppCompatActivity {
         });
 
         binding.rvSaves.setLayoutManager(manager);
-        binding.rvSaves.addItemDecoration(new ItemOffsetDecoration(this, R.dimen.item_off_ten));
 
         adapter = new VideosAdapter(this, list, null, new OnVideoListener() {
             @Override
@@ -112,7 +104,7 @@ public class SaveActivity extends AppCompatActivity {
             }
         });
         binding.rvSaves.setAdapter(adapter);
-        binding.rvSaves.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvSaves.setItemViewCacheSize(100);
 
         new Handler().postDelayed(new Runnable() {
             @Override

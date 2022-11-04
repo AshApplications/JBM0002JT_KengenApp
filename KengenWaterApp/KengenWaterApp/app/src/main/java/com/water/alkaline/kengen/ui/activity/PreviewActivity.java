@@ -31,9 +31,9 @@ import com.water.alkaline.kengen.databinding.DialogLoadingBinding;
 import com.water.alkaline.kengen.library.ActionListeners;
 import com.water.alkaline.kengen.library.ViewToImage;
 import com.water.alkaline.kengen.model.SaveEntity;
-import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.InterAds;
-import com.water.alkaline.kengen.placements.LargeNativeAds;
+import com.google.gms.ads.BackInterAds;
+import com.google.gms.ads.InterAds;
+import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
@@ -42,7 +42,6 @@ import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class PreviewActivity extends AppCompatActivity {
 
@@ -59,30 +58,24 @@ public class PreviewActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        new BackInterAds().showInterAds(this, new BackInterAds.OnAdClosedListener() {
-            @Override
-            public void onAdClosed() {
-                finish();
-            }
-        });
+        new MainAds().showBackInterAds(this, this::finish);
     }
 
     public void loader_dialog() {
         loaderDialog = new Dialog(this, R.style.NormalDialog);
         DialogLoadingBinding loadingBinding = DialogLoadingBinding.inflate(getLayoutInflater());
         loaderDialog.setContentView(loadingBinding.getRoot());
-        Objects.requireNonNull(loaderDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         loaderDialog.setCancelable(false);
         loaderDialog.setCanceledOnTouchOutside(false);
-        loaderDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        loaderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        loaderDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         loaderDialog.show();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Constant.checkIcon(this);
-        new LargeNativeAds().showNativeAds(this, null, null, null);
+        new MainAds().showNativeAds(this, null, binding.includedAd.adFrameLarge, binding.includedAd.adSpaceLarge);
     }
 
     @Override

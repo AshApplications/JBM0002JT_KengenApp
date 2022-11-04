@@ -12,19 +12,16 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.preference.PowerPreference;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.ui.activity.FeedbackActivity;
 import com.water.alkaline.kengen.ui.activity.SplashActivity;
-import com.water.alkaline.kengen.utils.Constant;
-import com.preference.PowerPreference;
-
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,12 +67,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     Intent intent;
                     intent = new Intent(this, SplashActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+                    contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
                 } else {
                     Intent intent;
                     intent = new Intent(this, FeedbackActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+                    contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
                 }
 
                 Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -101,14 +98,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     Intent intent;
                     intent = new Intent(this, SplashActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+                    contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
                 } else {
 
                     contentIntent = PendingIntent.getActivity(
                             getApplicationContext(),
                             0,
                             new Intent(), // add this
-                            PendingIntent.FLAG_ONE_SHOT);
+                            PendingIntent.FLAG_IMMUTABLE);
                 }
 
                 Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -133,7 +130,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         getApplicationContext(),
                         0,
                         rIntent,
-                        PendingIntent.FLAG_ONE_SHOT);
+                        PendingIntent.FLAG_IMMUTABLE);
 
                 Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -203,13 +200,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         Intent intent;
                         intent = new Intent(context, SplashActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+                        contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
                     } else {
                         contentIntent = PendingIntent.getActivity(
                                 getApplicationContext(),
                                 0,
                                 new Intent(),
-                                PendingIntent.FLAG_ONE_SHOT);
+                                PendingIntent.FLAG_IMMUTABLE);
                     }
 
 
@@ -234,7 +231,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             getApplicationContext(),
                             0,
                             rIntent,
-                            PendingIntent.FLAG_ONE_SHOT);
+                            PendingIntent.FLAG_IMMUTABLE);
 
                     builder = new NotificationCompat.Builder(context, CHANNEL_ID).setSmallIcon(R.drawable.ic_logo)
                             .setContentTitle(title)

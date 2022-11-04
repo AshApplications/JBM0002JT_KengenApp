@@ -32,15 +32,14 @@ public class MyService extends Service {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         Log.e(TAG, "onTaskRemoved");
-        PowerPreference.getDefaultFile().putBoolean(Constant.isRunning,false);
+        PowerPreference.getDefaultFile().putBoolean(Constant.isRunning, false);
         stopSelf();
-    }
+     }
 
     @Override
     public void onDestroy() {
         Log.e(TAG, "Service Destroyed");
-
-        PowerPreference.getDefaultFile().putBoolean(Constant.isRunning,false);
+        PowerPreference.getDefaultFile().putBoolean(Constant.isRunning, false);
         stopSelf();
         super.onDestroy();
     }

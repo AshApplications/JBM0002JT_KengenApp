@@ -10,11 +10,13 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Canvas;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.water.alkaline.kengen.R;
 
 
-public class RoundCornerLayout extends FrameLayout {
+public class RoundCornerLayout extends LinearLayout {
     // CONSTANTS
     private final static float CORNER_RADIUS_DEFAULT = 10.0f;
 

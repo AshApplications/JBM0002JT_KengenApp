@@ -12,11 +12,11 @@ import retrofit2.http.Query;
 public interface RetroInterface {
 
     @FormUrlEncoded
-    @POST("updateApi.php")
+    @POST("update2Api.php")
     Call<String> updateApi(@Field("device") String device,@Field("token") String token,@Field("pkgName") String pkgName,@Field("versionCode") int versionCode);
 
     @FormUrlEncoded
-    @POST("updateApi.php")
+    @POST("update2Api.php")
     Call<String> refreshApi(@Field("device") String device,@Field("token") String token,@Field("pkgName") String pkgName,@Field("versionCode") int versionCode,@Field("work") String work);
 
 

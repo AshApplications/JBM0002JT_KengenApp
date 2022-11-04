@@ -14,7 +14,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 
 import com.google.gson.Gson;
@@ -27,7 +26,6 @@ import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.data.network.RetroClient;
 
 import com.water.alkaline.kengen.databinding.ActivityChannelBinding;
-import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.ErrorReponse;
 import com.water.alkaline.kengen.model.SaveEntity;
 import com.water.alkaline.kengen.model.channel.ChannelResponse;
@@ -35,9 +33,9 @@ import com.water.alkaline.kengen.model.channel.PlaylistResponse;
 import com.water.alkaline.kengen.model.main.Channel;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
-import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.InterAds;
-import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.google.gms.ads.BackInterAds;
+import com.google.gms.ads.InterAds;
+import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.ui.adapter.ChannelAdapter;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnChannelListener;
@@ -81,19 +79,13 @@ public class ChannelActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        new BackInterAds().showInterAds(this, new BackInterAds.OnAdClosedListener() {
-            @Override
-            public void onAdClosed() {
-                finish();
-            }
-        });
+        new MainAds().showBackInterAds(this, this::finish);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Constant.checkIcon(this);
-        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
+        new MainAds().showBannerAds(this, binding.includedAd.adFrameMini, binding.includedAd.adSpaceMini);
     }
 
     @Override
@@ -152,9 +144,8 @@ public class ChannelActivity extends AppCompatActivity {
             }
         });
 
-        binding.rvChannels.addItemDecoration(new ItemOffsetDecoration(ChannelActivity.this, R.dimen.item_off_ten));
         binding.rvChannels.setAdapter(channelAdapter);
-        binding.rvChannels.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvChannels.setItemViewCacheSize(100);
         checkData();
     }
 
@@ -201,8 +192,6 @@ public class ChannelActivity extends AppCompatActivity {
         });
 
         binding.rvChannels.setLayoutManager(manager);
-        binding.rvChannels.addItemDecoration(new ItemOffsetDecoration(ChannelActivity.this, R.dimen.item_off_ten));
-
         videosAdapter = new VideosAdapter(ChannelActivity.this, videoList, binding.rvChannels, new OnVideoListener() {
             @Override
             public void onItemClick(int position, SaveEntity item) {
@@ -225,7 +214,7 @@ public class ChannelActivity extends AppCompatActivity {
         });
 
         binding.rvChannels.setAdapter(videosAdapter);
-        binding.rvChannels.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvChannels.setItemViewCacheSize(100);
         videosAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {

@@ -18,14 +18,12 @@ import android.view.ViewGroup;
 
 import com.google.gson.Gson;
 import com.preference.PowerPreference;
-import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.FragmentBannerBinding;
-import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.main.Banner;
-import com.water.alkaline.kengen.placements.InterAds;
+import com.google.gms.ads.InterAds;
 import com.water.alkaline.kengen.ui.activity.HomeActivity;
-import com.water.alkaline.kengen.ui.activity.ViewImageActivity;
+import com.water.alkaline.kengen.ui.activity.BannerImageActivity;
 import com.water.alkaline.kengen.ui.adapter.BannerAdapter;
 import com.water.alkaline.kengen.ui.listener.OnBannerListerner;
 import com.water.alkaline.kengen.utils.Constant;
@@ -107,7 +105,7 @@ public class BannerFragment extends Fragment {
                             }
 
                             PowerPreference.getDefaultFile().putString(Constant.mBanners, new Gson().toJson(list));
-                            Intent intent = new Intent(activity, ViewImageActivity.class);
+                            Intent intent = new Intent(activity, BannerImageActivity.class);
                             intent.putExtra("POS", pos);
                             intent.putExtra("PAGE", Constant.LIVE);
                             startActivity(intent);
@@ -132,9 +130,8 @@ public class BannerFragment extends Fragment {
                 }
             });
             binding.rvBanners.setLayoutManager(manager);
-            binding.rvBanners.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
             binding.rvBanners.setAdapter(adapter);
-            binding.rvBanners.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+            binding.rvBanners.setItemViewCacheSize(100);
             refreshFragment();
         }
     }

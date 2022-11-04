@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <include
-        layout="@layout/native_ad_mini"
+        layout="@layout/layout_ad_tiny"
         android:visibility="gone" />
 
     <ImageView
@@ -52,6 +52,7 @@
                 android:fontFamily="@font/mfont_medium"
                 android:gravity="center"
                 android:text="@string/title"
+                android:textStyle="bold"
                 android:textColor="#FFE400"
                 android:textSize="@dimen/_20ssp" />
 
@@ -61,6 +62,7 @@
                 android:layout_height="match_parent"
                 android:fontFamily="@font/mfont_medium"
                 android:gravity="center"
+                android:textStyle="bold"
                 android:text="@string/title_sub"
                 android:textColor="#000000"
                 android:textSize="@dimen/_20ssp" />
@@ -70,8 +72,8 @@
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/progress"
-            android:layout_width="@dimen/_75sdp"
-            android:layout_height="@dimen/_75sdp"
+            android:layout_width="@dimen/_100sdp"
+            android:layout_height="@dimen/_100sdp"
             android:layout_marginTop="@dimen/_10sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

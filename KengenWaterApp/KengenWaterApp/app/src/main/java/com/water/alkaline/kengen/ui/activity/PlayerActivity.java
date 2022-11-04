@@ -28,6 +28,7 @@ import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
+import com.google.gms.ads.MainAds;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.water.alkaline.kengen.MyApplication;
@@ -36,22 +37,19 @@ import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.ActivityPlayerBinding;
 import com.water.alkaline.kengen.databinding.DialogLoadingBinding;
 import com.water.alkaline.kengen.library.ActionListeners;
-import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.library.ViewToImage;
 import com.water.alkaline.kengen.model.SaveEntity;
-import com.water.alkaline.kengen.placements.BackInterAds;
+import com.google.gms.ads.BackInterAds;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
 
-
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class PlayerActivity extends YouTubeBaseActivity {
 
@@ -81,14 +79,10 @@ public class PlayerActivity extends YouTubeBaseActivity {
         loaderDialog = new Dialog(this, R.style.NormalDialog);
         DialogLoadingBinding loadingBinding = DialogLoadingBinding.inflate(getLayoutInflater());
         loaderDialog.setContentView(loadingBinding.getRoot());
-        try {
-            Objects.requireNonNull(loaderDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         loaderDialog.setCancelable(false);
         loaderDialog.setCanceledOnTouchOutside(false);
-        loaderDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        loaderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        loaderDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         loaderDialog.show();
     }
 
@@ -165,8 +159,6 @@ public class PlayerActivity extends YouTubeBaseActivity {
                 onBackPressed();
             }
         });
-
-
     }
 
     public void checkLike() {
@@ -215,9 +207,8 @@ public class PlayerActivity extends YouTubeBaseActivity {
             }
         });
         binding.rvVideos.setLayoutManager(manager);
-        binding.rvVideos.addItemDecoration(new ItemOffsetDecoration(this, R.dimen.item_off_ten));
         binding.rvVideos.setAdapter(videosAdapter);
-        binding.rvVideos.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvVideos.setItemViewCacheSize(100);
         binding.rvVideos.scrollToPosition(position);
 
         refreshActivity();
@@ -318,9 +309,7 @@ public class PlayerActivity extends YouTubeBaseActivity {
             ft.replace(R.id.frameContainer, playerFragment, tag);
             ft.commit();
         }
-
         initialize(null);
-
     }
 
 
@@ -365,7 +354,12 @@ public class PlayerActivity extends YouTubeBaseActivity {
         if (isPause) {
             isPause = false;
             if (vPlayer != null) {
-                vPlayer.play();
+                try {
+                    vPlayer.play();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    setPlayer();
+                }
             }
         }
     }
@@ -375,12 +369,7 @@ public class PlayerActivity extends YouTubeBaseActivity {
         if (isFullScreen) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else {
-            new BackInterAds().showInterAds(this, new BackInterAds.OnAdClosedListener() {
-                @Override
-                public void onAdClosed() {
-                    finish();
-                }
-            });
+            new MainAds().showBackInterAds(this, this::finish);
         }
     }
 
@@ -445,21 +434,5 @@ public class PlayerActivity extends YouTubeBaseActivity {
             Toast.makeText(PlayerActivity.this, "Something went Wrong", Toast.LENGTH_SHORT).show();
             dismiss_loader_dialog();
         }
-
     }
-
-
-
-
-
-
-/*    public void getMore()
-    {
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
-            channelAPI();
-        } else {
-            playlistAPI();
-        }
-
-    }*/
 }

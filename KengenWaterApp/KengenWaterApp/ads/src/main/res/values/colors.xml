@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorButton">#02adff</color>
+
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorBlack">#000000</color>
+
+    <color name="colorBGNativeStart">#1a02adff</color>
+    <color name="colorBGNativeEnd">#2602adff</color>
+
+</resources>

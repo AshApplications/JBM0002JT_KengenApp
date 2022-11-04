@@ -1,3 +1,0 @@
-ninja: Entering directory `G:\JT\Other\Apps\JBM0002JT_KengenApp\Shadow\JBM0002JT_KengenApp\app\.cxx\RelWithDebInfo\285q3t2z\arm64-v8a'
-[1/2] Building C object CMakeFiles/native-lib.dir/src/main/cpp/native-lib.c.o
-[2/2] Linking C shared library ..\..\..\..\build\intermediates\cxx\RelWithDebInfo\285q3t2z\obj\arm64-v8a\libnative-lib.so

@@ -1,4 +1,3 @@
-
 package com.water.alkaline.kengen.model.update;
 
 import com.google.gson.annotations.Expose;
@@ -11,7 +10,7 @@ public class AdsInfo {
     private String id;
     @SerializedName("GoogleBannerAds")
     @Expose
-    private String GoogleBannerAds;
+    private String googleBannerAds;
     @SerializedName("GoogleInterAds")
     @Expose
     private String googleInterAds;
@@ -33,113 +32,42 @@ public class AdsInfo {
     @SerializedName("QurekaOnOff")
     @Expose
     private Boolean qurekaOnOff;
-    @SerializedName("GoogleSplashOpenAdsOnOff")
+    @SerializedName("AppOpenTime")
     @Expose
-    private Boolean googleSplashOpenAdsOnOff;
-    @SerializedName("GoogleExitSplashInterOnOff")
+    private Integer appOpenTime;
+    @SerializedName("WhichOneSplashAppOpen")
     @Expose
-    private Boolean googleExitSplashInterOnOff;
-    @SerializedName("GoogleAppOpenAdsOnOff")
+    private Integer whichOneSplashAppOpen;
+    @SerializedName("WhichOneBannerNative")
     @Expose
-    private Boolean googleAppOpenAdsOnOff;
-    @SerializedName("GoogleBannerOnOff")
+    private Integer whichOneBannerNative;
+    @SerializedName("WhichOneAllNative")
     @Expose
-    private Boolean GoogleBannerOnOff;
-    @SerializedName("BannerAdWhichOne")
+    private Integer whichOneAllNative;
+    @SerializedName("WhichOneListNative")
     @Expose
-    private Integer BannerAdWhichOne;
-    @SerializedName("AppOpen")
-    @Expose
-    private Integer AppOpen;
-    @SerializedName("IntervalCount")
-    @Expose
-    private Integer IntervalCount;
-    @SerializedName("BackIntervalCount")
-    @Expose
-    private Integer BackIntervalCount;
-    @SerializedName("GoogleInterOnOff")
-    @Expose
-    private Boolean GoogleInterOnOff;
-    @SerializedName("GoogleBackInterOnOff")
-    @Expose
-    private Boolean GoogleBackInterOnOff;
-    @SerializedName("GoogleMiniNativeOnOff")
-    @Expose
-    private Boolean googleMiniNativeOnOff;
-    @SerializedName("GoogleLargeNativeOnOff")
-    @Expose
-    private Boolean googleLargeNativeOnOff;
-    @SerializedName("GoogleListNativeOnOff")
-    @Expose
-    private Boolean googleListNativeOnOff;
-    @SerializedName("ListNativeWhichOne")
-    @Expose
-    private Integer listNativeWhichOne;
+    private Integer whichOneListNative;
     @SerializedName("ListNativeAfterCount")
     @Expose
     private Integer listNativeAfterCount;
-    @SerializedName("QurekaIconOnOff")
+    @SerializedName("LoaderNativeOnOff")
     @Expose
-    private Boolean QurekaIconOnOff;
-    @SerializedName("QurekaBannerOnOff")
+    private Boolean loaderNativeOnOff;
+    @SerializedName("InterIntervalCount")
     @Expose
-    private Boolean QurekaBannerOnOff;
-    @SerializedName("QurekaInterOnOff")
+    private Integer interIntervalCount;
+    @SerializedName("BackInterIntervalCount")
     @Expose
-    private Boolean QurekaInterOnOff;
-    @SerializedName("QurekaBackInterOnOff")
-    @Expose
-    private Boolean QurekaBackInterOnOff;
-    @SerializedName("QurekaMiniNativeOnOff")
-    @Expose
-    private Boolean qurekaMiniNativeOnOff;
-    @SerializedName("QurekaLargeNativeOnOff")
-    @Expose
-    private Boolean qurekaLargeNativeOnOff;
-    @SerializedName("QurekaListNativeOnOff")
-    @Expose
-    private Boolean qurekaListNativeOnOff;
-    @SerializedName("QurekaAppOpenOnOff")
-    @Expose
-    private Boolean qurekaAppOpenOnOff;
+    private Integer backInterIntervalCount;
     @SerializedName("ShowDialogBeforeAds")
     @Expose
     private Boolean showDialogBeforeAds;
     @SerializedName("DialogTimeInSec")
     @Expose
     private Integer dialogTimeInSec;
-    @SerializedName("VpnOnOff")
-    @Expose
-    private Boolean vpnOnOff;
-    @SerializedName("VpnUrl")
-    @Expose
-    private String vpnUrl;
-    @SerializedName("VpnAuto")
-    @Expose
-    private Boolean VpnAuto;
     @SerializedName("adsCloseCount")
     @Expose
     private Integer adsCloseCount;
-
-    @SerializedName("isList")
-    @Expose
-    private Boolean isList;
-
-    public Boolean getList() {
-        return isList;
-    }
-
-    public void setList(Boolean list) {
-        isList = list;
-    }
-
-    public Integer getAppOpen() {
-        return AppOpen;
-    }
-
-    public void setAppOpen(Integer appOpen) {
-        AppOpen = appOpen;
-    }
 
     public String getId() {
         return id;
@@ -147,6 +75,14 @@ public class AdsInfo {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getGoogleBannerAds() {
+        return googleBannerAds;
+    }
+
+    public void setGoogleBannerAds(String googleBannerAds) {
+        this.googleBannerAds = googleBannerAds;
     }
 
     public String getGoogleInterAds() {
@@ -163,14 +99,6 @@ public class AdsInfo {
 
     public void setGoogleNativeAds(String googleNativeAds) {
         this.googleNativeAds = googleNativeAds;
-    }
-
-    public Boolean getVpnAuto() {
-        return VpnAuto;
-    }
-
-    public void setVpnAuto(Boolean vpnAuto) {
-        VpnAuto = vpnAuto;
     }
 
     public String getGoogleAppOpenAds() {
@@ -213,61 +141,44 @@ public class AdsInfo {
         this.qurekaOnOff = qurekaOnOff;
     }
 
-    public Boolean getGoogleSplashOpenAdsOnOff() {
-        return googleSplashOpenAdsOnOff;
+    public Integer getAppOpenTime() {
+        return appOpenTime;
     }
 
-    public void setGoogleSplashOpenAdsOnOff(Boolean googleSplashOpenAdsOnOff) {
-        this.googleSplashOpenAdsOnOff = googleSplashOpenAdsOnOff;
+    public void setAppOpenTime(Integer appOpenTime) {
+        this.appOpenTime = appOpenTime;
     }
 
-    public Boolean getGoogleExitSplashInterOnOff() {
-        return googleExitSplashInterOnOff;
+    public Integer getWhichOneSplashAppOpen() {
+        return whichOneSplashAppOpen;
     }
 
-    public void setGoogleExitSplashInterOnOff(Boolean googleExitSplashInterOnOff) {
-        this.googleExitSplashInterOnOff = googleExitSplashInterOnOff;
+    public void setWhichOneSplashAppOpen(Integer whichOneSplashAppOpen) {
+        this.whichOneSplashAppOpen = whichOneSplashAppOpen;
     }
 
-    public Boolean getGoogleAppOpenAdsOnOff() {
-        return googleAppOpenAdsOnOff;
+    public Integer getWhichOneBannerNative() {
+        return whichOneBannerNative;
     }
 
-    public void setGoogleAppOpenAdsOnOff(Boolean googleAppOpenAdsOnOff) {
-        this.googleAppOpenAdsOnOff = googleAppOpenAdsOnOff;
+    public void setWhichOneBannerNative(Integer whichOneBannerNative) {
+        this.whichOneBannerNative = whichOneBannerNative;
     }
 
-
-    public Boolean getGoogleMiniNativeOnOff() {
-        return googleMiniNativeOnOff;
+    public Integer getWhichOneAllNative() {
+        return whichOneAllNative;
     }
 
-    public void setGoogleMiniNativeOnOff(Boolean googleMiniNativeOnOff) {
-        this.googleMiniNativeOnOff = googleMiniNativeOnOff;
+    public void setWhichOneAllNative(Integer whichOneAllNative) {
+        this.whichOneAllNative = whichOneAllNative;
     }
 
-    public Boolean getGoogleLargeNativeOnOff() {
-        return googleLargeNativeOnOff;
+    public Integer getWhichOneListNative() {
+        return whichOneListNative;
     }
 
-    public void setGoogleLargeNativeOnOff(Boolean googleLargeNativeOnOff) {
-        this.googleLargeNativeOnOff = googleLargeNativeOnOff;
-    }
-
-    public Boolean getGoogleListNativeOnOff() {
-        return googleListNativeOnOff;
-    }
-
-    public void setGoogleListNativeOnOff(Boolean googleListNativeOnOff) {
-        this.googleListNativeOnOff = googleListNativeOnOff;
-    }
-
-    public Integer getListNativeWhichOne() {
-        return listNativeWhichOne;
-    }
-
-    public void setListNativeWhichOne(Integer listNativeWhichOne) {
-        this.listNativeWhichOne = listNativeWhichOne;
+    public void setWhichOneListNative(Integer whichOneListNative) {
+        this.whichOneListNative = whichOneListNative;
     }
 
     public Integer getListNativeAfterCount() {
@@ -278,45 +189,28 @@ public class AdsInfo {
         this.listNativeAfterCount = listNativeAfterCount;
     }
 
-
-    public Boolean getQurekaIconOnOff() {
-        return QurekaIconOnOff;
+    public Boolean getLoaderNativeOnOff() {
+        return loaderNativeOnOff;
     }
 
-    public void setQurekaIconOnOff(Boolean qurekaIconOnOff) {
-        QurekaIconOnOff = qurekaIconOnOff;
+    public void setLoaderNativeOnOff(Boolean loaderNativeOnOff) {
+        this.loaderNativeOnOff = loaderNativeOnOff;
     }
 
-    public Boolean getQurekaMiniNativeOnOff() {
-        return qurekaMiniNativeOnOff;
+    public Integer getInterIntervalCount() {
+        return interIntervalCount;
     }
 
-    public void setQurekaMiniNativeOnOff(Boolean qurekaMiniNativeOnOff) {
-        this.qurekaMiniNativeOnOff = qurekaMiniNativeOnOff;
+    public void setInterIntervalCount(Integer interIntervalCount) {
+        this.interIntervalCount = interIntervalCount;
     }
 
-    public Boolean getQurekaLargeNativeOnOff() {
-        return qurekaLargeNativeOnOff;
+    public Integer getBackInterIntervalCount() {
+        return backInterIntervalCount;
     }
 
-    public void setQurekaLargeNativeOnOff(Boolean qurekaLargeNativeOnOff) {
-        this.qurekaLargeNativeOnOff = qurekaLargeNativeOnOff;
-    }
-
-    public Boolean getQurekaListNativeOnOff() {
-        return qurekaListNativeOnOff;
-    }
-
-    public void setQurekaListNativeOnOff(Boolean qurekaListNativeOnOff) {
-        this.qurekaListNativeOnOff = qurekaListNativeOnOff;
-    }
-
-    public Boolean getQurekaAppOpenOnOff() {
-        return qurekaAppOpenOnOff;
-    }
-
-    public void setQurekaAppOpenOnOff(Boolean qurekaAppOpenOnOff) {
-        this.qurekaAppOpenOnOff = qurekaAppOpenOnOff;
+    public void setBackInterIntervalCount(Integer backInterIntervalCount) {
+        this.backInterIntervalCount = backInterIntervalCount;
     }
 
     public Boolean getShowDialogBeforeAds() {
@@ -335,21 +229,7 @@ public class AdsInfo {
         this.dialogTimeInSec = dialogTimeInSec;
     }
 
-    public Boolean getVpnOnOff() {
-        return vpnOnOff;
-    }
 
-    public void setVpnOnOff(Boolean vpnOnOff) {
-        this.vpnOnOff = vpnOnOff;
-    }
-
-    public String getVpnUrl() {
-        return vpnUrl;
-    }
-
-    public void setVpnUrl(String vpnUrl) {
-        this.vpnUrl = vpnUrl;
-    }
 
     public Integer getAdsCloseCount() {
         return adsCloseCount;
@@ -357,85 +237,5 @@ public class AdsInfo {
 
     public void setAdsCloseCount(Integer adsCloseCount) {
         this.adsCloseCount = adsCloseCount;
-    }
-
-    public Integer getIntervalCount() {
-        return IntervalCount;
-    }
-
-    public void setIntervalCount(Integer intervalCount) {
-        IntervalCount = intervalCount;
-    }
-
-    public Integer getBackIntervalCount() {
-        return BackIntervalCount;
-    }
-
-    public void setBackIntervalCount(Integer backIntervalCount) {
-        BackIntervalCount = backIntervalCount;
-    }
-
-    public Boolean getGoogleInterOnOff() {
-        return GoogleInterOnOff;
-    }
-
-    public void setGoogleInterOnOff(Boolean googleInterOnOff) {
-        GoogleInterOnOff = googleInterOnOff;
-    }
-
-    public Boolean getGoogleBackInterOnOff() {
-        return GoogleBackInterOnOff;
-    }
-
-    public void setGoogleBackInterOnOff(Boolean googleBackInterOnOff) {
-        GoogleBackInterOnOff = googleBackInterOnOff;
-    }
-
-    public Boolean getQurekaInterOnOff() {
-        return QurekaInterOnOff;
-    }
-
-    public void setQurekaInterOnOff(Boolean qurekaInterOnOff) {
-        QurekaInterOnOff = qurekaInterOnOff;
-    }
-
-    public Boolean getQurekaBackInterOnOff() {
-        return QurekaBackInterOnOff;
-    }
-
-    public void setQurekaBackInterOnOff(Boolean qurekaBackInterOnOff) {
-        QurekaBackInterOnOff = qurekaBackInterOnOff;
-    }
-
-    public String getGoogleBannerAds() {
-        return GoogleBannerAds;
-    }
-
-    public void setGoogleBannerAds(String googleBannerAds) {
-        GoogleBannerAds = googleBannerAds;
-    }
-
-    public Boolean getGoogleBannerOnOff() {
-        return GoogleBannerOnOff;
-    }
-
-    public void setGoogleBannerOnOff(Boolean googleBannerOnOff) {
-        GoogleBannerOnOff = googleBannerOnOff;
-    }
-
-    public Integer getBannerAdWhichOne() {
-        return BannerAdWhichOne;
-    }
-
-    public void setBannerAdWhichOne(Integer bannerAdWhichOne) {
-        BannerAdWhichOne = bannerAdWhichOne;
-    }
-
-    public Boolean getQurekaBannerOnOff() {
-        return QurekaBannerOnOff;
-    }
-
-    public void setQurekaBannerOnOff(Boolean qurekaBannerOnOff) {
-        QurekaBannerOnOff = qurekaBannerOnOff;
     }
 }

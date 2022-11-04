@@ -81,7 +81,6 @@ public class HistoryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (activity != null) {
-            binding.rvFeeds.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
             GridLayoutManager manager = new GridLayoutManager(activity, 1);
             manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
@@ -102,7 +101,7 @@ public class HistoryFragment extends Fragment {
             binding.rvFeeds.setLayoutManager(manager);
             adapter = new FeedAdapter(activity, feedbacks);
             binding.rvFeeds.setAdapter(adapter);
-            binding.rvFeeds.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+            binding.rvFeeds.setItemViewCacheSize(100);
 
             new Handler().postDelayed(new Runnable() {
                 @Override

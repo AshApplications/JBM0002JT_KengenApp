@@ -10,13 +10,6 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
-
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
@@ -24,16 +17,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.preference.PowerPreference;
 import com.water.alkaline.kengen.BuildConfig;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.data.network.RetroClient;
 import com.water.alkaline.kengen.databinding.FragmentChannelBinding;
-import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.ErrorReponse;
 import com.water.alkaline.kengen.model.SaveEntity;
 import com.water.alkaline.kengen.model.channel.ChannelResponse;
@@ -42,7 +41,7 @@ import com.water.alkaline.kengen.model.main.Channel;
 import com.water.alkaline.kengen.model.main.Subcategory;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
-import com.water.alkaline.kengen.placements.InterAds;
+import com.google.gms.ads.InterAds;
 import com.water.alkaline.kengen.ui.activity.ChannelActivity;
 import com.water.alkaline.kengen.ui.activity.HomeActivity;
 import com.water.alkaline.kengen.ui.activity.PreviewActivity;
@@ -55,9 +54,6 @@ import com.water.alkaline.kengen.ui.listener.OnLoadMoreListener;
 import com.water.alkaline.kengen.ui.listener.OnSubcatListener;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
 import com.water.alkaline.kengen.utils.Constant;
-import com.preference.PowerPreference;
-
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,12 +66,11 @@ import retrofit2.Response;
 public class ChannelFragment extends Fragment {
 
 
+    private static final String ARG_PARAM1 = "param1";
     public Dialog dialog;
-
+    public AppViewModel viewModel;
     String channelId;
     boolean isChannel = true;
-    private static final String ARG_PARAM1 = "param1";
-    private String mParam1;
     FragmentChannelBinding binding;
     Activity activity;
 
@@ -86,14 +81,21 @@ public class ChannelFragment extends Fragment {
     SubcatAdapter subcatAdapter;
     ChannelAdapter channelAdapter;
     VideosAdapter videosAdapter;
-
-    public AppViewModel viewModel;
+    private String mParam1;
 
     public ChannelFragment() {
     }
 
     public ChannelFragment(Activity activity) {
         this.activity = activity;
+    }
+
+    public static ChannelFragment newInstance(Activity activity, String param1) {
+        ChannelFragment fragment = new ChannelFragment(activity);
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -103,15 +105,6 @@ public class ChannelFragment extends Fragment {
         if (activity == null) {
             activity = (HomeActivity) context;
         }
-    }
-
-
-    public static ChannelFragment newInstance(Activity activity, String param1) {
-        ChannelFragment fragment = new ChannelFragment(activity);
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -170,7 +163,6 @@ public class ChannelFragment extends Fragment {
             }
         });
         binding.rvCats.setLayoutManager(manager);
-        binding.rvCats.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
 
         subcatAdapter = new SubcatAdapter(activity, subList, new OnSubcatListener() {
             @Override
@@ -186,7 +178,7 @@ public class ChannelFragment extends Fragment {
         });
 
         binding.rvCats.setAdapter(subcatAdapter);
-        binding.rvCats.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvCats.setItemViewCacheSize(100);
         checkData();
     }
 
@@ -223,7 +215,6 @@ public class ChannelFragment extends Fragment {
             }
         });
         binding.rvCats.setLayoutManager(manager);
-        binding.rvCats.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
 
         channelAdapter = new ChannelAdapter(activity, chanList, new OnChannelListener() {
             @Override
@@ -240,7 +231,7 @@ public class ChannelFragment extends Fragment {
         });
 
         binding.rvCats.setAdapter(channelAdapter);
-        binding.rvCats.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvCats.setItemViewCacheSize(100);
 
         checkData();
     }
@@ -280,7 +271,6 @@ public class ChannelFragment extends Fragment {
             }
         });
         binding.rvCats.setLayoutManager(manager);
-        binding.rvCats.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
 
         videosAdapter = new VideosAdapter(activity, videoList, binding.rvCats, new OnVideoListener() {
             @Override
@@ -303,7 +293,7 @@ public class ChannelFragment extends Fragment {
         });
 
         binding.rvCats.setAdapter(videosAdapter);
-        binding.rvCats.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+        binding.rvCats.setItemViewCacheSize(100);
         videosAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
@@ -506,6 +496,7 @@ public class ChannelFragment extends Fragment {
                                 }
 
                                 refreshActivity();
+
                             } else {
 
                                 ErrorReponse errorReponse = new Gson().fromJson(response.body(), ErrorReponse.class);
@@ -605,15 +596,15 @@ public class ChannelFragment extends Fragment {
             }
 
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance(activity).getApi().refreshApi(DecryptEncrypt.EncryptStr(activity,deviceId), DecryptEncrypt.EncryptStr(activity,token), DecryptEncrypt.EncryptStr(activity,activity.getPackageName()), VERSION,DecryptEncrypt.EncryptStr(activity,"refresh"))
+            RetroClient.getInstance(activity).getApi().refreshApi(DecryptEncrypt.EncryptStr(activity, deviceId), DecryptEncrypt.EncryptStr(activity, token), DecryptEncrypt.EncryptStr(activity, activity.getPackageName()), VERSION, DecryptEncrypt.EncryptStr(activity, "refresh"))
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
                             try {
                                 PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, false);
-                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(activity,response.body())), UpdateResponse.class);
+                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(activity, response.body())), UpdateResponse.class);
 
-                                if(updateResponse.getFlag()) {
+                                if (updateResponse.getFlag()) {
                                     AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
                                     PowerPreference.getDefaultFile().putString(Constant.mKeyId, appInfo.getApiKey());
 
@@ -622,7 +613,7 @@ public class ChannelFragment extends Fragment {
                                     } else {
                                         playlistAPI();
                                     }
-                                }else{
+                                } else {
                                     Constant.showToast(activity, "Something went Wrong");
                                 }
                             } catch (Exception e) {

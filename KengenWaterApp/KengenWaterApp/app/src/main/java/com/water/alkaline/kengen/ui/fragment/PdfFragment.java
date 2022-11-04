@@ -16,12 +16,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.FragmentPdfBinding;
-import com.water.alkaline.kengen.library.ItemOffsetDecoration;
 import com.water.alkaline.kengen.model.main.Pdf;
-import com.water.alkaline.kengen.placements.InterAds;
+import com.google.gms.ads.InterAds;
 import com.water.alkaline.kengen.ui.activity.HomeActivity;
 import com.water.alkaline.kengen.ui.activity.PdfActivity;
 import com.water.alkaline.kengen.ui.adapter.PdfAdapter;
@@ -119,9 +117,8 @@ public class PdfFragment extends Fragment {
                 }
             });
             binding.rvPdfs.setLayoutManager(manager);
-            binding.rvPdfs.addItemDecoration(new ItemOffsetDecoration(activity, R.dimen.item_off_ten));
             binding.rvPdfs.setAdapter(adapter);
-            binding.rvPdfs.getRecycledViewPool().setMaxRecycledViews(Constant.AD_TYPE, 50);
+            binding.rvPdfs.setItemViewCacheSize(100);
             refreshFragment();
         }
     }

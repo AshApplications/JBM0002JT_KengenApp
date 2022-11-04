@@ -28,14 +28,12 @@ import com.water.alkaline.kengen.library.downloader.PRDownloader;
 import com.water.alkaline.kengen.library.downloader.Progress;
 import com.water.alkaline.kengen.model.DownloadEntity;
 import com.water.alkaline.kengen.model.main.Banner;
-import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.LargeNativeAds;
-import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.google.gms.ads.BackInterAds;
+import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
 import java.io.File;
-import java.util.Objects;
 
 public class ImageActivity extends AppCompatActivity {
 
@@ -56,34 +54,27 @@ public class ImageActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Constant.checkIcon(this);
-        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
+        new MainAds().showBannerAds(this, binding.includedAd.adFrameMini, binding.includedAd.adSpaceMini);
     }
 
     @Override
     public void onBackPressed() {
-        new BackInterAds().showInterAds(this, new BackInterAds.OnAdClosedListener() {
-            @Override
-            public void onAdClosed() {
-                finish();
-            }
-        });
+        new MainAds().showBackInterAds(this, this::finish);
     }
 
     public void download_dialog() {
+
+        dismiss_download_dialog();
+
         downloadDialog = new Dialog(this, R.style.NormalDialog);
         downloadBinding = DialogDownloadBinding.inflate(getLayoutInflater());
         downloadDialog.setContentView(downloadBinding.getRoot());
-        Objects.requireNonNull(downloadDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        
         downloadDialog.setCancelable(false);
         downloadDialog.setCanceledOnTouchOutside(false);
-        downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        downloadDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                new LargeNativeAds().showNativeAds(ImageActivity.this, downloadDialog, null, null);
-            }
-        });
+        downloadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        downloadDialog.setOnShowListener(dialog -> new MainAds().showNativeAds(ImageActivity.this, downloadDialog, downloadBinding.includedAd.adFrameLarge, downloadBinding.includedAd.adSpaceLarge));
         downloadDialog.show();
 
     }
@@ -187,6 +178,7 @@ public class ImageActivity extends AppCompatActivity {
                     if (viewModel.getDownloadbyUrl(banner.getUrl()).size() > 0)
                         entity = viewModel.getDownloadbyUrl(banner.getUrl()).get(0);
 
+
                     if (entity != null) {
                         if (new File(entity.filePath).exists()) {
                             shareImage(entity.filePath);
@@ -203,6 +195,12 @@ public class ImageActivity extends AppCompatActivity {
     }
 
     public void downloadBanner(boolean isShare) {
+
+        if (!Constant.checkPermissions()) {
+            Constant.getPermissions(this);
+            return;
+        }
+
         download_dialog();
         String filename = "file" + System.currentTimeMillis() + ".jpg";
         PRDownloader.download(banner.getUrl(), Constant.getImagedisc(), filename)

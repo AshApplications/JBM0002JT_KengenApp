@@ -36,9 +36,8 @@ import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.databinding.ActivityPdfBinding;
 import com.water.alkaline.kengen.model.DownloadEntity;
 import com.water.alkaline.kengen.model.main.Pdf;
-import com.water.alkaline.kengen.placements.BackInterAds;
-import com.water.alkaline.kengen.placements.LargeNativeAds;
-import com.water.alkaline.kengen.placements.ListBannerAds;
+import com.google.gms.ads.BackInterAds;
+import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
 
@@ -48,7 +47,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Objects;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -81,28 +79,22 @@ public class PdfActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Constant.checkIcon(this);
-        new ListBannerAds().showBannerAds(this, binding.includedAd.frameNativeMini, binding.includedAd.adSpaceMini);
+        new MainAds().showBannerAds(this, binding.includedAd.adFrameMini, binding.includedAd.adSpaceMini);
     }
 
     @Override
     public void onBackPressed() {
-        new BackInterAds().showInterAds(this, new BackInterAds.OnAdClosedListener() {
-            @Override
-            public void onAdClosed() {
-                finish();
-            }
-        });
+        new MainAds().showBackInterAds(this, this::finish);
     }
 
     public DialogInternetBinding network_dialog(String text) {
         dialog = new Dialog(this, R.style.NormalDialog);
         DialogInternetBinding binding = DialogInternetBinding.inflate(getLayoutInflater());
         dialog.setContentView(binding.getRoot());
-        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         dialog.show();
         binding.txtError.setText(text);
         return binding;
@@ -114,19 +106,15 @@ public class PdfActivity extends AppCompatActivity {
     }
 
     public void download_dialog() {
+        dismiss_download_dialog();
         downloadDialog = new Dialog(this, R.style.NormalDialog);
         downloadBinding = DialogDownloadBinding.inflate(getLayoutInflater());
         downloadDialog.setContentView(downloadBinding.getRoot());
-        Objects.requireNonNull(downloadDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         downloadDialog.setCancelable(false);
         downloadDialog.setCanceledOnTouchOutside(false);
-        downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        downloadDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                new LargeNativeAds().showNativeAds(PdfActivity.this, downloadDialog, null, null);
-            }
-        });
+        downloadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        downloadDialog.setOnShowListener(dialog -> new MainAds().showNativeAds(PdfActivity.this, downloadDialog, downloadBinding.includedAd.adFrameLarge, downloadBinding.includedAd.adSpaceLarge));
         downloadDialog.show();
     }
 
@@ -283,32 +271,28 @@ public class PdfActivity extends AppCompatActivity {
 
 
     public void showJumpDialog() {
-        DialogJumpBinding binding = DialogJumpBinding.inflate(getLayoutInflater());
-        Dialog dialog = new Dialog(PdfActivity.this, R.style.NormalDialog);
-        dialog.setContentView(binding.getRoot());
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().setLayout(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        dialog.setCancelable(true);
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogh) {
-                new LargeNativeAds().showNativeAds(PdfActivity.this, dialog, null, null);
-            }
-        });
-        dialog.show();
+        DialogJumpBinding jumpBinding = DialogJumpBinding.inflate(getLayoutInflater());
+        Dialog dialogJump = new Dialog(PdfActivity.this, R.style.NormalDialog);
+        dialogJump.setContentView(jumpBinding.getRoot());
+        dialogJump.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogJump.getWindow().setLayout(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        dialogJump.setCancelable(true);
 
-        binding.editJump.setText(PdfActivity.this.binding.pdfview.getCurrentPage() + 1 + "");
-        binding.txtJump.setOnClickListener(new View.OnClickListener() {
+        dialogJump.setOnShowListener(dialog -> new MainAds().showNativeAds(PdfActivity.this, dialogJump, jumpBinding.includedAd.adFrameLarge, jumpBinding.includedAd.adSpaceLarge));
+        dialogJump.show();
+
+        jumpBinding.editJump.setText(PdfActivity.this.binding.pdfview.getCurrentPage() + 1 + "");
+        jumpBinding.txtJump.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    if (binding.editJump.getText().toString().equalsIgnoreCase(""))
-                        binding.editJump.setError("Enter Page Number");
-                    else if (Integer.parseInt(binding.editJump.getText().toString()) > totPages || Integer.parseInt(binding.editJump.getText().toString()) == 0)
-                        binding.editJump.setError("Page Not Available");
+                    if (jumpBinding.editJump.getText().toString().equalsIgnoreCase(""))
+                        jumpBinding.editJump.setError("Enter Page Number");
+                    else if (Integer.parseInt(jumpBinding.editJump.getText().toString()) > totPages || Integer.parseInt(jumpBinding.editJump.getText().toString()) == 0)
+                        jumpBinding.editJump.setError("Page Not Available");
                     else {
-                        dialog.dismiss();
-                        PdfActivity.this.binding.pdfview.jumpTo(Integer.parseInt(binding.editJump.getText().toString()) - 1);
+                        dialogJump.dismiss();
+                        PdfActivity.this.binding.pdfview.jumpTo(Integer.parseInt(jumpBinding.editJump.getText().toString()) - 1);
                     }
                 } catch (Exception e) {
                     Log.e("TAG", e.toString());
@@ -319,10 +303,10 @@ public class PdfActivity extends AppCompatActivity {
         });
 
 
-        binding.txtCancel.setOnClickListener(new View.OnClickListener() {
+        jumpBinding.txtCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                dialogJump.dismiss();
             }
         });
     }
@@ -383,7 +367,7 @@ public class PdfActivity extends AppCompatActivity {
                         binding.includedProgress.progress.setVisibility(View.GONE);
                         binding.txtPageNumbers.setVisibility(View.VISIBLE);
                         binding.includedProgress.llError.setVisibility(View.GONE);
-                        binding.cvBottom.setVisibility(View.VISIBLE);
+                        binding.llPdfMenu.setVisibility(View.VISIBLE);
                         checkArrow();
                     }
                 }).onError(new OnErrorListener() {
@@ -396,7 +380,7 @@ public class PdfActivity extends AppCompatActivity {
                         binding.includedProgress.progress.setVisibility(View.GONE);
                         binding.txtPageNumbers.setVisibility(View.GONE);
                         binding.includedProgress.llError.setVisibility(View.VISIBLE);
-                        binding.cvBottom.setVisibility(View.GONE);
+                        binding.llPdfMenu.setVisibility(View.GONE);
                         Constant.showToast(PdfActivity.this, "Something went wrong");
                     }
                 }).load();
@@ -432,7 +416,7 @@ public class PdfActivity extends AppCompatActivity {
                         binding.includedProgress.progress.setVisibility(View.GONE);
                         binding.txtPageNumbers.setVisibility(View.VISIBLE);
                         binding.includedProgress.llError.setVisibility(View.GONE);
-                        binding.cvBottom.setVisibility(View.VISIBLE);
+                        binding.llPdfMenu.setVisibility(View.VISIBLE);
                         checkArrow();
                     }
                 }).onError(new OnErrorListener() {
@@ -445,13 +429,19 @@ public class PdfActivity extends AppCompatActivity {
                         binding.includedProgress.progress.setVisibility(View.GONE);
                         binding.txtPageNumbers.setVisibility(View.GONE);
                         binding.includedProgress.llError.setVisibility(View.VISIBLE);
-                        binding.cvBottom.setVisibility(View.GONE);
+                        binding.llPdfMenu.setVisibility(View.GONE);
                         Constant.showToast(PdfActivity.this, "Something went wrong");
                     }
                 }).load();
     }
 
     public void downloadPDF(boolean isShare) {
+
+        if (!Constant.checkPermissions()) {
+            Constant.getPermissions(this);
+            return;
+        }
+
         download_dialog();
         String filename = "file" + System.currentTimeMillis() + ".pdf";
         String url = "";

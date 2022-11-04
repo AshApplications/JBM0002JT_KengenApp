@@ -1,2 +1,3 @@
 rootProject.name = "KengenWaterApp"
 include ':app'
+include ':ads'

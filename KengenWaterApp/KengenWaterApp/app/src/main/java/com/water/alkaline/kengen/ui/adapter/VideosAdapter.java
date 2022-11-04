@@ -3,6 +3,7 @@ package com.water.alkaline.kengen.ui.adapter;
 
 import android.app.Activity;
 import android.text.Html;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,16 +13,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.gms.ads.databinding.LayoutAdLargeBinding;
+import com.google.gms.ads.databinding.LayoutAdMediumBinding;
+import com.google.gms.ads.databinding.LayoutAdMiniBinding;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
-import com.water.alkaline.kengen.databinding.ItemImageBinding;
+import com.google.gms.ads.AdUtils;
 import com.water.alkaline.kengen.databinding.ItemVideoBinding;
 import com.water.alkaline.kengen.databinding.LayoutProgressBinding;
-import com.water.alkaline.kengen.databinding.NativeAdLargeBinding;
-import com.water.alkaline.kengen.databinding.NativeAdMediumBinding;
-import com.water.alkaline.kengen.databinding.NativeAdMiniBinding;
 import com.water.alkaline.kengen.model.SaveEntity;
-import com.water.alkaline.kengen.placements.ListNativeAds;
+import com.google.gms.ads.MainAds;
+import com.water.alkaline.kengen.model.main.Banner;
 import com.water.alkaline.kengen.ui.activity.PlayerActivity;
 import com.water.alkaline.kengen.ui.listener.OnLoadMoreListener;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
@@ -29,7 +31,6 @@ import com.water.alkaline.kengen.ui.viewholder.LargeAdHolder;
 import com.water.alkaline.kengen.ui.viewholder.MediumAdHolder;
 import com.water.alkaline.kengen.ui.viewholder.MiniAdHolder;
 import com.water.alkaline.kengen.utils.Constant;
-
 
 
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class VideosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         this.listener = listener;
 
         if (!(activity instanceof PlayerActivity))
-            setAds();
+            setAds(false);
 
         if (recyclerView != null) {
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -92,34 +93,33 @@ public class VideosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    public void setAds() {
-        int PARTICLE_AD_DISPLAY_COUNT = PowerPreference.getDefaultFile().getInt(Constant.ListNativeAfterCount, 10);
-        arrayList.removeAll(Collections.singleton(null));
-        ArrayList<SaveEntity> tempArr = new ArrayList<>();
-        if (arrayList.size() > 0) {
-            tempArr.add(null);
-        }
+    public void setAds(boolean isAds) {
+        int PARTICLE_AD_DISPLAY_COUNT = PowerPreference.getDefaultFile().getInt(AdUtils.ListNativeAfterCount, 10);
+        if (PARTICLE_AD_DISPLAY_COUNT > 0) {
 
-        for (int i = 0; i < arrayList.size(); i++) {
-            if (arrayList.size() > PARTICLE_AD_DISPLAY_COUNT) {
-                if (i != 0) {
-                    if (i % PARTICLE_AD_DISPLAY_COUNT == 0) {
-                        tempArr.add(null);
-                    }
-                }
-                tempArr.add(arrayList.get(i));
-            } else {
-                tempArr.add(arrayList.get(i));
-            }
-        }
-        if (arrayList.size() > 0) {
-            if (arrayList.size() % PARTICLE_AD_DISPLAY_COUNT == 0) {
+            arrayList.removeAll(Collections.singleton(null));
+            ArrayList<SaveEntity> tempArr = new ArrayList<>();
+
+            if (arrayList.size() > 0) {
                 tempArr.add(null);
             }
+
+            for (int i = 0; i < arrayList.size(); i++) {
+                if (arrayList.size() > PARTICLE_AD_DISPLAY_COUNT) {
+                    if (i != 0 && i % PARTICLE_AD_DISPLAY_COUNT == 0) {
+                        tempArr.add(null);
+                    }
+                    tempArr.add(arrayList.get(i));
+                } else {
+                    tempArr.add(arrayList.get(i));
+                }
+            }
+
+            this.arrayList = tempArr;
         }
 
-        this.arrayList = tempArr;
-        notifyDataSetChanged();
+        if (isAds)
+            notifyDataSetChanged();
     }
 
     @Override
@@ -148,10 +148,14 @@ public class VideosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         else if (viewType == Constant.LOADING)
             return new LoadingView(LayoutProgressBinding.inflate(LayoutInflater.from(activity), parent, false));
         else {
-            if (PowerPreference.getDefaultFile().getInt(Constant.ListNativeWhichOne, 0) == 0)
-                return new LargeAdHolder(NativeAdLargeBinding.inflate(LayoutInflater.from(activity), parent, false));
+            if (PowerPreference.getDefaultFile().getInt(AdUtils.WhichOneListNative, 0) == 1)
+                return new LargeAdHolder(LayoutAdLargeBinding.inflate(LayoutInflater.from(activity), parent, false));
+            else if (PowerPreference.getDefaultFile().getInt(AdUtils.WhichOneListNative, 0) == 2)
+                return new MiniAdHolder(LayoutAdMiniBinding.inflate(LayoutInflater.from(activity), parent, false));
+            else if (PowerPreference.getDefaultFile().getInt(AdUtils.WhichOneListNative, 0) == 3)
+                return new MediumAdHolder(LayoutAdMediumBinding.inflate(LayoutInflater.from(activity), parent, false));
             else
-                return new MediumAdHolder(NativeAdMediumBinding.inflate(LayoutInflater.from(activity), parent, false));
+                return new MiniAdHolder(LayoutAdMiniBinding.inflate(LayoutInflater.from(activity), parent, false));
         }
     }
 
@@ -159,7 +163,7 @@ public class VideosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         this.arrayList = arrayList;
         isLoading = false;
         if (!(activity instanceof PlayerActivity))
-            setAds();
+            setAds(true);
         else notifyDataSetChanged();
     }
 
@@ -167,10 +171,19 @@ public class VideosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof LargeAdHolder) {
             LargeAdHolder adHolder = (LargeAdHolder) holder;
-            new ListNativeAds().showListNativeAds(activity, adHolder.binding.frameNativeLarge, adHolder.binding.adSpaceLarge);
+            new MainAds().showListNativeAds(activity, adHolder.binding.adFrameLarge, adHolder.binding.adSpaceLarge);
+            int dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, activity.getResources().getDisplayMetrics());
+            ((LargeAdHolder) holder).binding.adFrameLarge.setPadding(0, dp, dp, 0);
+        } else if (holder instanceof MiniAdHolder) {
+            MiniAdHolder adHolder = (MiniAdHolder) holder;
+            new MainAds().showListNativeAds(activity, adHolder.binding.adFrameLarge, adHolder.binding.adSpaceLarge);
+            int dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, activity.getResources().getDisplayMetrics());
+            ((MiniAdHolder) holder).binding.adFrameLarge.setPadding(0, dp, dp, 0);
         } else if (holder instanceof MediumAdHolder) {
             MediumAdHolder adHolder = (MediumAdHolder) holder;
-            new ListNativeAds().showListNativeAds(activity, adHolder.binding.frameNativeMedium, adHolder.binding.adSpaceMedium);
+            new MainAds().showListNativeAds(activity, adHolder.binding.adFrameLarge, adHolder.binding.adSpaceLarge);
+            int dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, activity.getResources().getDisplayMetrics());
+            ((MediumAdHolder) holder).binding.adFrameLarge.setPadding(0, dp, dp, 0);
         } else if (holder instanceof LoadingView) {
 
         } else {

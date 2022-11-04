@@ -8,7 +8,11 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPdfs"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingStart="10dp"
+        android:paddingEnd="0dp"
+        android:paddingBottom="10dp"/>
 
     <include
         android:id="@+id/includedProgress"

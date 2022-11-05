@@ -5,11 +5,14 @@ import android.content.Context;
 
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.gms.ads.CustomApplication;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.library.downloader.PRDownloader;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MyApplication extends CustomApplication {
 
@@ -49,15 +52,6 @@ public class MyApplication extends CustomApplication {
 
     public static native String getKey2(Context context);
 
-    public static native String getIcon(Context context);
-
-    public static native String getBanner(Context context);
-
-    public static native String getInter(Context context);
-
-    public static native String getRound(Context context);
-
-    public static native String getFlag(Context context);
 
     public AppViewModel getViewModel() {
         if (viewModel == null)
@@ -70,6 +64,8 @@ public class MyApplication extends CustomApplication {
         super.onCreate();
         instance = this;
         PRDownloader.initialize(getApplicationContext());
+
+        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("89A41056FF29122A58016AA2F6DBD5B6")).build());
     }
 
 }

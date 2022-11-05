@@ -193,7 +193,7 @@ public class LargeNativeAds {
 
         if (nativeAd.getStarRating() == null) {
             if (adView.getStarRatingView() != null)
-                Objects.requireNonNull(adView.getStarRatingView()).setVisibility(View.GONE);
+                Objects.requireNonNull(adView.getStarRatingView()).setVisibility(View.VISIBLE);
         } else {
             if (adView.getStarRatingView() != null) {
                 Objects.requireNonNull(adView.getStarRatingView()).setVisibility(View.VISIBLE);

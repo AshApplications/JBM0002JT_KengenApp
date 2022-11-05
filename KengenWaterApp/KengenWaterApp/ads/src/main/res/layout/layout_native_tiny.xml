@@ -30,6 +30,8 @@
                     android:id="@+id/ad_media"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
+                    android:adjustViewBounds="true"
+                    android:layout_gravity="center"
                     android:layout_margin="4dp" />
 
                 <RelativeLayout

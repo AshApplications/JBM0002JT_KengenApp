@@ -94,45 +94,67 @@
                                         android:layout_height="wrap_content"
                                         android:orientation="vertical">
 
-                                        <TextView
-                                            android:id="@+id/txtAd"
-                                            android:layout_width="18dp"
-                                            android:layout_height="13.5dp"
-                                            android:background="@drawable/btn_ad"
-                                            android:backgroundTint="@color/colorBlack"
-                                            android:gravity="center"
-                                            android:text="AD"
-                                            android:textAllCaps="true"
-                                            android:textColor="@color/colorWhite"
-                                            android:textSize="9dp" />
-
-                                        <TextView
-                                            android:id="@+id/ad_headline"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:ellipsize="end"
-                                            android:maxLines="1"
-                                            android:singleLine="true"
-                                            android:textColor="@color/colorBlack"
-                                            android:textSize="@dimen/_9ssp" />
-
                                         <LinearLayout
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:orientation="horizontal">
 
-                                            <RatingBar
-                                                android:id="@+id/ad_stars"
-                                                style="?android:attr/ratingBarStyleSmall"
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:isIndicator="true"
-                                                android:max="5"
-                                                android:progressBackgroundTint="@color/colorBlack"
-                                                android:progressTint="@color/colorBlack"
-                                                android:stepSize="0.5"
-                                                android:visibility="visible" />
+                                            <ImageView
+                                                android:id="@+id/ad_app_icon"
+                                                android:layout_width="50dp"
+                                                android:layout_height="50dp"
+                                                android:layout_marginEnd="2dp"
+                                                android:adjustViewBounds="true" />
 
+                                            <LinearLayout
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:orientation="vertical">
+
+                                                <TextView
+                                                    android:id="@+id/txtAd"
+                                                    android:layout_width="18dp"
+                                                    android:layout_height="13.5dp"
+                                                    android:background="@drawable/btn_ad"
+                                                    android:backgroundTint="@color/colorBlack"
+                                                    android:gravity="center"
+                                                    android:text="AD"
+                                                    android:textAllCaps="true"
+                                                    android:textColor="@color/colorWhite"
+                                                    android:textSize="9dp" />
+
+                                                <TextView
+                                                    android:id="@+id/ad_headline"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:ellipsize="end"
+                                                    android:maxLines="1"
+                                                    android:singleLine="true"
+                                                    android:textColor="@color/colorBlack"
+                                                    android:textSize="@dimen/_9ssp" />
+
+
+                                                <LinearLayout
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:orientation="horizontal">
+
+                                                    <RatingBar
+                                                        android:id="@+id/ad_stars"
+                                                        style="?android:attr/ratingBarStyleSmall"
+                                                        android:layout_width="wrap_content"
+                                                        android:layout_height="wrap_content"
+                                                        android:isIndicator="true"
+                                                        android:max="5"
+                                                        android:progress="5"
+                                                        android:progressBackgroundTint="@color/colorBlack"
+                                                        android:progressTint="@color/colorBlack"
+                                                        android:stepSize="0.5"
+                                                        android:visibility="visible" />
+
+                                                </LinearLayout>
+
+                                            </LinearLayout>
                                         </LinearLayout>
                                     </LinearLayout>
                                 </LinearLayout>

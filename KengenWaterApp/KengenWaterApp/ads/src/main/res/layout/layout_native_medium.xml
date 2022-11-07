@@ -5,11 +5,13 @@
     android:layout_height="250dp"
     android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="300dp"
         android:layout_height="250dp"
         android:id="@+id/adBackground"
-        android:background="@drawable/bg_native"
+        app:cardElevation="0dp"
+        app:cardCornerRadius="@dimen/_5sdp"
+        app:cardBackgroundColor="@color/colorBGNativeStart"
         android:layout_gravity="center">
 
         <com.google.android.gms.ads.nativead.NativeAdView
@@ -114,7 +116,7 @@
                                             android:ellipsize="end"
                                             android:maxLines="1"
                                             android:singleLine="true"
-                                            android:textColor="@color/colorBlack"
+                                            android:textColor="@color/colorAdText"
                                             android:textSize="13sp"
                                             android:textStyle="bold" />
                                     </LinearLayout>
@@ -127,7 +129,7 @@
                                         android:autoSizeMinTextSize="10sp"
                                         android:maxLines="1"
                                         android:text="helkkladkakladslkdsalk"
-                                        android:textColor="@color/colorBlack"
+                                        android:textColor="@color/colorAdText"
                                         android:textSize="12sp"
                                         app:autoSizeTextType="uniform" />
 
@@ -141,8 +143,8 @@
                                         android:isIndicator="true"
                                         android:max="5"
                                         android:progress="5"
-                                        android:progressBackgroundTint="@color/colorBlack"
-                                        android:progressTint="@color/colorBlack"
+                                        android:progressBackgroundTint="@color/colorAdText"
+                                        android:progressTint="@color/colorAdText"
                                         android:stepSize="0.5"
                                         android:visibility="visible" />
 
@@ -230,5 +232,5 @@
                 </RelativeLayout>
             </LinearLayout>
         </com.google.android.gms.ads.nativead.NativeAdView>
-    </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

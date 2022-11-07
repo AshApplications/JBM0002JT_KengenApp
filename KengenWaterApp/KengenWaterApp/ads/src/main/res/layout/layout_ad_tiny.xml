@@ -13,6 +13,6 @@
         android:background="@drawable/bg_banner"
         android:gravity="center"
         android:text="Space For Ads"
-        android:textColor="@color/colorBlack" />
+        android:textColor="@color/colorAdText" />
 
 </LinearLayout>

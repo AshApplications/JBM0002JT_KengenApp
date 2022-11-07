@@ -5,11 +5,13 @@
     android:layout_height="250dp"
     android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:id="@+id/adBackground"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:background="@drawable/bg_native">
+        app:cardElevation="0dp"
+        app:cardCornerRadius="@dimen/_5sdp"
+        app:cardBackgroundColor="@color/colorBGNativeStart">
 
 
         <LinearLayout
@@ -121,7 +123,7 @@
                                         android:maxLines="1"
                                         android:text="Play &amp; Win Coins"
                                         android:singleLine="true"
-                                        android:textColor="@color/colorBlack"
+                                        android:textColor="@color/colorAdText"
                                         android:textSize="13sp"
                                         android:textStyle="bold" />
                                 </LinearLayout>
@@ -134,7 +136,7 @@
                                     android:autoSizeMinTextSize="10sp"
                                     android:maxLines="1"
                                     android:text="Win 5,00,000 Coins &amp; More"
-                                    android:textColor="@color/colorBlack"
+                                    android:textColor="@color/colorAdText"
                                     android:textSize="12sp"
                                     app:autoSizeTextType="uniform" />
 
@@ -148,7 +150,8 @@
                                     android:isIndicator="true"
                                     android:max="5"
                                     android:progress="5"
-                                    android:progressTint="@color/colorBlack"
+                                    android:progressBackgroundTint="@color/colorAdText"
+                                    android:progressTint="@color/colorAdText"
                                     android:stepSize="0.5"
                                     android:visibility="visible" />
 
@@ -235,5 +238,5 @@
                 </RelativeLayout>
             </RelativeLayout>
         </LinearLayout>
-    </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

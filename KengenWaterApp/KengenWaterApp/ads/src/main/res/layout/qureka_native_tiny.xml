@@ -67,7 +67,7 @@
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:text="Play &amp; Win Coins"
-                            android:textColor="@color/colorBlack"
+                            android:textColor="@color/colorAdText"
                             android:textSize="12sp"
                             android:textStyle="bold" />
 
@@ -86,8 +86,8 @@
                             android:isIndicator="true"
                             android:max="5"
                             android:progress="5"
-                            android:progressBackgroundTint="@color/colorBlack"
-                            android:progressTint="@color/colorBlack"
+                            android:progressBackgroundTint="@color/colorAdText"
+                            android:progressTint="@color/colorAdText"
                             android:stepSize="0.5"
                             android:visibility="visible" />
 
@@ -102,7 +102,7 @@
                         android:gravity="top"
                         android:maxLines="1"
                         android:text="Win 5,00,000 Coins &amp; More"
-                        android:textColor="@color/colorBlack"
+                        android:textColor="@color/colorAdText"
                         android:textSize="12sp" />
                 </LinearLayout>
             </RelativeLayout>

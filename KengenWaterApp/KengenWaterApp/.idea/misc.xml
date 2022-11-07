@@ -3,14 +3,18 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/ads/src/main/res/drawable/bg_banner.xml" value="0.189" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/ads/src/main/res/drawable/bg_native.xml" value="0.189" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/ads/src/main/res/layout/layout_ad_large.xml" value="0.3333333333333333" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/ads/src/main/res/layout/layout_ad_medium.xml" value="0.3333333333333333" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/ads/src/main/res/layout/layout_native_large.xml" value="0.3333333333333333" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/ads/src/main/res/layout/layout_native_medium.xml" value="0.3333333333333333" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/ads/src/main/res/layout/layout_native_mini.xml" value="0.44722222222222224" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/ads/src/main/res/layout/layout_native_tiny.xml" value="0.3333333333333333" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/ads/src/main/res/layout/qureka_native_large.xml" value="0.3333333333333333" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/ads/src/main/res/layout/qureka_native_medium.xml" value="0.3333333333333333" />
-        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/ads/src/main/res/layout/qureka_native_mini.xml" value="0.67" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/ads/src/main/res/layout/qureka_native_mini.xml" value="0.44536652835408025" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/ads/src/main/res/layout/qureka_native_tiny.xml" value="0.3333333333333333" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/bg_splash.xml" value="0.123" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/bg_splashlogo.xml" value="0.123" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/bgback.xml" value="0.123" />

@@ -136,7 +136,16 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (MyApplication.getMain(SplashActivity.this).equalsIgnoreCase("")) {
+                if (Constant.isVpnConnected()) {
+                    network_dialog("VPN is Connected Please Turn it Off & Try Again !")
+                            .txtRetry.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dismiss_dialog();
+                                    startApp();
+                                }
+                            });
+                } else if (MyApplication.getMain(SplashActivity.this).equalsIgnoreCase("")) {
                     network_dialog("Something Went Wrong\nPlease Try Again Later !")
                             .txtRetry.setOnClickListener(new View.OnClickListener() {
                                 @Override

@@ -35,6 +35,9 @@ import com.water.alkaline.kengen.databinding.DialogExitBinding;
 import com.water.alkaline.kengen.ui.activity.ExitActivity;
 
 import java.io.File;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -196,4 +199,21 @@ public class Constant {
         return ContextCompat.checkSelfPermission(MyApplication.getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 
+    public static boolean isVpnConnected() {
+        String iface = "";
+        try {
+            for (NetworkInterface networkInterface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                if (networkInterface.isUp())
+                    iface = networkInterface.getName();
+
+                if (iface.contains("tun") || iface.contains("ppp") || iface.contains("pptp")) {
+                    return true;
+                }
+            }
+        } catch (SocketException e1) {
+            e1.printStackTrace();
+        }
+
+        return false;
+    }
 }

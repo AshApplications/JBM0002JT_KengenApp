@@ -51,7 +51,6 @@ import com.water.alkaline.kengen.model.update.AdsInfo;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
 import com.water.alkaline.kengen.utils.Constant;
-import com.water.alkaline.kengen.utils.MyService;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -108,14 +107,6 @@ public class SplashActivity extends AppCompatActivity {
         PowerPreference.getDefaultFile().putInt(Constant.mIsDuration, 1);
         PowerPreference.getDefaultFile().putBoolean(Constant.isRunning, true);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isMyServiceRunning(MyService.class))
-                    startService(new Intent(SplashActivity.this, MyService.class));
-            }
-        }, 2000);
-
         ViewAnimator.animate(binding.ivLogo)
                 .scale(0f, 1f)
                 .andAnimate(binding.llText)
@@ -155,32 +146,11 @@ public class SplashActivity extends AppCompatActivity {
                                 }
                             });
                 } else {
-                    getToken();
+                    callAPI();
                 }
             }
         }, 1000);
     }
-
-    public void getToken() {
-        if (Constant.checkInternet(SplashActivity.this)) {
-            FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
-                @Override
-                public void onSuccess(@NonNull String s) {
-                    PowerPreference.getDefaultFile().putString(Constant.Token, s);
-                    callAPI();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    PowerPreference.getDefaultFile().putString(Constant.Token, "123");
-                    callAPI();
-                }
-            });
-        } else {
-            handler.sendEmptyMessage(998);
-        }
-    }
-
     public void callAPI() {
         if (Constant.checkInternet(SplashActivity.this)) {
             new Thread(new Runnable() {
@@ -224,7 +194,7 @@ public class SplashActivity extends AppCompatActivity {
 
         if (Constant.checkInternet(SplashActivity.this)) {
             @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-            String token = PowerPreference.getDefaultFile().getString(Constant.Token, "");
+            String token = PowerPreference.getDefaultFile().getString(Constant.Token, "123abc");
 
             PackageManager manager = getPackageManager();
             PackageInfo info = null;
@@ -311,9 +281,9 @@ public class SplashActivity extends AppCompatActivity {
                                     loadAds();
 
                                     OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
-
                                     OneSignal.initWithContext(MyApplication.getInstance());
                                     OneSignal.setAppId(appInfo.getOneSignalAppId());
+                                    OneSignal.sendTag("deviceId", deviceId);
 
                                     if (!appInfo.getTitle().equals("")) {
                                         binding.txtName.setText(appInfo.getTitle());
@@ -448,13 +418,6 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     public void nextActivity() {
-        FirebaseMessaging.getInstance().subscribeToTopic(PowerPreference.getDefaultFile().getString(Constant.notifyKey, "kengen")).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-
-            }
-        });
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -492,9 +455,7 @@ public class SplashActivity extends AppCompatActivity {
                                 updateAPI();
                             } else if (msg.what == 1001) {
                                 mainAPI();
-                            } else if (msg.what == 998) {
-                                getToken();
-                            } else {
+                            }else {
                                 callAPI();
                             }
                         } else dialog.show();
@@ -505,15 +466,4 @@ public class SplashActivity extends AppCompatActivity {
             }
         }
     };
-
-    private boolean isMyServiceRunning(Class<?> cls) {
-        for (ActivityManager.RunningServiceInfo runningServiceInfo : ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE)).getRunningServices(Integer.MAX_VALUE)) {
-            if (cls.getName().equals(runningServiceInfo.service.getClassName())) {
-                Log.e("ServiceStatus", "Running");
-                return true;
-            }
-        }
-        Log.e("ServiceStatus", "Not running");
-        return false;
-    }
 }

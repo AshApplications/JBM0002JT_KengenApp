@@ -7,6 +7,7 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.RequestConfiguration;
+import com.google.firebase.FirebaseApp;
 import com.google.gms.ads.CustomApplication;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.library.downloader.PRDownloader;
@@ -64,8 +65,7 @@ public class MyApplication extends CustomApplication {
         super.onCreate();
         instance = this;
         PRDownloader.initialize(getApplicationContext());
-
-        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("89A41056FF29122A58016AA2F6DBD5B6")).build());
+        FirebaseApp.initializeApp(getApplicationContext());
     }
 
 }

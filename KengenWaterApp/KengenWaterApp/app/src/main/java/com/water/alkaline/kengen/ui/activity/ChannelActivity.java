@@ -485,7 +485,7 @@ public class ChannelActivity extends AppCompatActivity {
 
             int VERSION = 0;
             @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-            String token = PowerPreference.getDefaultFile().getString(Constant.Token, "");
+            String token = PowerPreference.getDefaultFile().getString(Constant.Token, "123abc");
 
             PackageManager manager = getPackageManager();
             PackageInfo info = null;

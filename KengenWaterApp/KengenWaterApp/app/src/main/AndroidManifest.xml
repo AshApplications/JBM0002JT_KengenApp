@@ -100,7 +100,6 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -114,31 +113,9 @@
                 android:resource="@xml/provider_path" />
         </provider>
 
-        <service
-            android:name="com.water.alkaline.kengen.utils.MyFirebaseMessagingService"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_logo" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/colorMain" />
-
-        <service
-            android:name=".utils.MyService"
-            android:enabled="true"
-            android:exported="false"
-            android:launchMode="singleInstance" />
-
     </application>
 
 </manifest>

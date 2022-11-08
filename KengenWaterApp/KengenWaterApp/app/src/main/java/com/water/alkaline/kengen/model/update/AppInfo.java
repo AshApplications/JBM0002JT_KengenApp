@@ -54,6 +54,17 @@ public class AppInfo {
     @SerializedName("notifyKey")
     @Expose
     private String notifyKey;
+    @SerializedName("OneSignalAppId")
+    @Expose
+    private String OneSignalAppId;
+
+    public String getOneSignalAppId() {
+        return OneSignalAppId;
+    }
+
+    public void setOneSignalAppId(String oneSignalAppId) {
+        OneSignalAppId = oneSignalAppId;
+    }
 
     public String getId() {
         return id;

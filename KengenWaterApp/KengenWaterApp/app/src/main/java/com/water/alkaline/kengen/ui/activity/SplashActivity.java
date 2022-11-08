@@ -30,6 +30,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.onesignal.OneSignal;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.BuildConfig;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
@@ -308,6 +309,11 @@ public class SplashActivity extends AppCompatActivity {
                                     }
 
                                     loadAds();
+
+                                    OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
+
+                                    OneSignal.initWithContext(MyApplication.getInstance());
+                                    OneSignal.setAppId(appInfo.getOneSignalAppId());
 
                                     if (!appInfo.getTitle().equals("")) {
                                         binding.txtName.setText(appInfo.getTitle());

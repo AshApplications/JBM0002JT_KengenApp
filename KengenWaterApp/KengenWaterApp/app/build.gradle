@@ -103,6 +103,9 @@ dependencies {
 
     implementation 'org.jsoup:jsoup:1.15.1'
     implementation("com.guolindev.permissionx:permissionx:1.6.4")
+
+
+    implementation 'com.onesignal:OneSignal:[4.0.0, 4.99.99]'
 }
 
 apply plugin: 'com.google.gms.google-services'

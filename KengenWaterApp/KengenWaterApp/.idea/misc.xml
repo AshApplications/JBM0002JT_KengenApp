@@ -25,6 +25,7 @@
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/qureka_inter_bg.xml" value="0.123" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/rounded_allborders.xml" value="0.123" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/drawable/text_shape.xml" value="0.123" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/layout/activity_banner_image.xml" value="0.29814814814814816" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/layout/activity_channel.xml" value="0.32864583333333336" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/layout/activity_download.xml" value="0.32864583333333336" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/layout/activity_exit.xml" value="0.32864583333333336" />
@@ -42,6 +43,7 @@
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/layout/ads_native_large.xml" value="0.35185185185185186" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/layout/ads_native_medium.xml" value="0.3333333333333333" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/layout/ads_native_mini.xml" value="0.22" />
+        <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/layout/fragment_feedback.xml" value="0.3333333333333333" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/layout/item_toolbar.xml" value="0.32864583333333336" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/layout/native_ad_large.xml" value="0.32864583333333336" />
         <entry key="..\:/Android/MainProjects/JBM0002JT_KengenApp/KengenWaterApp/KengenWaterApp/app/src/main/res/layout/native_ad_medium.xml" value="0.32864583333333336" />

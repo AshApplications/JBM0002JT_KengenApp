@@ -115,6 +115,7 @@ public class ListNativeAds {
             }
 
             AdUtils.setQureka(activity, AdUtils.QLIST_COUNT, adView.findViewById(R.id.qurekaAds1), adView.findViewById(R.id.qurekaAds), adView.findViewById(R.id.gif_inter_round));
+            adView.setOnClickListener(v->AdUtils.gotoAds(activity));
 
             adLayout.removeAllViews();
             adLayout.addView(adView);

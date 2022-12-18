@@ -53,6 +53,9 @@ public class AdsInfo {
     @SerializedName("LoaderNativeOnOff")
     @Expose
     private Boolean loaderNativeOnOff;
+    @SerializedName("ExitDialogNativeOnOff")
+    @Expose
+    private Boolean ExitDialogNativeOnOff;
     @SerializedName("InterIntervalCount")
     @Expose
     private Integer interIntervalCount;
@@ -71,6 +74,14 @@ public class AdsInfo {
 
     public String getId() {
         return id;
+    }
+
+    public Boolean getExitDialogNativeOnOff() {
+        return ExitDialogNativeOnOff;
+    }
+
+    public void setExitDialogNativeOnOff(Boolean exitDialogNativeOnOff) {
+        ExitDialogNativeOnOff = exitDialogNativeOnOff;
     }
 
     public void setId(String id) {

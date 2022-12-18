@@ -341,9 +341,13 @@ public class PlayerActivity extends YouTubeBaseActivity {
     protected void onPause() {
         super.onPause();
         if (vPlayer != null) {
-            if (vPlayer.isPlaying()) {
-                vPlayer.pause();
-                isPause = true;
+            try {
+                if (vPlayer.isPlaying()) {
+                    vPlayer.pause();
+                    isPause = true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -360,6 +364,8 @@ public class PlayerActivity extends YouTubeBaseActivity {
                     e.printStackTrace();
                     setPlayer();
                 }
+            } else {
+                setPlayer();
             }
         }
     }

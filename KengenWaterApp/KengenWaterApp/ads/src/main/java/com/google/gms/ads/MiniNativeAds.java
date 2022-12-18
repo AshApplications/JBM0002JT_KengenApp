@@ -129,6 +129,7 @@ public class MiniNativeAds {
         if (PowerPreference.getDefaultFile().getBoolean(AdUtils.QurekaOnOff, false)) {
             LinearLayout adView = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.qureka_native_tiny, null);
             AdUtils.setQureka(activity, AdUtils.QMINI_COUNT, adView.findViewById(R.id.qurekaAds1), adView.findViewById(R.id.qurekaAds), adView.findViewById(R.id.gif_inter_round));
+            adView.setOnClickListener(v->AdUtils.gotoAds(activity));
             adLayout.removeAllViews();
             adLayout.addView(adView);
         } else {

@@ -235,7 +235,7 @@ public class SplashActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putBoolean(AdUtils.QurekaOnOff, appData.getQurekaOnOff());
 
                                     PowerPreference.getDefaultFile().putBoolean(AdUtils.LoaderNativeOnOff, appData.getLoaderNativeOnOff());
-                                    PowerPreference.getDefaultFile().putBoolean(AdUtils.ExitDialogNativeOnOff, true);
+                                    PowerPreference.getDefaultFile().putBoolean(AdUtils.ExitDialogNativeOnOff, appData.getExitDialogNativeOnOff());
 
                                     PowerPreference.getDefaultFile().putInt(AdUtils.SERVER_INTERVAL_COUNT, appData.getInterIntervalCount());
                                     PowerPreference.getDefaultFile().putInt(AdUtils.APP_INTERVAL_COUNT, 0);

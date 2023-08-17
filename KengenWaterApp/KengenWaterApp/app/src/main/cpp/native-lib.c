@@ -94,19 +94,6 @@ int getVerified(JNIEnv *env, jobject context) {
 
 
 jstring
-Java_com_water_alkaline_kengen_MyApplication_getMain(JNIEnv *env, jobject instance,
-                                                     jobject context) {
-    if (getVerified(env, context) == 0) {
-        char str[100];
-        const char *Z = "jkapps/kengenwater/api/";
-        strcpy(str, Z);
-        return (*env)->NewStringUTF(env, str);
-    } else {
-        return (*env)->NewStringUTF(env, "");
-    }
-}
-
-jstring
 Java_com_water_alkaline_kengen_MyApplication_getSub(
         JNIEnv *env, jobject instance, jobject context) {
 

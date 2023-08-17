@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
 import com.water.alkaline.kengen.R;
@@ -40,6 +41,7 @@ import com.water.alkaline.kengen.utils.Constant;
 
 import java.util.Objects;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -237,18 +239,22 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
         if (Constant.checkInternet(activity)) {
             loader_dialog();
             @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-            RetroClient.getInstance(activity).getApi().SendfeedApi(DecryptEncrypt.EncryptStr(activity, PowerPreference.getDefaultFile().getString(Constant.mToken, "123")), deviceId, String.valueOf(binding.ratingBar.getRating()), binding.txtComments.getText().toString())
-                    .enqueue(new Callback<String>() {
-                        @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
-                            dismiss_loader_dialog();
+            JsonObject object = new JsonObject();
+            object.addProperty("token", PowerPreference.getDefaultFile().getString(Constant.mToken, "123"));
+            object.addProperty("device", deviceId);
+            object.addProperty("message", binding.txtComments.getText().toString());
+            object.addProperty("star", String.valueOf(binding.ratingBar.getRating()));
 
-                            if (response.isSuccessful()) {
+            RetroClient.getInstance(activity).getApi().SendfeedApi(DecryptEncrypt.EncryptStr(activity, object.toString()))
+                    .enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            dismiss_loader_dialog();
+                            if (response.isSuccessful() && response.body() != null) {
                                 try {
-                                    final FeedbackResponse response1 = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(activity, response.body())), FeedbackResponse.class);
+                                    final FeedbackResponse response1 = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(activity, response.body().string())), FeedbackResponse.class);
                                     if (response1 != null && response1.feedbacks != null)
                                         PowerPreference.getDefaultFile().putString(Constant.mFeeds, new Gson().toJson(response1.feedbacks));
-
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -260,7 +266,7 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
                         }
 
                         @Override
-                        public void onFailure(Call<String> call, Throwable t) {
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
                             dismiss_loader_dialog();
                             Toast.makeText(activity, "feedback submitted", Toast.LENGTH_SHORT).show();
                             animate();

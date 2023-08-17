@@ -2,6 +2,7 @@ package com.water.alkaline.kengen.ui.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
@@ -24,13 +25,16 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.google.android.youtube.player.YouTubeBaseActivity;
-import com.google.android.youtube.player.YouTubeInitializationResult;
-import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.gms.ads.MainAds;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.customui.DefaultPlayerUiController;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.FullscreenListener;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
@@ -51,7 +55,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerActivity extends YouTubeBaseActivity {
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
+
+public class PlayerActivity extends AppCompatActivity {
 
     ActivityPlayerBinding binding;
 
@@ -60,11 +67,10 @@ public class PlayerActivity extends YouTubeBaseActivity {
 
     VideosAdapter videosAdapter;
 
-    boolean isPause = false;
     YouTubePlayer vPlayer;
+    boolean isPause = false;
 
     AppViewModel viewModel;
-    YouTubePlayerFragment playerFragment;
     int position = 0;
 
     Dialog loaderDialog;
@@ -229,87 +235,53 @@ public class PlayerActivity extends YouTubeBaseActivity {
     }
 
 
-    public void initialize(String videoID) {
-        playerFragment.initialize(PowerPreference.getDefaultFile().getString(Constant.mKeyId), new YouTubePlayer.OnInitializedListener() {
-            @Override
-            public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-                if (!b) {
-                    PlayerActivity.this.vPlayer = youTubePlayer;
-                    vPlayer.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
-                        @Override
-                        public void onLoading() {
-
-                        }
-
-                        @Override
-                        public void onLoaded(String s) {
-
-                        }
-
-                        @Override
-                        public void onAdStarted() {
-
-                        }
-
-                        @Override
-                        public void onVideoStarted() {
-
-                        }
-
-                        @Override
-                        public void onVideoEnded() {
-                            nextVideo();
-                        }
-
-                        @Override
-                        public void onError(YouTubePlayer.ErrorReason errorReason) {
-                            Log.e("TAG", errorReason.toString());
-                            Constant.showToast(PlayerActivity.this, "Something went wrong");
-                            nextVideo();
-                        }
-
-                    });
-
-                    vPlayer.setOnFullscreenListener(new YouTubePlayer.OnFullscreenListener() {
-                        @Override
-                        public void onFullscreen(boolean b) {
-                            if (b) {
-                                isFullScreen = true;
-                                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                            } else {
-                                isFullScreen = false;
-                                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                            }
-                        }
-                    });
-                    if (videoID == null) {
-                        loadVideo(mList.get(position).videoId);
-                    } else {
-                        loadVideo(videoID);
-                    }
-                }
-            }
-
-            @Override
-            public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
-                Constant.showToast(PlayerActivity.this, "Something went wrong");
-
-            }
-        });
-    }
-
     public void setPlayer() {
 
-        FragmentManager fm = getFragmentManager();
-        String tag = YouTubePlayerFragment.class.getSimpleName();
-        playerFragment = (YouTubePlayerFragment) fm.findFragmentByTag(tag);
-        if (playerFragment == null) {
-            FragmentTransaction ft = fm.beginTransaction();
-            playerFragment = YouTubePlayerFragment.newInstance();
-            ft.replace(R.id.frameContainer, playerFragment, tag);
-            ft.commit();
-        }
-        initialize(null);
+        getLifecycle().addObserver(binding.playerView);
+        binding.playerView.setEnableAutomaticInitialization(false);
+        IFramePlayerOptions options = new IFramePlayerOptions.Builder().controls(1).fullscreen(1).build();
+        binding.playerView.initialize(new AbstractYouTubePlayerListener() {
+            @Override
+            public void onReady(@NonNull YouTubePlayer youTubePlayer) {
+                super.onReady(youTubePlayer);
+                DefaultPlayerUiController defaultPlayerUiController = new DefaultPlayerUiController(binding.playerView, youTubePlayer);
+                binding.playerView.setCustomPlayerUi(defaultPlayerUiController.getRootView());
+                vPlayer = youTubePlayer;
+                vPlayer.addListener(new AbstractYouTubePlayerListener() {
+                    @Override
+                    public void onError(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerError error) {
+                        super.onError(youTubePlayer, error);
+                        Log.e("TAG", error.toString());
+                        Constant.showToast(PlayerActivity.this, "Something went wrong");
+                        nextVideo();
+                    }
+
+                    @Override
+                    public void onStateChange(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerState state) {
+                        super.onStateChange(youTubePlayer, state);
+                        if (state == PlayerConstants.PlayerState.ENDED) {
+                            nextVideo();
+                        }
+                    }
+                });
+                loadVideo(mList.get(position).videoId);
+            }
+        }, options);
+        binding.playerView.addFullscreenListener(new FullscreenListener() {
+            @Override
+            public void onEnterFullscreen(@NonNull View view, @NonNull Function0<Unit> function0) {
+                Log.e("TAG", "uess1");
+                isFullScreen = true;
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            }
+
+            @Override
+            public void onExitFullscreen() {
+                Log.e("TAG", "uess2");
+                isFullScreen = false;
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
+        });
     }
 
 
@@ -327,9 +299,9 @@ public class PlayerActivity extends YouTubeBaseActivity {
         if (vPlayer != null) {
             checkLike();
             try {
-                vPlayer.loadVideo(id);
+                vPlayer.loadVideo(id, 0);
             } catch (IllegalStateException e) {
-                initialize(id);
+                setPlayer();
             }
 
         } else {
@@ -342,10 +314,8 @@ public class PlayerActivity extends YouTubeBaseActivity {
         super.onPause();
         if (vPlayer != null) {
             try {
-                if (vPlayer.isPlaying()) {
-                    vPlayer.pause();
-                    isPause = true;
-                }
+                vPlayer.pause();
+                isPause = true;
             } catch (Exception e) {
                 e.printStackTrace();
             }

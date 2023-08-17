@@ -40,6 +40,7 @@ import com.preference.PowerPreference;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -405,14 +406,22 @@ public class VideoListActivity extends AppCompatActivity {
                 VERSION = BuildConfig.VERSION_CODE;
             }
 
+            JsonObject object = new JsonObject();
+            object.addProperty("device", deviceId);
+            object.addProperty("token", token);
+            object.addProperty("pkgName", getPackageName());
+            object.addProperty("versionCode", VERSION);
+            object.addProperty("work", "refresh");
+
+
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance(this).getApi().refreshApi(DecryptEncrypt.EncryptStr(VideoListActivity.this,deviceId), DecryptEncrypt.EncryptStr(VideoListActivity.this,token), DecryptEncrypt.EncryptStr(VideoListActivity.this,getPackageName()), VERSION, DecryptEncrypt.EncryptStr(VideoListActivity.this,"refresh"))
-                    .enqueue(new Callback<String>() {
+            RetroClient.getInstance(this).getApi().refreshApi(DecryptEncrypt.EncryptStr(VideoListActivity.this, object.toString()))
+                    .enqueue(new Callback<ResponseBody>() {
                         @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             try {
                                 PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, false);
-                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(VideoListActivity.this,response.body())), UpdateResponse.class);
+                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(VideoListActivity.this,response.body().string())), UpdateResponse.class);
                                 if (updateResponse.getFlag()) {
                                     AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
                                     PowerPreference.getDefaultFile().putString(Constant.mKeyId, appInfo.getApiKey());
@@ -434,7 +443,7 @@ public class VideoListActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onFailure(Call<String> call, Throwable t) {
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
                             updateError("Something went Wrong");
                         }
                     });

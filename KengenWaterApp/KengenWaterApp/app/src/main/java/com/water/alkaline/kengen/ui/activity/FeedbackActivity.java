@@ -15,6 +15,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
 import com.water.alkaline.kengen.R;
@@ -30,6 +31,7 @@ import com.water.alkaline.kengen.ui.fragment.FeedbackFragment;
 import com.water.alkaline.kengen.ui.fragment.HistoryFragment;
 import com.water.alkaline.kengen.utils.Constant;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -158,15 +160,16 @@ public class FeedbackActivity extends AppCompatActivity {
     public void FeedAPI() {
         if (Constant.checkInternet(FeedbackActivity.this)) {
             loader_dialog();
-            RetroClient.getInstance(this).getApi().GetfeedApi(DecryptEncrypt.EncryptStr(FeedbackActivity.this, PowerPreference.getDefaultFile().getString(Constant.mToken, "123")))
-                    .enqueue(new Callback<String>() {
+            JsonObject object = new JsonObject();
+            object.addProperty("token", PowerPreference.getDefaultFile().getString(Constant.mToken, "123"));
+            RetroClient.getInstance(this).getApi().GetfeedApi(DecryptEncrypt.EncryptStr(FeedbackActivity.this, object.toString()))
+                    .enqueue(new Callback<ResponseBody>() {
                         @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
                             dismiss_loader_dialog();
                             try {
-                                final FeedbackResponse response1 = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(FeedbackActivity.this, response.body())), FeedbackResponse.class);
-
+                                final FeedbackResponse response1 = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(FeedbackActivity.this, response.body().string())), FeedbackResponse.class);
                                 if (response1 != null && response1.feedbacks != null)
                                     PowerPreference.getDefaultFile().putString(Constant.mFeeds, new Gson().toJson(response1.feedbacks));
 
@@ -180,7 +183,7 @@ public class FeedbackActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onFailure(Call<String> call, Throwable t) {
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
                             dismiss_loader_dialog();
                             FeedError();
                         }

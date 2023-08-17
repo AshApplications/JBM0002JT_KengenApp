@@ -34,6 +34,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.onesignal.OneSignal;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.BuildConfig;
@@ -61,6 +62,7 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -141,7 +143,7 @@ public class SplashActivity extends AppCompatActivity {
                                     startApp();
                                 }
                             });
-                } else if (MyApplication.getMain(SplashActivity.this).equalsIgnoreCase("")) {
+                } else if (MyApplication.getSub(SplashActivity.this).equalsIgnoreCase("")) {
                     network_dialog("Something Went Wrong\nPlease Try Again Later !")
                             .txtRetry.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -155,6 +157,7 @@ public class SplashActivity extends AppCompatActivity {
             }
         }, 1000);
     }
+
     public void callAPI() {
         if (Constant.checkInternet(SplashActivity.this)) {
             FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
@@ -209,15 +212,21 @@ public class SplashActivity extends AppCompatActivity {
                 VERSION = BuildConfig.VERSION_CODE;
             }
 
+            JsonObject object = new JsonObject();
+            object.addProperty("device", deviceId);
+            object.addProperty("token", token);
+            object.addProperty("pkgName", getPackageName());
+            object.addProperty("versionCode", VERSION);
 
-            RetroClient.getInstance(this).getApi().updateApi(DecryptEncrypt.EncryptStr(SplashActivity.this, deviceId), DecryptEncrypt.EncryptStr(SplashActivity.this, token), DecryptEncrypt.EncryptStr(SplashActivity.this, getPackageName()), VERSION)
-                    .enqueue(new Callback<String>() {
+            RetroClient.getInstance(this).getApi().updateApi(DecryptEncrypt.EncryptStr(this, object.toString()))
+                    .enqueue(new Callback<ResponseBody>() {
                         @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             try {
-                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(SplashActivity.this, response.body())), UpdateResponse.class);
+                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(SplashActivity.this, response.body().string())), UpdateResponse.class);
 
                                 if (updateResponse != null) {
+
                                     AdsInfo appData = updateResponse.getData().getAdsInfo().get(0);
 
                                     PowerPreference.getDefaultFile().putString(Constant.mToken, updateResponse.getMtoken());
@@ -369,7 +378,7 @@ public class SplashActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onFailure(Call<String> call, Throwable t) {
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
                             Constant.showLog(t.getMessage());
                             handler.sendEmptyMessage(1000);
                         }
@@ -381,11 +390,14 @@ public class SplashActivity extends AppCompatActivity {
 
     public void mainAPI() {
         if (Constant.checkInternet(SplashActivity.this)) {
-            RetroClient.getInstance(this).getApi().dataApi(DecryptEncrypt.EncryptStr(SplashActivity.this, PowerPreference.getDefaultFile().getString(Constant.mToken, "123"))).enqueue(new Callback<String>() {
+            JsonObject object = new JsonObject();
+            object.addProperty("token", PowerPreference.getDefaultFile().getString(Constant.mToken, "123"));
+
+            RetroClient.getInstance(this).getApi().dataApi(DecryptEncrypt.EncryptStr(SplashActivity.this, object.toString())).enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<String> call, Response<String> response) {
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     try {
-                        final MainResponse mainResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(SplashActivity.this, response.body())), MainResponse.class);
+                        final MainResponse mainResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(SplashActivity.this, response.body().string())), MainResponse.class);
 
                         viewModel.deleteAllCategory();
                         viewModel.deleteAllSubCategory();
@@ -409,7 +421,7 @@ public class SplashActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Call<String> call, Throwable t) {
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
                     handler.sendEmptyMessage(1001);
                 }
             });
@@ -456,7 +468,7 @@ public class SplashActivity extends AppCompatActivity {
                                 updateAPI();
                             } else if (msg.what == 1001) {
                                 mainAPI();
-                            }else {
+                            } else {
                                 callAPI();
                             }
                         } else dialog.show();

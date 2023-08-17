@@ -28,7 +28,7 @@ public class RetroClient {
 
     public RetroClient(Context context) {
 
-        String BASE_URL = PowerPreference.getDefaultFile().getString(Constant.apiKey, MyApplication.getSub(context)) + MyApplication.getMain(context);
+        String BASE_URL = PowerPreference.getDefaultFile().getString(Constant.apiKey, MyApplication.getSub(context));
         String YOU_URL = MyApplication.getSub(context);
 
         Gson gson = new GsonBuilder()

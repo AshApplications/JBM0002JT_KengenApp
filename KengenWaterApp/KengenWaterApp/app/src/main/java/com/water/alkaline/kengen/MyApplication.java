@@ -43,9 +43,6 @@ public class MyApplication extends CustomApplication {
         return circularProgressDrawable;
     }
 
-    public static native String getBase(Context context);
-
-    public static native String getMain(Context context);
 
     public static native String getSub(Context context);
 

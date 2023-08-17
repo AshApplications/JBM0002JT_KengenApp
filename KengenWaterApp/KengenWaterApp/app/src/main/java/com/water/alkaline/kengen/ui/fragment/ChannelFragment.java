@@ -58,6 +58,7 @@ import com.water.alkaline.kengen.utils.Constant;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -595,14 +596,21 @@ public class ChannelFragment extends Fragment {
                 VERSION = BuildConfig.VERSION_CODE;
             }
 
+            JsonObject object = new JsonObject();
+            object.addProperty("token", token);
+            object.addProperty("device", deviceId);
+            object.addProperty("pkgName", activity.getPackageName());
+            object.addProperty("versionCode", VERSION);
+            object.addProperty("work", "refresh");
+
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance(activity).getApi().refreshApi(DecryptEncrypt.EncryptStr(activity, deviceId), DecryptEncrypt.EncryptStr(activity, token), DecryptEncrypt.EncryptStr(activity, activity.getPackageName()), VERSION, DecryptEncrypt.EncryptStr(activity, "refresh"))
-                    .enqueue(new Callback<String>() {
+            RetroClient.getInstance(activity).getApi().refreshApi(DecryptEncrypt.EncryptStr(activity, object.toString()))
+                    .enqueue(new Callback<ResponseBody>() {
                         @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             try {
                                 PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, false);
-                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(activity, response.body())), UpdateResponse.class);
+                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(activity, response.body().string())), UpdateResponse.class);
 
                                 if (updateResponse.getFlag()) {
                                     AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
@@ -625,7 +633,7 @@ public class ChannelFragment extends Fragment {
                         }
 
                         @Override
-                        public void onFailure(Call<String> call, Throwable t) {
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
                             if (t.getMessage() != null)
                                 Log.e("TAG", "error" + t.getMessage());
                             updateError("Something went Wrong");

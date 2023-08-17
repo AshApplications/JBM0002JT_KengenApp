@@ -89,29 +89,16 @@ const char *getSignature(JNIEnv *env, jobject context) {
 }
 
 int getVerified(JNIEnv *env, jobject context) {
-    return strcmp("211A4200C81328A0E252E90C48BF45F2", getSignature(env, context));
+    return !strcmp("211A4200C81328A0E252E90C48BF45F2", getSignature(env, context));
 }
 
-
-jstring
-Java_com_water_alkaline_kengen_MyApplication_getBase(JNIEnv *env, jobject instance,
-                                                     jobject context) {
-    if (getVerified(env, context) == 0) {
-        char str[100];
-        const char *Z = "https://sites.google.com/view/jbmapps/home";
-        strcpy(str, Z);
-        return (*env)->NewStringUTF(env, str);
-    } else {
-        return (*env)->NewStringUTF(env, "");
-    }
-}
 
 jstring
 Java_com_water_alkaline_kengen_MyApplication_getMain(JNIEnv *env, jobject instance,
                                                      jobject context) {
     if (getVerified(env, context) == 0) {
         char str[100];
-        const char *Z = "kangen/api/";
+        const char *Z = "jkapps/kengenwater/api/";
         strcpy(str, Z);
         return (*env)->NewStringUTF(env, str);
     } else {
@@ -140,7 +127,7 @@ Java_com_water_alkaline_kengen_MyApplication_getKey1(JNIEnv *env, jobject instan
 
     if (getVerified(env, context) == 0) {
         char str[100];
-        const char *Z = "B26D9C799955D93AF2F01EA97B6E157E0CC8EE72A457C3AAA35F79627FD13728";
+        const char *Z = "yo0dJr95Rk0RxKti";
         strcpy(str, Z);
         return (*env)->NewStringUTF(env, str);
     } else {
@@ -154,7 +141,7 @@ Java_com_water_alkaline_kengen_MyApplication_getKey2(JNIEnv *env, jobject instan
                                                      jobject context) {
     if (getVerified(env, context) == 0) {
         char str[100];
-        const char *Z = "FB24433EA865DB81308C1319C8CAAE1E0CC8EE72A457C3AAA35F79627FD13728";
+        const char *Z = "SeaHPKd4PxYNZ5zO";
         strcpy(str, Z);
         return (*env)->NewStringUTF(env, str);
     } else {

@@ -25,9 +25,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.onesignal.OneSignal;
@@ -153,23 +157,19 @@ public class SplashActivity extends AppCompatActivity {
     }
     public void callAPI() {
         if (Constant.checkInternet(SplashActivity.this)) {
-            new Thread(new Runnable() {
+            FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+            FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                    .setMinimumFetchIntervalInSeconds(3600)
+                    .build();
+            mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings);
+            mFirebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults);
+            mFirebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(new OnCompleteListener<Boolean>() {
                 @Override
-                public void run() {
-                    try {
-                        Document doc = Jsoup.connect(MyApplication.getBase(SplashActivity.this)).get();
-                        PowerPreference.getDefaultFile().putString(Constant.apiKey, doc.select("strong").get(0).text());
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                updateAPI();
-                            }
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                public void onComplete(@NonNull Task<Boolean> task) {
+                    PowerPreference.getDefaultFile().putString(Constant.apiKey, mFirebaseRemoteConfig.getValue("url").asString());
+                    updateAPI();
                 }
-            }).start();
+            });
         } else {
             handler.sendEmptyMessage(999);
         }
@@ -193,6 +193,7 @@ public class SplashActivity extends AppCompatActivity {
     public void updateAPI() {
 
         if (Constant.checkInternet(SplashActivity.this)) {
+
             @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
             String token = PowerPreference.getDefaultFile().getString(Constant.Token, "123abc");
 

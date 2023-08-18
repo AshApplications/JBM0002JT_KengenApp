@@ -45,10 +45,10 @@ public class MyApplication extends CustomApplication {
 
 
     public static native String getSub(Context context);
-
     public static native String getKey1(Context context);
-
     public static native String getKey2(Context context);
+    public static native String updateApi(Context context, String text1, String text2, String text3, String text4, String text5);
+    public static native String sendFeedApi(Context context, String text1, String text2, String text3, String text4);
 
 
     public AppViewModel getViewModel() {

@@ -18,6 +18,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.water.alkaline.kengen.BuildConfig;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
+import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.data.network.RetroClient;
@@ -406,16 +407,8 @@ public class VideoListActivity extends AppCompatActivity {
                 VERSION = BuildConfig.VERSION_CODE;
             }
 
-            JsonObject object = new JsonObject();
-            object.addProperty("device", deviceId);
-            object.addProperty("token", token);
-            object.addProperty("pkgName", getPackageName());
-            object.addProperty("versionCode", VERSION);
-            object.addProperty("work", "refresh");
-
-
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance(this).getApi().refreshApi(DecryptEncrypt.EncryptStr(VideoListActivity.this, object.toString()))
+            RetroClient.getInstance(this).getApi().updateApi(DecryptEncrypt.EncryptStr(this, MyApplication.updateApi(this, deviceId, token, getPackageName(), String.valueOf(VERSION), "refresh")))
                     .enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

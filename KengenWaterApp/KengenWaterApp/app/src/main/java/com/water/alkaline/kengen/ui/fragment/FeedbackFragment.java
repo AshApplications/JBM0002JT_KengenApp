@@ -27,6 +27,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
+import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.network.RetroClient;
 import com.water.alkaline.kengen.databinding.DialogInternetBinding;
@@ -239,13 +240,7 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
         if (Constant.checkInternet(activity)) {
             loader_dialog();
             @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-            JsonObject object = new JsonObject();
-            object.addProperty("token", PowerPreference.getDefaultFile().getString(Constant.mToken, "123"));
-            object.addProperty("device", deviceId);
-            object.addProperty("message", binding.txtComments.getText().toString());
-            object.addProperty("star", String.valueOf(binding.ratingBar.getRating()));
-
-            RetroClient.getInstance(activity).getApi().SendfeedApi(DecryptEncrypt.EncryptStr(activity, object.toString()))
+            RetroClient.getInstance(activity).getApi().SendfeedApi(DecryptEncrypt.EncryptStr(activity, MyApplication.sendFeedApi(activity, deviceId, PowerPreference.getDefaultFile().getString(Constant.mToken, "123"), binding.txtComments.getText().toString(), String.valueOf(binding.ratingBar.getRating()))))
                     .enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

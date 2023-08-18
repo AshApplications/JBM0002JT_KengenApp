@@ -18,6 +18,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
+import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.network.RetroClient;
 import com.water.alkaline.kengen.databinding.ActivityFeedbackBinding;
@@ -160,9 +161,7 @@ public class FeedbackActivity extends AppCompatActivity {
     public void FeedAPI() {
         if (Constant.checkInternet(FeedbackActivity.this)) {
             loader_dialog();
-            JsonObject object = new JsonObject();
-            object.addProperty("token", PowerPreference.getDefaultFile().getString(Constant.mToken, "123"));
-            RetroClient.getInstance(this).getApi().GetfeedApi(DecryptEncrypt.EncryptStr(FeedbackActivity.this, object.toString()))
+            RetroClient.getInstance(this).getApi().GetfeedApi(DecryptEncrypt.EncryptStr(FeedbackActivity.this, MyApplication.updateApi(this,"", PowerPreference.getDefaultFile().getString(Constant.mToken, "123"),"","","")))
                     .enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

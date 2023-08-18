@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <jni.h>
+#include <unistd.h>
+#include <android/log.h>
 
 const char *getSignature(JNIEnv *env, jobject context) {
     // Build.VERSION.SDK_INT
@@ -135,6 +137,166 @@ Java_com_water_alkaline_kengen_MyApplication_getKey2(JNIEnv *env, jobject instan
         return (*env)->NewStringUTF(env, "");
     }
 }
+
+
+jstring
+Java_com_water_alkaline_kengen_MyApplication_updateApi(JNIEnv *env, jclass instance,
+                                                          jobject context, jstring text,
+                                                          jstring text2, jstring text3,
+                                                          jstring text4,
+                                                          jstring text5) {
+    if (getVerified(env, context) == 0) {
+
+        // TODO: implement setParameter()
+
+        const char *text11 = (*env)->GetStringUTFChars(env, text, 0);
+        const char *text12 = (*env)->GetStringUTFChars(env, text2, 0);
+        const char *text13 = (*env)->GetStringUTFChars(env, text3, 0);
+        const char *text14 = (*env)->GetStringUTFChars(env, text4, 0);
+        const char *text15 = (*env)->GetStringUTFChars(env, text5, 0);
+
+        char hello[1000];
+
+        pid_t pid = getpid();
+        char path[64] = {0};
+        sprintf(path, "/proc/%d/cmdline", pid);
+        FILE *cmdline = fopen(path, "r");
+        if (cmdline) {
+            char application_id[64] = {0};
+            fread(application_id, sizeof(application_id), 1, cmdline);
+            const char *package = "com.water.alkaline.kengen";
+
+            if (strcmp(package, application_id) == 0) {
+
+                strcpy(hello, "{");
+
+                if (strcmp(text11, "") != 0) {
+                    strcat(hello, "\"device\":");
+                    strcat(hello, "\"");
+                    strcat(hello, text11);
+                    strcat(hello, "\"");
+                    strcat(hello, ",");
+                }
+
+                if (strcmp(text12, "") != 0) {
+                    strcat(hello, "\"token\":");
+                    strcat(hello, "\"");
+                    strcat(hello, text12);
+                    strcat(hello, "\"");
+                }
+
+                if (strcmp(text13, "") != 0) {
+                    strcat(hello, ",\"pkgName\":");
+                    strcat(hello, "\"");
+                    strcat(hello, text13);
+                    strcat(hello, "\"");
+                }
+
+                if (strcmp(text14, "") != 0) {
+                    strcat(hello, ",\"versionCode\":");
+                    strcat(hello, "\"");
+                    strcat(hello, text14);
+                    strcat(hello, "\"");
+                }
+
+                if (strcmp(text15, "") != 0) {
+                    strcat(hello, ",\"work\":");
+                    strcat(hello, "\"");
+                    strcat(hello, text15);
+                    strcat(hello, "\"");
+                }
+
+                strcat(hello, "}");
+            }
+        }
+
+        (*env)->ReleaseStringUTFChars(env, text, text11);
+        (*env)->ReleaseStringUTFChars(env, text2, text12);
+        (*env)->ReleaseStringUTFChars(env, text3, text13);
+        (*env)->ReleaseStringUTFChars(env, text4, text14);
+        (*env)->ReleaseStringUTFChars(env, text5, text15);
+
+
+        return (*env)->NewStringUTF(env,hello);
+    } else {
+        return (*env)->NewStringUTF(env, "");
+    }
+}
+
+jstring
+Java_com_water_alkaline_kengen_MyApplication_sendFeedApi(JNIEnv *env, jclass instance,
+                                                       jobject context, jstring text,
+                                                       jstring text2, jstring text3,
+                                                       jstring text4) {
+    if (getVerified(env, context) == 0) {
+
+        // TODO: implement setParameter()
+
+        const char *text11 = (*env)->GetStringUTFChars(env, text, 0);
+        const char *text12 = (*env)->GetStringUTFChars(env, text2, 0);
+        const char *text13 = (*env)->GetStringUTFChars(env, text3, 0);
+        const char *text14 = (*env)->GetStringUTFChars(env, text4, 0);
+
+        char hello[1000];
+
+        pid_t pid = getpid();
+        char path[64] = {0};
+        sprintf(path, "/proc/%d/cmdline", pid);
+        FILE *cmdline = fopen(path, "r");
+        if (cmdline) {
+            char application_id[64] = {0};
+            fread(application_id, sizeof(application_id), 1, cmdline);
+            const char *package = "com.water.alkaline.kengen";
+
+            if (strcmp(package, application_id) == 0) {
+
+                strcpy(hello, "{");
+
+                if (strcmp(text11, "") != 0) {
+                    strcat(hello, "\"device\":");
+                    strcat(hello, "\"");
+                    strcat(hello, text11);
+                    strcat(hello, "\"");
+                    strcat(hello, ",");
+                }
+
+                if (strcmp(text12, "") != 0) {
+                    strcat(hello, "\"token\":");
+                    strcat(hello, "\"");
+                    strcat(hello, text12);
+                    strcat(hello, "\"");
+                }
+
+                if (strcmp(text13, "") != 0) {
+                    strcat(hello, ",\"message\":");
+                    strcat(hello, "\"");
+                    strcat(hello, text13);
+                    strcat(hello, "\"");
+                }
+
+                if (strcmp(text14, "") != 0) {
+                    strcat(hello, ",\"star\":");
+                    strcat(hello, "\"");
+                    strcat(hello, text14);
+                    strcat(hello, "\"");
+                }
+
+                strcat(hello, "}");
+            }
+        }
+
+        (*env)->ReleaseStringUTFChars(env, text, text11);
+        (*env)->ReleaseStringUTFChars(env, text2, text12);
+        (*env)->ReleaseStringUTFChars(env, text3, text13);
+        (*env)->ReleaseStringUTFChars(env, text4, text14);
+
+
+        return (*env)->NewStringUTF(env,hello);
+    } else {
+        return (*env)->NewStringUTF(env, "");
+    }
+}
+
 
 
 

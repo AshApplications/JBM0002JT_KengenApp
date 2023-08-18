@@ -17,9 +17,8 @@ public interface RetroInterface {
     Call<ResponseBody> updateApi(@Field("data") String requestBody);
 
     @FormUrlEncoded
-    @POST("updateApi.php")
-    Call<ResponseBody> refreshApi(@Field("data") String requestBody);
-
+    @POST("dataApi.php")
+    Call<ResponseBody> dataApi(@Field("data") String requestBody);
 
     @FormUrlEncoded
     @POST("feedApi.php")
@@ -30,9 +29,6 @@ public interface RetroInterface {
     Call<ResponseBody> SendfeedApi(@Field("data") String requestBody);
 
 
-    @FormUrlEncoded
-    @POST("dataApi.php")
-    Call<ResponseBody> dataApi(@Field("data") String requestBody);
 
 
     @GET("youtube/v3/search?part=snippet&maxResults=50&order=date&type=video")

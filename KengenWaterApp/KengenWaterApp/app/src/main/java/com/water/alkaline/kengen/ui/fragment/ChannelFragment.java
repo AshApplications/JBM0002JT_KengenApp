@@ -29,6 +29,7 @@ import com.google.gson.JsonObject;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.BuildConfig;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
+import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.data.network.RetroClient;
@@ -596,15 +597,8 @@ public class ChannelFragment extends Fragment {
                 VERSION = BuildConfig.VERSION_CODE;
             }
 
-            JsonObject object = new JsonObject();
-            object.addProperty("token", token);
-            object.addProperty("device", deviceId);
-            object.addProperty("pkgName", activity.getPackageName());
-            object.addProperty("versionCode", VERSION);
-            object.addProperty("work", "refresh");
-
             PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance(activity).getApi().refreshApi(DecryptEncrypt.EncryptStr(activity, object.toString()))
+            RetroClient.getInstance(activity).getApi().updateApi(DecryptEncrypt.EncryptStr(activity, MyApplication.updateApi(activity, deviceId, token, activity.getPackageName(), String.valueOf(VERSION), "refresh")))
                     .enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

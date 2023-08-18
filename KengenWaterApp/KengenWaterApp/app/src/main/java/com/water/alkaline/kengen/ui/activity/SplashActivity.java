@@ -212,13 +212,7 @@ public class SplashActivity extends AppCompatActivity {
                 VERSION = BuildConfig.VERSION_CODE;
             }
 
-            JsonObject object = new JsonObject();
-            object.addProperty("device", deviceId);
-            object.addProperty("token", token);
-            object.addProperty("pkgName", getPackageName());
-            object.addProperty("versionCode", VERSION);
-
-            RetroClient.getInstance(this).getApi().updateApi(DecryptEncrypt.EncryptStr(this, object.toString()))
+            RetroClient.getInstance(this).getApi().updateApi(DecryptEncrypt.EncryptStr(this, MyApplication.updateApi(this, deviceId, token, getPackageName(), String.valueOf(VERSION), "")))
                     .enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -390,10 +384,7 @@ public class SplashActivity extends AppCompatActivity {
 
     public void mainAPI() {
         if (Constant.checkInternet(SplashActivity.this)) {
-            JsonObject object = new JsonObject();
-            object.addProperty("token", PowerPreference.getDefaultFile().getString(Constant.mToken, "123"));
-
-            RetroClient.getInstance(this).getApi().dataApi(DecryptEncrypt.EncryptStr(SplashActivity.this, object.toString())).enqueue(new Callback<ResponseBody>() {
+            RetroClient.getInstance(this).getApi().dataApi(DecryptEncrypt.EncryptStr(SplashActivity.this, MyApplication.updateApi(this,"", PowerPreference.getDefaultFile().getString(Constant.mToken, "123"),"","",""))).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     try {

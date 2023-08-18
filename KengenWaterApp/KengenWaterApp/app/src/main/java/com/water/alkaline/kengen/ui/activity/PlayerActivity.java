@@ -2,6 +2,7 @@ package com.water.alkaline.kengen.ui.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiContext;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -20,6 +21,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -239,12 +241,29 @@ public class PlayerActivity extends AppCompatActivity {
 
         getLifecycle().addObserver(binding.playerView);
         binding.playerView.setEnableAutomaticInitialization(false);
-        IFramePlayerOptions options = new IFramePlayerOptions.Builder().controls(1).fullscreen(1).build();
+        IFramePlayerOptions options = new IFramePlayerOptions.Builder().controls(0).rel(0).build();
         binding.playerView.initialize(new AbstractYouTubePlayerListener() {
             @Override
             public void onReady(@NonNull YouTubePlayer youTubePlayer) {
                 super.onReady(youTubePlayer);
                 DefaultPlayerUiController defaultPlayerUiController = new DefaultPlayerUiController(binding.playerView, youTubePlayer);
+                defaultPlayerUiController.showYouTubeButton(false);
+                defaultPlayerUiController.setFullscreenButtonClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (isFullScreen) {
+                            isFullScreen = false;
+                            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                            binding.cvToolbar.setVisibility(View.VISIBLE);
+                            binding.playerView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        } else {
+                            isFullScreen = true;
+                            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                            binding.cvToolbar.setVisibility(View.GONE);
+                            binding.playerView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                        }
+                    }
+                });
                 binding.playerView.setCustomPlayerUi(defaultPlayerUiController.getRootView());
                 vPlayer = youTubePlayer;
                 vPlayer.addListener(new AbstractYouTubePlayerListener() {
@@ -255,6 +274,7 @@ public class PlayerActivity extends AppCompatActivity {
                         Constant.showToast(PlayerActivity.this, "Something went wrong");
                         nextVideo();
                     }
+
 
                     @Override
                     public void onStateChange(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerState state) {
@@ -267,21 +287,6 @@ public class PlayerActivity extends AppCompatActivity {
                 loadVideo(mList.get(position).videoId);
             }
         }, options);
-        binding.playerView.addFullscreenListener(new FullscreenListener() {
-            @Override
-            public void onEnterFullscreen(@NonNull View view, @NonNull Function0<Unit> function0) {
-                Log.e("TAG", "uess1");
-                isFullScreen = true;
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            }
-
-            @Override
-            public void onExitFullscreen() {
-                Log.e("TAG", "uess2");
-                isFullScreen = false;
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            }
-        });
     }
 
 
@@ -292,6 +297,8 @@ public class PlayerActivity extends AppCompatActivity {
             loadVideo(mList.get(position).videoId);
         } else {
             Constant.showToast(PlayerActivity.this, "Completed All Videos");
+            vPlayer.seekTo(0);
+            vPlayer.pause();
         }
     }
 
@@ -303,7 +310,6 @@ public class PlayerActivity extends AppCompatActivity {
             } catch (IllegalStateException e) {
                 setPlayer();
             }
-
         } else {
             Constant.showToast(PlayerActivity.this, "VideoPlayer not loaded");
         }
@@ -343,6 +349,9 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (isFullScreen) {
+            isFullScreen = false;
+            binding.cvToolbar.setVisibility(View.VISIBLE);
+            binding.playerView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else {
             new MainAds().showBackInterAds(this, this::finish);

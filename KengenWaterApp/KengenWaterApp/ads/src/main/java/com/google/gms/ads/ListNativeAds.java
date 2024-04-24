@@ -35,6 +35,7 @@ public class ListNativeAds {
         final String nativeAdstr = PowerPreference.getDefaultFile().getString(AdUtils.NATIVEID, "123");
 
         if (!isNativeAdLoaded && !nativeAdstr.equalsIgnoreCase("") && PowerPreference.getDefaultFile().getBoolean(AdUtils.GoogleAdsOnOff)) {
+
             if (gNativeAd.size() >= 5) {
                 Collections.shuffle(gNativeAd);
                 return;
@@ -94,8 +95,6 @@ public class ListNativeAds {
             adLayout.removeAllViews();
             adLayout.addView(adView);
 
-            loadNativeAds(activity);
-
         } else {
             showQureka(activity, adLayout, adSpace);
         }
@@ -120,11 +119,8 @@ public class ListNativeAds {
             adLayout.removeAllViews();
             adLayout.addView(adView);
 
-            loadNativeAds(activity);
-
         } else {
             adLayout.removeAllViews();
-            loadNativeAds(activity);
         }
     }
 

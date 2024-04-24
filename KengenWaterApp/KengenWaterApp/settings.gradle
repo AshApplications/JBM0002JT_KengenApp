@@ -19,3 +19,4 @@ dependencyResolutionManagement {
 rootProject.name = "KengenWaterApp"
 include ':app'
 include ':ads'
+include ':adsdk'

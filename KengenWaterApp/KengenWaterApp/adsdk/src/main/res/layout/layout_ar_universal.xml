@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/native_background"
+    app:cardCornerRadius="0dp"
+    android:id="@+id/cvAdMain"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/native_border"
+    app:strokeWidth="1dp">
+    <!--NATIVE LARGE AD SPACE PLACE HOLDER-->
+    <TextView
+        android:id="@+id/tvAdSpaceLarge"
+        style="@style/fontMedium"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_190sdp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/ar_ad_space"
+        android:textColor="#73818C9F"
+        android:textSize="@dimen/_15ssp"
+        android:visibility="gone" />
+    <!--NATIVE SMALL AD SPACE PLACE HOLDER-->
+    <TextView
+        android:id="@+id/tvAdSpaceSmall"
+        style="@style/fontMedium"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_85sdp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/ar_ad_space"
+        android:textColor="#73818C9F"
+        android:textSize="@dimen/_15ssp" />
+    <!--BANNER AD SPACE PLACE HOLDER-->
+    <TextView
+        android:id="@+id/tvAdSpaceBanner"
+        style="@style/fontMedium"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/ar_ad_space"
+        android:textColor="#73818C9F"
+        android:textSize="@dimen/_15ssp"
+        android:visibility="gone" />
+    <!--UNIVERSAL AD ROOT VIEW-->
+    <FrameLayout
+        android:id="@+id/flAd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</com.google.android.material.card.MaterialCardView>

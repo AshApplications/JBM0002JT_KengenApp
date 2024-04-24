@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="RatingBar" parent="@style/Theme.AppCompat">
+        <item name="colorControlActivated">#FF9800</item>
+        <item name="colorControlNormal">#FF9800</item>
+    </style>
+
+    <style name="fontNormal">
+        <item name="fontFamily">@font/mfont</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="fontMedium">
+        <item name="fontFamily">@font/mfont_medium</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+</resources>

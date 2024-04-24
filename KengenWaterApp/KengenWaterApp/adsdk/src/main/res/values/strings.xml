@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">adsdk</string>
+
+    <string name="ar_ad_loading">Ad is Loading…</string>
+    <string name="ar_ad_space">Space for Ads</string>
+    <string name="ar_exit_app">Exit App</string>
+    <string name="ar_are_you_sure_you_want_to_exit_app">Are You Sure You Want To Exit App?</string>
+    <string name="ar_play_free_games">Play Free Games</string>
+    <string name="ar_tap_here_to_exit">Tap Here To Exit</string>
+    <string name="ar_no_internet_connection">No Internet Connection</string>
+    <string name="ar_internet_message">Check Your Connection and try again</string>
+    <string name="ar_try_again">Try Again</string>
+
+
+</resources>

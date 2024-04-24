@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorApp">#02adff</color>
+
+    <color name="native_button">#008FFF</color>
+    <color name="native_background">#F5F5F5</color>
+    <color name="native_border">#E1DFDF</color>
+
+
+    <color name="colorBlack">#FF000000</color>
+    <color name="colorWhite">#FFFFFFFF</color>
+</resources>

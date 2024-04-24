@@ -78,7 +78,6 @@
                     android:hint="Your Comments..."
                     android:lines="6"
                     android:padding="@dimen/_10sdp"
-                    android:textColorHint="@color/starNormalColor"
                     android:textSize="@dimen/_12sdp" />
 
 

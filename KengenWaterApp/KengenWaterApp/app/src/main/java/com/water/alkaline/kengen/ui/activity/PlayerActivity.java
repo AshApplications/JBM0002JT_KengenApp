@@ -27,7 +27,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.google.gms.ads.MainAds;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.customui.DefaultPlayerUiController;
@@ -45,11 +44,11 @@ import com.water.alkaline.kengen.databinding.DialogLoadingBinding;
 import com.water.alkaline.kengen.library.ActionListeners;
 import com.water.alkaline.kengen.library.ViewToImage;
 import com.water.alkaline.kengen.model.SaveEntity;
-import com.google.gms.ads.BackInterAds;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
+import com.water.alkaline.kengen.utils.uiController;
 
 
 import java.io.File;
@@ -354,7 +353,7 @@ public class PlayerActivity extends AppCompatActivity {
             binding.playerView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else {
-            new MainAds().showBackInterAds(this, this::finish);
+            uiController.onBackPressed(this);
         }
     }
 

@@ -37,7 +37,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdOptions;
 import com.google.android.gms.ads.nativead.NativeAdView;
-import com.google.gms.ads.databinding.LayoutArUniversalBinding;
+import com.google.gms.ads.databinding.LayoutAdUniversalBinding;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,6 +67,15 @@ public class AdLoader {
 
     public ArrayList<NativeAd> getNativeAds() {
         return nativeAds;
+    }
+
+    public static void disableAds() {
+        MyApp.getAdModel().setAdsAppOpen("None");
+        MyApp.getAdModel().setAdsBanner("None");
+        MyApp.getAdModel().setAdsInterstitial("None");
+        MyApp.getAdModel().setAdsInterstitialBack("None");
+        MyApp.getAdModel().setAdsNative("None");
+
     }
 
     public static void resetCounter() {
@@ -336,7 +345,7 @@ public class AdLoader {
         }
     }
 
-    private void showBanner(final Activity activity, final LayoutArUniversalBinding ltUniversal) {
+    private void showBanner(final Activity activity, final LayoutAdUniversalBinding ltUniversal) {
         if (getFailedCountBanner() < MyApp.getAdModel().getAdsBannerFailedCount() && MyApp.getAdModel().getAdsBanner().equalsIgnoreCase("Google")) {
             //remove any margin if exist
             ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltUniversal.getRoot().getLayoutParams();
@@ -425,7 +434,7 @@ public class AdLoader {
 
     public void showInterstitialAd(Activity activity, boolean isBack, FullScreenDismissListener listener) {
         if (isBack ? MyApp.getAdModel().getAdsInterstitialBack().equalsIgnoreCase("Google") : MyApp.getAdModel().getAdsInterstitial().equalsIgnoreCase("Google")) {
-            int currentInterval =  getInterstitialInterval(isBack);
+            int currentInterval = getInterstitialInterval(isBack);
             int regularInterval = isBack ? MyApp.getAdModel().getAdsInterstitialBackCount() : MyApp.getAdModel().getAdsInterstitialCount();
             if (currentInterval == regularInterval) {
                 if (interstitialAd != null) {
@@ -481,23 +490,23 @@ public class AdLoader {
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, adWidth);
     }
 
-    private void showNativeLarge(Activity activity, LayoutArUniversalBinding ltUniversal) {
+    private void showNativeLarge(Activity activity, LayoutAdUniversalBinding ltUniversal) {
         showNative(activity, ltUniversal, "Large");
     }
 
-    private void showNativeSmall(Activity activity, LayoutArUniversalBinding ltUniversal) {
+    private void showNativeSmall(Activity activity, LayoutAdUniversalBinding ltUniversal) {
         showNative(activity, ltUniversal, "Small");
     }
 
-    public void showNativeLargeList(Activity activity, LayoutArUniversalBinding ltNative) {
+    public void showNativeLargeList(Activity activity, LayoutAdUniversalBinding ltNative) {
         showNativeList(activity, ltNative, "Large");
     }
 
-    public void showNativeSmallList(Activity activity, LayoutArUniversalBinding ltNative) {
+    public void showNativeSmallList(Activity activity, LayoutAdUniversalBinding ltNative) {
         showNativeList(activity, ltNative, "Small");
     }
 
-    public void showNativeList(Activity activity, LayoutArUniversalBinding ltNative, String adType) {
+    public void showNativeList(Activity activity, LayoutAdUniversalBinding ltNative, String adType) {
         if (nativeAds.size() > 0) {
             Collections.shuffle(nativeAds);
             NativeAdView adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_large, null, false);
@@ -519,7 +528,7 @@ public class AdLoader {
         }
     }
 
-    public void showUniversalAd(Activity activity, LayoutArUniversalBinding ltUniversal, boolean showBanner) {
+    public void showUniversalAd(Activity activity, LayoutAdUniversalBinding ltUniversal, boolean showBanner) {
         if (MyApp.getAdModel().getAdsBottomLayout() == 1) {
             if (showBanner) {
                 showBanner(activity, ltUniversal);
@@ -533,7 +542,7 @@ public class AdLoader {
         }
     }
 
-    private void showNative(Activity activity, LayoutArUniversalBinding ltUniversal, String adType) {
+    private void showNative(Activity activity, LayoutAdUniversalBinding ltUniversal, String adType) {
         if (MyApp.getAdModel().getAdsNative().equalsIgnoreCase("Google")) {
             ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltUniversal.getRoot().getLayoutParams();
             int margin = (int) activity.getResources().getDimension(com.intuit.sdp.R.dimen._3sdp);
@@ -552,7 +561,7 @@ public class AdLoader {
         }
     }
 
-    private void showNativeAd(Activity activity, LayoutArUniversalBinding ltUniversal, String adType) {
+    private void showNativeAd(Activity activity, LayoutAdUniversalBinding ltUniversal, String adType) {
         if (nativeAdPreload != null) {
             AdLoader.log("NATIVE (PRELOAD) -> AD SHOW");
             NativeAdView adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small_1, null, false);
@@ -613,7 +622,7 @@ public class AdLoader {
         }
     }
 
-    private void loadNativeAd(Activity activity, LayoutArUniversalBinding ltUniversal, String adType) {
+    private void loadNativeAd(Activity activity, LayoutAdUniversalBinding ltUniversal, String adType) {
         if (adType.equalsIgnoreCase("Small")) {
             ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
             ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);

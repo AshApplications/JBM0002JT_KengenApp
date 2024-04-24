@@ -29,14 +29,12 @@ import com.water.alkaline.kengen.model.channel.ChannelResponse;
 import com.water.alkaline.kengen.model.channel.PlaylistResponse;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
-import com.google.gms.ads.BackInterAds;
-import com.google.gms.ads.InterAds;
-import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnLoadMoreListener;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
+import com.water.alkaline.kengen.utils.uiController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,14 +52,8 @@ public class VideoListActivity extends AppCompatActivity {
     public AppViewModel viewModel;
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        new MainAds().showBannerAds(this, binding.includedAd.adFrameMini, binding.includedAd.adSpaceMini);
-    }
-
-    @Override
     public void onBackPressed() {
-        new MainAds().showBackInterAds(this, this::finish);
+        uiController.onBackPressed(this);
     }
 
     public void setBG() {
@@ -106,24 +98,18 @@ public class VideoListActivity extends AppCompatActivity {
             }
         });
         binding.rvVideos.setLayoutManager(manager);
-
         adapter = new VideosAdapter(this, list, binding.rvVideos, new OnVideoListener() {
             @Override
             public void onItemClick(int position, SaveEntity item) {
-                new InterAds().showInterAds(VideoListActivity.this, new InterAds.OnAdClosedListener() {
-                    @Override
-                    public void onAdClosed() {
-                        int pos = position;
-                        for (int i = 0; i < list.size(); i++) {
-                            if (list.get(i).videoId.equalsIgnoreCase(item.videoId)) {
-                                pos = i;
-                                break;
-                            }
-                        }
-                        PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(list));
-                        startActivity(new Intent(VideoListActivity.this, PreviewActivity.class).putExtra(Constant.POSITION, pos));
+                int pos = position;
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).videoId.equalsIgnoreCase(item.videoId)) {
+                        pos = i;
+                        break;
                     }
-                });
+                }
+                PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(list));
+                uiController.sendIntent(VideoListActivity.this,new Intent(VideoListActivity.this, PreviewActivity.class).putExtra(Constant.POSITION, pos),true,false);
             }
         });
 

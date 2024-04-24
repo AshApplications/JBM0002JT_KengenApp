@@ -41,9 +41,7 @@ public class SubcatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemViewType(int position) {
-        if (arrayList.get(position) == null)
-            return Constant.AD_TYPE;
-        else return Constant.STORE_TYPE;
+        return Constant.STORE_TYPE;
     }
 
 

@@ -10,7 +10,6 @@
 
     <string name="error_nodata">No Data Available …</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="info">This App do not host any content showing in this app. We are just embed and sharing videos from www.youtube.com. Youtube and Channel owners are the original owner and copyright holder for this content. This app doesn\'t access or use a service or Api in a manner that violates its terms of service. Enagic Company and youtube owners are original owners and copyright holder for these contents. By using this app, you are agree that the owner of this app is not the owner of any content in this app.</string>
 </resources>

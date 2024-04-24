@@ -12,12 +12,10 @@ import android.view.View;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.ActivityDownloadBinding;
 import com.water.alkaline.kengen.model.DownloadEntity;
-import com.google.gms.ads.BackInterAds;
-import com.google.gms.ads.InterAds;
-import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.ui.adapter.DownloadAdapter;
 import com.water.alkaline.kengen.ui.listener.OnDownloadListener;
 import com.water.alkaline.kengen.utils.Constant;
+import com.water.alkaline.kengen.utils.uiController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,14 +29,8 @@ public class DownloadActivity extends AppCompatActivity {
     public AppViewModel viewModel;
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        new MainAds().showBannerAds(this, binding.includedAd.adFrameMini, binding.includedAd.adSpaceMini);
-    }
-
-    @Override
     public void onBackPressed() {
-        new MainAds().showBackInterAds(this, this::finish);
+        uiController.onBackPressed(this);
     }
 
     public void setBG() {
@@ -58,20 +50,8 @@ public class DownloadActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         setBG();
 
-        adapter = new DownloadAdapter(this, list, new OnDownloadListener() {
-            @Override
-            public void onItemClick(int position, DownloadEntity item) {
-                new InterAds().showInterAds(DownloadActivity.this, new InterAds.OnAdClosedListener() {
-                    @Override
-                    public void onAdClosed() {
-                        if (item.type == Constant.TYPE_PDF) {
-                            startActivity(new Intent(DownloadActivity.this, PdfActivity.class).putExtra("mpath", item.filePath));
-                        } else {
-                            startActivity(new Intent(DownloadActivity.this, ImageActivity.class).putExtra("mpath", item.url));
-                        }
-                    }
-                });
-            }
+        adapter = new DownloadAdapter(this, list, (position, item) -> {
+            uiController.gotoIntent(this, new Intent(DownloadActivity.this, item.type == Constant.TYPE_PDF ? PdfActivity.class : ImageActivity.class).putExtra("mpath", item.type == Constant.TYPE_PDF ? item.filePath : item.url), true, false);
         });
         GridLayoutManager manager = new GridLayoutManager(this, 2);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {

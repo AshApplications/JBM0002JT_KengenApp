@@ -19,13 +19,12 @@ import android.view.ViewGroup;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.FragmentPdfBinding;
 import com.water.alkaline.kengen.model.main.Pdf;
-import com.google.gms.ads.InterAds;
 import com.water.alkaline.kengen.ui.activity.HomeActivity;
 import com.water.alkaline.kengen.ui.activity.PdfActivity;
 import com.water.alkaline.kengen.ui.adapter.PdfAdapter;
 import com.water.alkaline.kengen.ui.listener.OnPdfListener;
 import com.water.alkaline.kengen.utils.Constant;
-
+import com.water.alkaline.kengen.utils.uiController;
 
 
 import java.util.ArrayList;
@@ -91,12 +90,7 @@ public class PdfFragment extends Fragment {
             adapter = new PdfAdapter(activity, list, new OnPdfListener() {
                 @Override
                 public void onItemClick(int position, Pdf item) {
-                    new InterAds().showInterAds(activity, new InterAds.OnAdClosedListener() {
-                        @Override
-                        public void onAdClosed() {
-                            startActivity(new Intent(activity, PdfActivity.class).putExtra("mpath", item.getUrl()));
-                        }
-                    });
+                    uiController.gotoIntent(activity, new Intent(activity, PdfActivity.class).putExtra("mpath", item.getUrl()), true, false);
                 }
             });
             GridLayoutManager manager = new GridLayoutManager(activity, 2);

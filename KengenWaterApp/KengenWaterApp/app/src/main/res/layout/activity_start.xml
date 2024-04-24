@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <include
-        layout="@layout/layout_ad_tiny"
+        layout="@layout/layout_ad_universal"
         android:visibility="gone" />
 
     <ImageView

@@ -71,7 +71,7 @@
 
             <include
                 android:id="@+id/includedAd"
-                layout="@layout/layout_ad_mini"
+                layout="@layout/layout_ad_universal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp" />

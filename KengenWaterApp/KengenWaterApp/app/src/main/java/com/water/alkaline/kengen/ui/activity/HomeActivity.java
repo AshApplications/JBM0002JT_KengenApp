@@ -31,14 +31,13 @@ import com.water.alkaline.kengen.databinding.DialogInfoBinding;
 import com.water.alkaline.kengen.library.toprightmenu.MenuItem;
 import com.water.alkaline.kengen.library.toprightmenu.TopRightMenu;
 import com.water.alkaline.kengen.model.main.Category;
-import com.google.gms.ads.InterAds;
-import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.ui.adapter.DrawerCatAdapter;
 import com.water.alkaline.kengen.ui.adapter.ViewPagerFragmentAdapter;
 import com.water.alkaline.kengen.ui.fragment.BannerFragment;
 import com.water.alkaline.kengen.ui.fragment.ChannelFragment;
 import com.water.alkaline.kengen.ui.fragment.PdfFragment;
 import com.water.alkaline.kengen.utils.Constant;
+import com.water.alkaline.kengen.utils.uiController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,12 +55,6 @@ public class HomeActivity extends AppCompatActivity {
     boolean isOpen = false;
     ViewPagerFragmentAdapter pagerFragmentAdapter;
     Bundle savedState;
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        new MainAds().showBannerAds(this, binding.includedAd.adFrameMini, binding.includedAd.adSpaceMini);
-    }
 
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
@@ -94,12 +87,7 @@ public class HomeActivity extends AppCompatActivity {
                                 showInfoDialog();
                                 break;
                             case 1:
-                                new InterAds().showInterAds(HomeActivity.this, new InterAds.OnAdClosedListener() {
-                                    @Override
-                                    public void onAdClosed() {
-                                        startActivity(new Intent(HomeActivity.this, FeedbackActivity.class));
-                                    }
-                                });
+                                uiController.gotoActivity(HomeActivity.this, FeedbackActivity.class, true, false);
                                 break;
                             case 2:
                                 shareApp();
@@ -198,23 +186,16 @@ public class HomeActivity extends AppCompatActivity {
                 } else {
                     binding.drawer.closeDrawer(GravityCompat.START);
                     if (item.getItemId() >= 10001 && item.getItemId() <= 10003) {
-                        new InterAds().showInterAds(HomeActivity.this, new InterAds.OnAdClosedListener() {
-                            @Override
-                            public void onAdClosed() {
-                                if (item.getItemId() == 10001) {
-                                    startActivity(new Intent(HomeActivity.this, SaveActivity.class));
-                                } else if (item.getItemId() == 10002) {
-                                    startActivity(new Intent(HomeActivity.this, DownloadActivity.class));
-                                } else if (item.getItemId() == 10003) {
-                                    startActivity(new Intent(HomeActivity.this, FeedbackActivity.class));
-                                }
-                            }
-                        });
-
+                        if (item.getItemId() == 10001) {
+                            uiController.gotoActivity(HomeActivity.this, SaveActivity.class, true, false);
+                        } else if (item.getItemId() == 10002) {
+                            uiController.gotoActivity(HomeActivity.this, DownloadActivity.class, true, false);
+                        } else if (item.getItemId() == 10003) {
+                            uiController.gotoActivity(HomeActivity.this, FeedbackActivity.class, true, false);
+                        }
                     } else if (item.getItemId() == 10004) {
                         shareApp();
                     }
-
                 }
                 return false;
             }

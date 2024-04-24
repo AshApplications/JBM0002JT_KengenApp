@@ -36,10 +36,9 @@ import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.databinding.ActivityPdfBinding;
 import com.water.alkaline.kengen.model.DownloadEntity;
 import com.water.alkaline.kengen.model.main.Pdf;
-import com.google.gms.ads.BackInterAds;
-import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
+import com.water.alkaline.kengen.utils.uiController;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -77,14 +76,8 @@ public class PdfActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        new MainAds().showBannerAds(this, binding.includedAd.adFrameMini, binding.includedAd.adSpaceMini);
-    }
-
-    @Override
     public void onBackPressed() {
-        new MainAds().showBackInterAds(this, this::finish);
+        uiController.onBackPressed(this);
     }
 
     public DialogInternetBinding network_dialog(String text) {
@@ -114,20 +107,12 @@ public class PdfActivity extends AppCompatActivity {
         downloadDialog.setCanceledOnTouchOutside(false);
         downloadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        downloadDialog.setOnShowListener(dialog -> new MainAds().showNativeAds(PdfActivity.this, downloadDialog, downloadBinding.includedAd.adFrameLarge, downloadBinding.includedAd.adSpaceLarge));
         downloadDialog.show();
     }
 
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-
-
-        binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        binding.includedToolbar.ivBack.setOnClickListener(v -> onBackPressed());
     }
 
 
@@ -277,10 +262,7 @@ public class PdfActivity extends AppCompatActivity {
         dialogJump.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialogJump.getWindow().setLayout(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         dialogJump.setCancelable(true);
-
-        dialogJump.setOnShowListener(dialog -> new MainAds().showNativeAds(PdfActivity.this, dialogJump, jumpBinding.includedAd.adFrameLarge, jumpBinding.includedAd.adSpaceLarge));
         dialogJump.show();
-
         jumpBinding.editJump.setText(PdfActivity.this.binding.pdfview.getCurrentPage() + 1 + "");
         jumpBinding.txtJump.setOnClickListener(new View.OnClickListener() {
             @Override

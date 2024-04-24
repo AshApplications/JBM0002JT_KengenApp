@@ -1,19 +1,12 @@
 package com.water.alkaline.kengen.ui.activity;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.gms.ads.AdUtils;
-import com.google.gms.ads.InterAds;
-import com.google.gms.ads.OpenAds;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.R;
-import com.google.gms.ads.MainAds;
-import com.water.alkaline.kengen.library.downloader.core.Core;
 import com.water.alkaline.kengen.utils.Constant;
 
 public class ExitActivity extends AppCompatActivity {
@@ -36,7 +29,7 @@ public class ExitActivity extends AppCompatActivity {
     }
 
     public void checkAds(Activity activity) {
-        if (PowerPreference.getDefaultFile().getInt(AdUtils.WhichOneSplashAppOpen, 0) == 1) {
+        /*if (PowerPreference.getDefaultFile().getInt(AdUtils.WhichOneSplashAppOpen, 0) == 1) {
             new MainAds().showSplashInterAds(ExitActivity.this, new InterAds.OnAdClosedListener() {
                 @Override
                 public void onAdClosed() {
@@ -52,7 +45,7 @@ public class ExitActivity extends AppCompatActivity {
             });
         } else {
             exit();
-        }
+        }*/
     }
 
     public void exit() {

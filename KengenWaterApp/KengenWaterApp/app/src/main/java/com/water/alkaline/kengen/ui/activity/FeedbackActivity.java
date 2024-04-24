@@ -25,12 +25,11 @@ import com.water.alkaline.kengen.databinding.ActivityFeedbackBinding;
 import com.water.alkaline.kengen.databinding.DialogInternetBinding;
 import com.water.alkaline.kengen.databinding.DialogLoadingBinding;
 import com.water.alkaline.kengen.model.feedback.FeedbackResponse;
-import com.google.gms.ads.BackInterAds;
-import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.ui.adapter.ViewPagerFragmentAdapter;
 import com.water.alkaline.kengen.ui.fragment.FeedbackFragment;
 import com.water.alkaline.kengen.ui.fragment.HistoryFragment;
 import com.water.alkaline.kengen.utils.Constant;
+import com.water.alkaline.kengen.utils.uiController;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -46,14 +45,8 @@ public class FeedbackActivity extends AppCompatActivity {
     public Dialog loaderDialog;
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        new MainAds().showBannerAds(this, binding.includedAd.adFrameMini, binding.includedAd.adSpaceMini);
-    }
-
-    @Override
     public void onBackPressed() {
-        new MainAds().showBackInterAds(this, this::finish);
+        uiController.onBackPressed(this);
     }
 
     public void setBG() {

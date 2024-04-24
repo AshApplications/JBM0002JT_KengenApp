@@ -21,13 +21,12 @@ import com.preference.PowerPreference;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.FragmentBannerBinding;
 import com.water.alkaline.kengen.model.main.Banner;
-import com.google.gms.ads.InterAds;
 import com.water.alkaline.kengen.ui.activity.HomeActivity;
 import com.water.alkaline.kengen.ui.activity.BannerImageActivity;
 import com.water.alkaline.kengen.ui.adapter.BannerAdapter;
 import com.water.alkaline.kengen.ui.listener.OnBannerListerner;
 import com.water.alkaline.kengen.utils.Constant;
-
+import com.water.alkaline.kengen.utils.uiController;
 
 
 import java.util.ArrayList;
@@ -92,26 +91,18 @@ public class BannerFragment extends Fragment {
             adapter = new BannerAdapter(activity, list, new OnBannerListerner() {
                 @Override
                 public void onItemClick(int position, Banner item) {
-
-                    new InterAds().showInterAds(activity, new InterAds.OnAdClosedListener() {
-                        @Override
-                        public void onAdClosed() {
-                            int pos = position;
-                            for (int i = 0; i < list.size(); i++) {
-                                if (list.get(i).getId().equalsIgnoreCase(item.getId())) {
-                                    pos = i;
-                                    break;
-                                }
-                            }
-
-                            PowerPreference.getDefaultFile().putString(Constant.mBanners, new Gson().toJson(list));
-                            Intent intent = new Intent(activity, BannerImageActivity.class);
-                            intent.putExtra("POS", pos);
-                            intent.putExtra("PAGE", Constant.LIVE);
-                            startActivity(intent);
+                    int pos = position;
+                    for (int i = 0; i < list.size(); i++) {
+                        if (list.get(i).getId().equalsIgnoreCase(item.getId())) {
+                            pos = i;
+                            break;
                         }
-                    });
-
+                    }
+                    PowerPreference.getDefaultFile().putString(Constant.mBanners, new Gson().toJson(list));
+                    Intent intent = new Intent(activity, BannerImageActivity.class);
+                    intent.putExtra("POS", pos);
+                    intent.putExtra("PAGE", Constant.LIVE);
+                    uiController.gotoIntent(activity, intent, true, false);
                 }
             });
             GridLayoutManager manager = new GridLayoutManager(activity, 2);

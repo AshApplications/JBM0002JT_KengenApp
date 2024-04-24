@@ -2,6 +2,8 @@
 package com.water.alkaline.kengen.model.update;
 
 import java.util.List;
+
+import com.google.gms.ads.AdModel;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -12,7 +14,7 @@ public class Data {
     private List<AppInfo> appInfo = null;
     @SerializedName("ads_info")
     @Expose
-    private List<AdsInfo> adsInfo = null;
+    private List<AdModel> adsInfo = null;
 
     public List<AppInfo> getAppInfo() {
         return appInfo;
@@ -22,11 +24,11 @@ public class Data {
         this.appInfo = appInfo;
     }
 
-    public List<AdsInfo> getAdsInfo() {
+    public List<AdModel> getAdsInfo() {
         return adsInfo;
     }
 
-    public void setAdsInfo(List<AdsInfo> adsInfo) {
+    public void setAdsInfo(List<AdModel> adsInfo) {
         this.adsInfo = adsInfo;
     }
 

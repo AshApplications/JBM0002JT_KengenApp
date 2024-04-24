@@ -42,7 +42,6 @@ import com.water.alkaline.kengen.model.main.Channel;
 import com.water.alkaline.kengen.model.main.Subcategory;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
-import com.google.gms.ads.InterAds;
 import com.water.alkaline.kengen.ui.activity.ChannelActivity;
 import com.water.alkaline.kengen.ui.activity.HomeActivity;
 import com.water.alkaline.kengen.ui.activity.PreviewActivity;
@@ -55,6 +54,7 @@ import com.water.alkaline.kengen.ui.listener.OnLoadMoreListener;
 import com.water.alkaline.kengen.ui.listener.OnSubcatListener;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
 import com.water.alkaline.kengen.utils.Constant;
+import com.water.alkaline.kengen.utils.uiController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -169,13 +169,8 @@ public class ChannelFragment extends Fragment {
         subcatAdapter = new SubcatAdapter(activity, subList, new OnSubcatListener() {
             @Override
             public void onItemClick(int position, Subcategory item) {
-                new InterAds().showInterAds(activity, new InterAds.OnAdClosedListener() {
-                    @Override
-                    public void onAdClosed() {
-                        startActivity(new Intent(activity, ChannelActivity.class)
-                                .putExtra("catId", item.getId()));
-                    }
-                });
+                uiController.gotoIntent(activity, new Intent(activity, ChannelActivity.class).putExtra("catId", item.getId()), true, false);
+
             }
         });
 
@@ -221,14 +216,9 @@ public class ChannelFragment extends Fragment {
         channelAdapter = new ChannelAdapter(activity, chanList, new OnChannelListener() {
             @Override
             public void onItemClick(int position, Channel item) {
-                new InterAds().showInterAds(activity, new InterAds.OnAdClosedListener() {
-                    @Override
-                    public void onAdClosed() {
-                        PowerPreference.getDefaultFile().putString(Constant.mChannelID, item.getYouid());
-                        PowerPreference.getDefaultFile().putBoolean(Constant.mIsChannel, item.getType().equalsIgnoreCase("0"));
-                        startActivity(new Intent(activity, VideoListActivity.class));
-                    }
-                });
+                PowerPreference.getDefaultFile().putString(Constant.mChannelID, item.getYouid());
+                PowerPreference.getDefaultFile().putBoolean(Constant.mIsChannel, item.getType().equalsIgnoreCase("0"));
+                uiController.gotoActivity(activity, VideoListActivity.class, true, false);
             }
         });
 
@@ -277,20 +267,15 @@ public class ChannelFragment extends Fragment {
         videosAdapter = new VideosAdapter(activity, videoList, binding.rvCats, new OnVideoListener() {
             @Override
             public void onItemClick(int position, SaveEntity item) {
-                new InterAds().showInterAds(activity, new InterAds.OnAdClosedListener() {
-                    @Override
-                    public void onAdClosed() {
-                        int pos = position;
-                        for (int i = 0; i < videoList.size(); i++) {
-                            if (videoList.get(i).videoId.equalsIgnoreCase(item.videoId)) {
-                                pos = i;
-                                break;
-                            }
-                        }
-                        PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(videoList));
-                        startActivity(new Intent(activity, PreviewActivity.class).putExtra(Constant.POSITION, pos));
+                int pos = position;
+                for (int i = 0; i < videoList.size(); i++) {
+                    if (videoList.get(i).videoId.equalsIgnoreCase(item.videoId)) {
+                        pos = i;
+                        break;
                     }
-                });
+                }
+                PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(videoList));
+                uiController.gotoIntent(activity, new Intent(activity, PreviewActivity.class).putExtra(Constant.POSITION, pos), true, false);
             }
         });
 

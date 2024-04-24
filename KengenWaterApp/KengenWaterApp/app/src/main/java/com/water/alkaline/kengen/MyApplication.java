@@ -8,14 +8,14 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.RequestConfiguration;
 import com.google.firebase.FirebaseApp;
-import com.google.gms.ads.CustomApplication;
+import com.google.gms.ads.MyApp;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.library.downloader.PRDownloader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MyApplication extends CustomApplication {
+public class MyApplication extends MyApp {
 
     public static ArrayList<Integer> arrayList = new ArrayList<>();
 

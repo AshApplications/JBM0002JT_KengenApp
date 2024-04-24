@@ -31,7 +31,6 @@ import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
 import com.google.gms.ads.AdUtils;
-import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.databinding.DialogExitBinding;
 import com.water.alkaline.kengen.ui.activity.ExitActivity;
 
@@ -153,19 +152,6 @@ public class Constant {
             exitBinding.btnCancel.setOnClickListener(view -> {
                 mDialog.dismiss();
             });
-
-            if (isAds) {
-                mDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface dialog) {
-                        if (PowerPreference.getDefaultFile().getBoolean(AdUtils.ExitDialogNativeOnOff, false)) {
-                            new MainAds().showNativeAds(activity, mDialog, exitBinding.includedAd.adFrameLarge, exitBinding.includedAd.adSpaceLarge);
-                        } else {
-                            exitBinding.includedAd.adFrameLarge.removeAllViews();
-                        }
-                    }
-                });
-            }
             mDialog.show();
 
         } catch (Exception e) {

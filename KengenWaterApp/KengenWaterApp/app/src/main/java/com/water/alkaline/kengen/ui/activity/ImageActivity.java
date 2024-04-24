@@ -28,10 +28,9 @@ import com.water.alkaline.kengen.library.downloader.PRDownloader;
 import com.water.alkaline.kengen.library.downloader.Progress;
 import com.water.alkaline.kengen.model.DownloadEntity;
 import com.water.alkaline.kengen.model.main.Banner;
-import com.google.gms.ads.BackInterAds;
-import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
+import com.water.alkaline.kengen.utils.uiController;
 
 import java.io.File;
 
@@ -52,43 +51,25 @@ public class ImageActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        new MainAds().showBannerAds(this, binding.includedAd.adFrameMini, binding.includedAd.adSpaceMini);
-    }
-
-    @Override
     public void onBackPressed() {
-        new MainAds().showBackInterAds(this, this::finish);
+        uiController.onBackPressed(this);
     }
 
     public void download_dialog() {
-
         dismiss_download_dialog();
-
         downloadDialog = new Dialog(this, R.style.NormalDialog);
         downloadBinding = DialogDownloadBinding.inflate(getLayoutInflater());
         downloadDialog.setContentView(downloadBinding.getRoot());
-        
         downloadDialog.setCancelable(false);
         downloadDialog.setCanceledOnTouchOutside(false);
         downloadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        downloadDialog.setOnShowListener(dialog -> new MainAds().showNativeAds(ImageActivity.this, downloadDialog, downloadBinding.includedAd.adFrameLarge, downloadBinding.includedAd.adSpaceLarge));
         downloadDialog.show();
-
     }
 
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-
-
-        binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        binding.includedToolbar.ivBack.setOnClickListener(v -> onBackPressed());
     }
 
 
@@ -98,7 +79,6 @@ public class ImageActivity extends AppCompatActivity {
         binding = ActivityImageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setBG();
-
         mPath = getIntent().getExtras().getString("mpath", "");
         if (mPath.startsWith("http")) {
             banner = null;

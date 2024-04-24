@@ -34,9 +34,6 @@ import com.water.alkaline.kengen.model.channel.PlaylistResponse;
 import com.water.alkaline.kengen.model.main.Channel;
 import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
-import com.google.gms.ads.BackInterAds;
-import com.google.gms.ads.InterAds;
-import com.google.gms.ads.MainAds;
 import com.water.alkaline.kengen.ui.adapter.ChannelAdapter;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
 import com.water.alkaline.kengen.ui.listener.OnChannelListener;
@@ -44,6 +41,7 @@ import com.water.alkaline.kengen.ui.listener.OnLoadMoreListener;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
 import com.water.alkaline.kengen.utils.Constant;
 import com.preference.PowerPreference;
+import com.water.alkaline.kengen.utils.uiController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,13 +79,7 @@ public class ChannelActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        new MainAds().showBackInterAds(this, this::finish);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        new MainAds().showBannerAds(this, binding.includedAd.adFrameMini, binding.includedAd.adSpaceMini);
+        uiController.onBackPressed(this);
     }
 
     @Override
@@ -96,7 +88,6 @@ public class ChannelActivity extends AppCompatActivity {
         binding = ActivityChannelBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setBG();
-
         getStart();
     }
 
@@ -132,39 +123,16 @@ public class ChannelActivity extends AppCompatActivity {
             }
         });
         binding.rvChannels.setLayoutManager(manager);
-        channelAdapter = new ChannelAdapter(this, chanList, new OnChannelListener() {
-            @Override
-            public void onItemClick(int position, Channel item) {
-                new InterAds().showInterAds(ChannelActivity.this, new InterAds.OnAdClosedListener() {
-                    @Override
-                    public void onAdClosed() {
-                        PowerPreference.getDefaultFile().putString(Constant.mChannelID, item.getYouid());
-                        PowerPreference.getDefaultFile().putBoolean(Constant.mIsChannel, item.getType().equalsIgnoreCase("0"));
-                        startActivity(new Intent(ChannelActivity.this, VideoListActivity.class));
-                    }
-                });
-            }
+        channelAdapter = new ChannelAdapter(this, chanList, (position, item) -> {
+            PowerPreference.getDefaultFile().putString(Constant.mChannelID, item.getYouid());
+            PowerPreference.getDefaultFile().putBoolean(Constant.mIsChannel, item.getType().equalsIgnoreCase("0"));
+            uiController.gotoActivity(this, VideoListActivity.class, true, false);
         });
 
         binding.rvChannels.setAdapter(channelAdapter);
         binding.rvChannels.setItemViewCacheSize(100);
         checkData();
     }
-
-/*
-    public void refreshActivity() {
-        if (binding.rvChannels.getAdapter().getItemCount() <= 0) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.refreshAdapter(viewModel.getAllChannelByCategory(catId));
-                    checkData();
-                }
-            }, 500);
-        }
-    }
-*/
-
 
     public void checkData() {
         binding.includedProgress.progress.setVisibility(View.GONE);
@@ -194,25 +162,17 @@ public class ChannelActivity extends AppCompatActivity {
         });
 
         binding.rvChannels.setLayoutManager(manager);
-        videosAdapter = new VideosAdapter(ChannelActivity.this, videoList, binding.rvChannels, new OnVideoListener() {
-            @Override
-            public void onItemClick(int position, SaveEntity item) {
-                new InterAds().showInterAds(ChannelActivity.this, new InterAds.OnAdClosedListener() {
-                    @Override
-                    public void onAdClosed() {
-                        int pos = position;
-                        for (int i = 0; i < videoList.size(); i++) {
-                            if (videoList.get(i).videoId.equalsIgnoreCase(item.videoId)) {
-                                pos = i;
-                                break;
-                            }
-                        }
-                        PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(videoList));
-                        startActivity(new Intent(ChannelActivity.this, PreviewActivity.class).putExtra(Constant.POSITION, pos));
-                    }
-                });
-
+        videosAdapter = new VideosAdapter(ChannelActivity.this, videoList, binding.rvChannels, (position, item) -> {
+            int pos = position;
+            for (int i = 0; i < videoList.size(); i++) {
+                if (videoList.get(i).videoId.equalsIgnoreCase(item.videoId)) {
+                    pos = i;
+                    break;
+                }
             }
+            Intent intent=new Intent(this,PreviewActivity.class);
+            intent.putExtra(Constant.POSITION, pos);
+            uiController.gotoIntent(this, intent, true, false);
         });
 
         binding.rvChannels.setAdapter(videosAdapter);

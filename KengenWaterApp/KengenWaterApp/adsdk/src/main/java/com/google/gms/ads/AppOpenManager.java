@@ -233,7 +233,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
 
     @OnLifecycleEvent(ON_START)
     public void onStart() {
-        if (!(appCurrentActivity.getClass().getName().equalsIgnoreCase(MyApp.className)) && MyApp.isShowAds && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+        if (!(appCurrentActivity.getClass().getName().equalsIgnoreCase(MyApp.className)) && MyApp.isShowAds && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes") && MyApp.getAdModel().getAppOpenBack().equalsIgnoreCase("Yes")) {
             showAdIfAvailable();
         }
     }

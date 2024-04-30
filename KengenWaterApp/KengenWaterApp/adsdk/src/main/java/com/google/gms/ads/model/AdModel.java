@@ -57,6 +57,10 @@ public class AdModel {
     @Expose
     private String adsAppOpen = "Google";
 
+    @SerializedName("app_open_back")
+    @Expose
+    private String appOpenBack = "None";
+
     @SerializedName("ads_on_off")
     @Expose
     private String adsOnOff = "Yes";
@@ -122,6 +126,15 @@ public class AdModel {
     @SerializedName("ads_bottom_layout")
     @Expose
     private int adsBottomLayout = 1;
+
+
+    public String getAppOpenBack() {
+        return appOpenBack;
+    }
+
+    public void setAppOpenBack(String appOpenBack) {
+        this.appOpenBack = appOpenBack;
+    }
 
     public String getAdsOnOff() {
         return adsOnOff;

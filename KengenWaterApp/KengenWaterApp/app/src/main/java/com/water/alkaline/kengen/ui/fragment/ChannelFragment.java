@@ -146,6 +146,16 @@ public class ChannelFragment extends Fragment {
         }
     }
 
+    public void refreshFragment() {
+        if (!subList.isEmpty() && subcatAdapter != null) {
+            subcatAdapter.refreshAdapter(subList);
+        } else if (!chanList.isEmpty() && channelAdapter != null) {
+            channelAdapter.refreshAdapter(chanList);
+        } else if (!videoList.isEmpty() && videosAdapter != null) {
+            videosAdapter.refreshAdapter(videoList);
+        }
+    }
+
     public void SubCategory() {
         GridLayoutManager manager = new GridLayoutManager(activity, 2);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {

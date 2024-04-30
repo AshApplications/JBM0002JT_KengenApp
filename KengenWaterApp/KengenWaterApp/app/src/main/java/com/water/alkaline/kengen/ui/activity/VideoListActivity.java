@@ -70,9 +70,10 @@ public class VideoListActivity extends AppCompatActivity {
         } else {
             binding.includedAd.cvAdMain.setVisibility(View.GONE);
             binding.includedAd.flAd.setVisibility(View.GONE);
+            refreshFragment();
         }
-
     }
+
 
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
@@ -89,6 +90,11 @@ public class VideoListActivity extends AppCompatActivity {
         getStart();
     }
 
+    public void refreshFragment() {
+        if (!list.isEmpty() && adapter != null) {
+            adapter.refreshAdapter(list);
+        }
+    }
     public void getStart() {
         GridLayoutManager manager = new GridLayoutManager(this, 2);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {

@@ -89,6 +89,7 @@ public class ChannelActivity extends AppCompatActivity {
         } else {
             binding.includedAd.cvAdMain.setVisibility(View.GONE);
             binding.includedAd.flAd.setVisibility(View.GONE);
+            refreshFragment();
         }
     }
 
@@ -99,6 +100,15 @@ public class ChannelActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         setBG();
         getStart();
+    }
+
+
+    public void refreshFragment() {
+        if (!chanList.isEmpty() && channelAdapter != null) {
+            channelAdapter.refreshAdapter(chanList);
+        } else if (!videoList.isEmpty() && videosAdapter != null) {
+            videosAdapter.refreshAdapter(videoList);
+        }
     }
 
     public void getStart() {

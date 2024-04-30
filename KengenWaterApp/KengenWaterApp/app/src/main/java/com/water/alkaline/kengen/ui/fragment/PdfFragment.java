@@ -83,16 +83,9 @@ public class PdfFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-
         if (activity != null) {
-            adapter = new PdfAdapter(activity, list, new OnPdfListener() {
-                @Override
-                public void onItemClick(int position, Pdf item) {
-                    uiController.gotoIntent(activity, new Intent(activity, PdfActivity.class).putExtra("mpath", item.getUrl()), true, false);
-                }
-            });
+            adapter = new PdfAdapter(activity, list, (position, item) -> uiController.gotoIntent(activity, new Intent(activity, PdfActivity.class).putExtra("mpath", item.getUrl()), true, false));
             GridLayoutManager manager = new GridLayoutManager(activity, 2);
             manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
@@ -118,14 +111,11 @@ public class PdfFragment extends Fragment {
     }
 
     public void refreshFragment() {
-        if (binding.rvPdfs.getAdapter().getItemCount() <= 0) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.refreshAdapter(viewModel.getAllPdfByCategory(mParam1));
-                    binding.includedProgress.progress.setVisibility(View.GONE);
-                    checkData();
-                }
+        if (adapter != null) {
+            new Handler().postDelayed(() -> {
+                adapter.refreshAdapter(viewModel.getAllPdfByCategory(mParam1));
+                binding.includedProgress.progress.setVisibility(View.GONE);
+                checkData();
             }, 500);
         }
     }

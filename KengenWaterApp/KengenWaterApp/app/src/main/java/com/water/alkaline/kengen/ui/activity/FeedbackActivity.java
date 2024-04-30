@@ -61,6 +61,7 @@ public class FeedbackActivity extends AppCompatActivity {
         } else {
             binding.includedAd.cvAdMain.setVisibility(View.GONE);
             binding.includedAd.flAd.setVisibility(View.GONE);
+            refresh();
         }
 
     }
@@ -86,7 +87,6 @@ public class FeedbackActivity extends AppCompatActivity {
         binding.vpFeeds.setOffscreenPageLimit(2);
 
         new TabLayoutMediator(binding.tabHome, binding.vpFeeds, (tab, position) -> tab.setText(adapter.mFragmentTitleList.get(position))).attach();
-
         binding.vpFeeds.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
@@ -150,7 +150,7 @@ public class FeedbackActivity extends AppCompatActivity {
     public void FeedAPI() {
         if (Constant.checkInternet(FeedbackActivity.this)) {
             loader_dialog();
-            RetroClient.getInstance(this).getApi().GetfeedApi(DecryptEncrypt.EncryptStr(FeedbackActivity.this, MyApplication.updateApi(this,"", PowerPreference.getDefaultFile().getString(Constant.mToken, "123"),"","","")))
+            RetroClient.getInstance(this).getApi().GetfeedApi(DecryptEncrypt.EncryptStr(FeedbackActivity.this, MyApplication.updateApi(this, "", PowerPreference.getDefaultFile().getString(Constant.mToken, "123"), "", "", "")))
                     .enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -182,8 +182,8 @@ public class FeedbackActivity extends AppCompatActivity {
     }
 
     public void refresh() {
-        ((HistoryFragment) adapter.arrayList.get(1)).refreshActivity();
+        if (adapter != null && adapter.arrayList.size() > 0) {
+            ((HistoryFragment) adapter.arrayList.get(1)).refreshActivity();
+        }
     }
-
-
 }

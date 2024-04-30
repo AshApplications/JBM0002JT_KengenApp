@@ -50,8 +50,14 @@ public class DownloadActivity extends AppCompatActivity {
         } else {
             binding.includedAd.cvAdMain.setVisibility(View.GONE);
             binding.includedAd.flAd.setVisibility(View.GONE);
+            refreshFragment();
         }
+    }
 
+    public void refreshFragment() {
+        if (!list.isEmpty() && adapter != null) {
+            adapter.refreshAdapter(list);
+        }
     }
 
     @Override

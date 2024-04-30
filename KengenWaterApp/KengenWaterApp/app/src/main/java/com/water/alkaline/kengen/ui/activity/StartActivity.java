@@ -211,12 +211,13 @@ public class StartActivity extends AppCompatActivity {
                                     PowerPreference.getDefaultFile().putString(Constant.appShareMsg, appInfo.getAppShareMsg());
                                     PowerPreference.getDefaultFile().putString(Constant.vidShareMsg, appInfo.getVidShareMsg());
 
-                                    if (!PowerPreference.getDefaultFile().getString(Constant.T_DATE, "not").equalsIgnoreCase(appInfo.getTodayDate())) {
+
+                                     if (!PowerPreference.getDefaultFile().getString(Constant.T_DATE, "not").equalsIgnoreCase(appInfo.getTodayDate())) {
                                         PowerPreference.getDefaultFile().putString(Constant.T_DATE, appInfo.getTodayDate());
                                         PowerPreference.getDefaultFile().putInt(AdUtils.APP_CLICK_COUNT, 0);
                                     } else {
-                                        int clickCOunt2 = PowerPreference.getDefaultFile().getInt(AdUtils.APP_CLICK_COUNT, 0);
-                                        if (clickCOunt2 >= PowerPreference.getDefaultFile().getInt(AdUtils.AD_CLICK_COUNT, 3)) {
+                                        int clickCount2 = PowerPreference.getDefaultFile().getInt(AdUtils.APP_CLICK_COUNT, 0);
+                                        if (clickCount2 >= PowerPreference.getDefaultFile().getInt(AdUtils.AD_CLICK_COUNT, 3)) {
                                             AdLoader.disableAds();
                                         }
                                     }

@@ -70,6 +70,7 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             binding.includedAd.cvAdMain.setVisibility(View.GONE);
             binding.includedAd.flAd.setVisibility(View.GONE);
+            refreshFragments();
         }
 
     }
@@ -241,6 +242,18 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+
+    public void refreshFragments() {
+        for (int i = 0; i < pagerFragmentAdapter.getItemCount(); i++) {
+            if (pagerFragmentAdapter.arrayList.get(i) instanceof BannerFragment) {
+                ((BannerFragment) pagerFragmentAdapter.arrayList.get(i)).refreshFragment();
+            } else if (pagerFragmentAdapter.arrayList.get(i) instanceof ChannelFragment) {
+                ((ChannelFragment) pagerFragmentAdapter.arrayList.get(i)).refreshFragment();
+            } else if (pagerFragmentAdapter.arrayList.get(i) instanceof PdfFragment) {
+                ((PdfFragment) pagerFragmentAdapter.arrayList.get(i)).refreshFragment();
+            }
+        }
+    }
 
     public void setTabs() {
         List<Category> categories = viewModel.getAllCategory();

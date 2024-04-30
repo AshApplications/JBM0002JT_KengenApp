@@ -31,6 +31,7 @@ import com.water.alkaline.kengen.utils.uiController;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 
 public class BannerFragment extends Fragment {
@@ -126,15 +127,12 @@ public class BannerFragment extends Fragment {
     }
 
     public void refreshFragment() {
-        if (binding.rvBanners.getAdapter().getItemCount() <= 0) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    list = viewModel.getAllBannerByCategory(mParam1);
-                    adapter.refreshAdapter(list);
-                    binding.includedProgress.progress.setVisibility(View.GONE);
-                    checkData();
-                }
+        if (adapter != null) {
+            new Handler().postDelayed(() -> {
+                list = viewModel.getAllBannerByCategory(mParam1);
+                adapter.refreshAdapter(list);
+                binding.includedProgress.progress.setVisibility(View.GONE);
+                checkData();
             }, 500);
         }
     }

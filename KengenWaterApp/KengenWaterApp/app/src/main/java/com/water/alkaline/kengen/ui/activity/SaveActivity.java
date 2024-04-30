@@ -48,6 +48,7 @@ public class SaveActivity extends AppCompatActivity {
         } else {
             binding.includedAd.cvAdMain.setVisibility(View.GONE);
             binding.includedAd.flAd.setVisibility(View.GONE);
+            refreshFragment();
         }
 
     }
@@ -60,6 +61,12 @@ public class SaveActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+    }
+
+    public void refreshFragment() {
+        if (!list.isEmpty() && adapter != null) {
+            adapter.refreshAdapter(list);
+        }
     }
 
     @Override

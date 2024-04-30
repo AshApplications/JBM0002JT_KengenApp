@@ -45,7 +45,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void setAds(boolean isAds) {
         int PARTICLE_AD_DISPLAY_COUNT = MyApp.getAdModel().getAdsListViewCount();
 
-        if (PARTICLE_AD_DISPLAY_COUNT > 0) {
+        if (PARTICLE_AD_DISPLAY_COUNT > 0 && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
 
             arrayList.removeAll(Collections.singleton(null));
             ArrayList<Feedback> tempArr = new ArrayList<>();

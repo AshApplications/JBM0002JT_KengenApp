@@ -48,55 +48,68 @@
         <activity
             android:name=".ui.activity.PreviewActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.BannerActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.FeedbackActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.ExitActivity"
             android:excludeFromRecents="true"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:theme="@style/AppTheme.Dialog" />
         <activity
             android:name=".ui.activity.SaveActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.DownloadActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.PlayerActivity"
+            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
             android:exported="false" />
         <activity
             android:name=".ui.activity.ImageActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.VideoListActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.PdfActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.ChannelActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.HomeActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.StartActivity"
             android:exported="true"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>

@@ -1,6 +1,7 @@
 package com.google.gms.ads;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,9 +11,13 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -22,6 +27,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
@@ -37,7 +43,11 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdOptions;
 import com.google.android.gms.ads.nativead.NativeAdView;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.gms.ads.databinding.DialogExitBinding;
+import com.google.gms.ads.databinding.DialogExitBottomBinding;
 import com.google.gms.ads.databinding.LayoutAdUniversalBinding;
+import com.preference.PowerPreference;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,7 +66,7 @@ public class AdLoader {
     private InterstitialAd interstitialAd = null;
     private NativeAd nativeAdPreload = null;
     private final ArrayList<NativeAd> nativeAds = new ArrayList<>();
-    private static final int NATIVE_LIST_SIZE = 5;
+    private static final int NATIVE_LIST_SIZE = 6;
 
     public static AdLoader getInstance() {
         if (instance == null) {
@@ -69,13 +79,18 @@ public class AdLoader {
         return nativeAds;
     }
 
-    public static void disableAds() {
-        MyApp.getAdModel().setAdsAppOpen("None");
-        MyApp.getAdModel().setAdsBanner("None");
-        MyApp.getAdModel().setAdsInterstitial("None");
-        MyApp.getAdModel().setAdsInterstitialBack("None");
-        MyApp.getAdModel().setAdsNative("None");
+    public void closeAds() {
+        int clickCount = PowerPreference.getDefaultFile().getInt(AdUtils.APP_CLICK_COUNT, 0);
+        PowerPreference.getDefaultFile().putInt(AdUtils.APP_CLICK_COUNT, clickCount + 1);
+        int clickCount2 = PowerPreference.getDefaultFile().getInt(AdUtils.APP_CLICK_COUNT, 0);
 
+        if (clickCount2 >= PowerPreference.getDefaultFile().getInt(AdUtils.AD_CLICK_COUNT, 3)) {
+            disableAds();
+        }
+    }
+
+    public static void disableAds() {
+        MyApp.getAdModel().setAdsOnOff("No");
     }
 
     public static void resetCounter() {
@@ -289,6 +304,79 @@ public class AdLoader {
         AdLoader.getInstance().showInterstitialAd(activity, true, activity::finishAffinity);
     }
 
+
+    public static void showExit(Activity activity) {
+        if (MyApp.getAdModel().getAdsNative().equalsIgnoreCase("Google") && MyApp.getAdModel().getAdsExit().equalsIgnoreCase("Yes") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            showExitBottomDialog(activity);
+        } else {
+            showExitDialog(activity);
+        }
+    }
+
+    private static void showExitBottomDialog(Activity activity) {
+        try {
+            BottomSheetDialog dialog = new BottomSheetDialog(activity, androidx.appcompat.R.style.Base_Theme_AppCompat_Light_Dialog);
+            DialogExitBottomBinding binding = DialogExitBottomBinding.inflate(LayoutInflater.from(activity), null, false);
+            dialog.setContentView(binding.getRoot());
+            dialog.setCancelable(true);
+            dialog.setCanceledOnTouchOutside(true);
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
+            dialog.setOnShowListener(dialog1 -> AdLoader.getInstance().showNativeExit(activity, binding.ltUniversal, "Large"));
+            binding.cvExit.setOnClickListener(v -> {
+                dialog.setOnDismissListener(dialog12 -> activity.finishAffinity());
+                dialog.dismiss();
+            });
+            if (PowerPreference.getDefaultFile().getString(AdUtils.QUREKA, "").trim().isEmpty()) {
+                binding.btnPlayGame.setVisibility(View.GONE);
+            } else {
+                binding.btnPlayGame.setVisibility(View.VISIBLE);
+                Animation anim = new ScaleAnimation(0.9f, 1F, // Start and end values for the X axis scaling
+                        0.9F, 1F, // Start and end values for the Y axis scaling
+                        Animation.RELATIVE_TO_SELF, 0.5f, // Pivot point of X scaling
+                        Animation.RELATIVE_TO_SELF, 0.5f);
+                anim.setDuration(1000); //You can manage the blinking time with this parameter
+                anim.setStartOffset(20);
+                anim.setRepeatMode(Animation.REVERSE);
+                anim.setFillAfter(true);
+                anim.setRepeatCount(Animation.INFINITE);
+                binding.btnPlayGame.startAnimation(anim);
+                binding.btnPlayGame.setOnClickListener(v -> {
+                    dialog.setOnDismissListener(dialog13 -> openUrl(activity, PowerPreference.getDefaultFile().getString(AdUtils.QUREKA, "")));
+                    dialog.dismiss();
+                });
+            }
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void showExitDialog(Activity activity) {
+        try {
+            Dialog dialog = new Dialog(activity);
+            DialogExitBinding binding = DialogExitBinding.inflate(LayoutInflater.from(activity), null, false);
+            dialog.setContentView(binding.getRoot());
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
+            dialog.show();
+            binding.btnYes.setOnClickListener(v -> {
+                dialog.setOnDismissListener(dialog1 -> activity.finishAffinity());
+                dialog.dismiss();
+            });
+            binding.btnNo.setOnClickListener(v -> dialog.dismiss());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public static void openUrl(Activity activity, String url) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -348,13 +436,12 @@ public class AdLoader {
     private void showBanner(final Activity activity, final LayoutAdUniversalBinding ltUniversal) {
         if (getFailedCountBanner() < MyApp.getAdModel().getAdsBannerFailedCount() && MyApp.getAdModel().getAdsBanner().equalsIgnoreCase("Google")) {
             //remove any margin if exist
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltUniversal.getRoot().getLayoutParams();
+            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltUniversal.cvAdMain.getLayoutParams();
             layoutParams.setMargins(0, 0, 0, 0);
-            ltUniversal.getRoot().requestLayout();
-
-            //Remove Border
-            ltUniversal.getRoot().setStrokeWidth(0);
-
+            ltUniversal.cvAdMain.requestLayout();
+            ltUniversal.cvAdMain.setRadius(0f);
+            ltUniversal.cvAdMain.setStrokeWidth(0);
+            ltUniversal.llMain.setBackgroundColor(Color.parseColor(MyApp.getAdModel().getAdsBgColor()));
             //Set flAd View Height to Same As Place Holder
             ltUniversal.flAd.getLayoutParams().height = ltUniversal.tvAdSpaceBanner.getLayoutParams().height;
 
@@ -386,7 +473,7 @@ public class AdLoader {
                 @Override
                 public void onAdClicked() {
                     super.onAdClicked();
-                    showBanner(activity, ltUniversal);
+                    AdLoader.getInstance().closeAds();
                 }
 
                 @Override
@@ -405,7 +492,7 @@ public class AdLoader {
     }
 
     private void loadInterstitialAd(final Activity activity) {
-        if (getFailedCountInterstitial() < MyApp.getAdModel().getAdsInterstitialFailedCount()) {
+        if (getFailedCountInterstitial() < MyApp.getAdModel().getAdsInterstitialFailedCount() && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
             if (interstitialAd == null && !isInterstitialLoading) {
                 isInterstitialLoading = true;
                 AdRequest adRequest = new AdRequest.Builder().build();
@@ -433,7 +520,7 @@ public class AdLoader {
     }
 
     public void showInterstitialAd(Activity activity, boolean isBack, FullScreenDismissListener listener) {
-        if (isBack ? MyApp.getAdModel().getAdsInterstitialBack().equalsIgnoreCase("Google") : MyApp.getAdModel().getAdsInterstitial().equalsIgnoreCase("Google")) {
+        if (isBack ? MyApp.getAdModel().getAdsInterstitialBack().equalsIgnoreCase("Google") : MyApp.getAdModel().getAdsInterstitial().equalsIgnoreCase("Google") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
             int currentInterval = getInterstitialInterval(isBack);
             int regularInterval = isBack ? MyApp.getAdModel().getAdsInterstitialBackCount() : MyApp.getAdModel().getAdsInterstitialCount();
             if (currentInterval == regularInterval) {
@@ -447,6 +534,12 @@ public class AdLoader {
                             isInterstitialShowing = false;
                             loadInterstitialAd(activity);
                             listener.onDismiss();
+                        }
+
+                        @Override
+                        public void onAdClicked() {
+                            super.onAdClicked();
+                            AdLoader.getInstance().closeAds();
                         }
 
                         @Override
@@ -490,35 +583,62 @@ public class AdLoader {
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, adWidth);
     }
 
-    private void showNativeLarge(Activity activity, LayoutAdUniversalBinding ltUniversal) {
+    public void showNativeLarge(Activity activity, LayoutAdUniversalBinding ltUniversal) {
         showNative(activity, ltUniversal, "Large");
     }
 
-    private void showNativeSmall(Activity activity, LayoutAdUniversalBinding ltUniversal) {
+    public void showNativeSmall(Activity activity, LayoutAdUniversalBinding ltUniversal) {
         showNative(activity, ltUniversal, "Small");
     }
 
-    public void showNativeLargeList(Activity activity, LayoutAdUniversalBinding ltNative) {
-        showNativeList(activity, ltNative, "Large");
-    }
 
-    public void showNativeSmallList(Activity activity, LayoutAdUniversalBinding ltNative) {
-        showNativeList(activity, ltNative, "Small");
-    }
-
-    public void showNativeList(Activity activity, LayoutAdUniversalBinding ltNative, String adType) {
-        if (nativeAds.size() > 0) {
+    public void showNativeDialog(Activity activity, LayoutAdUniversalBinding ltNative) {
+        if (!nativeAds.isEmpty() && MyApp.getAdModel().getAdsNativeDialog().equalsIgnoreCase("Yes") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            ltNative.llMain.setBackgroundColor(ContextCompat.getColor(activity, android.R.color.transparent));
+            ltNative.cvAdMain.setCardBackgroundColor(Color.parseColor(MyApp.getAdModel().getAdsNativeBgColor()));
             Collections.shuffle(nativeAds);
-            NativeAdView adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_large, null, false);
-            if (adType.equalsIgnoreCase("Small")) {
-                if (MyApp.getAdModel().getAdsNativeViewId() == 1) {
-                    adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small_1, null, false);
-                } else if (MyApp.getAdModel().getAdsNativeViewId() == 2) {
-                    adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small_2, null, false);
-                }
-            } else if (adType.equalsIgnoreCase("Large")) {
-                adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_large, null, false);
+            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltNative.cvAdMain.getLayoutParams();
+            int margin = (int) activity.getResources().getDimension(com.intuit.sdp.R.dimen._3sdp);
+            layoutParams.setMargins(margin, margin, margin, margin);
+            ltNative.cvAdMain.requestLayout();
+            NativeAdView adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small, null, false);
+            AdLoader.getInstance().inflateGoogleNativeAd(activity, nativeAds.get(0), adView);
+            ltNative.flAd.removeAllViews();
+            ltNative.flAd.addView(adView);
+        } else {
+            ltNative.flAd.removeAllViews();
+            ltNative.cvAdMain.setVisibility(View.GONE);
+        }
+    }
+
+    private void showNativeExit(Activity activity, LayoutAdUniversalBinding ltUniversal, String adType) {
+        if (MyApp.getAdModel().getAdsNative().equalsIgnoreCase("Google") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            ltUniversal.llMain.setBackgroundColor(ContextCompat.getColor(activity, android.R.color.transparent));
+            ltUniversal.cvAdMain.setCardBackgroundColor(Color.parseColor(MyApp.getAdModel().getAdsNativeBgColor()));
+            if (nativeAdPreload != null) {
+                showNativeAd(activity, ltUniversal, adType);
+            } else {
+                loadNativeAd(activity, ltUniversal, adType);
             }
+        } else {
+            ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
+            ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
+            ltUniversal.tvAdSpaceSmall.setVisibility(View.GONE);
+            ltUniversal.flAd.setVisibility(View.GONE);
+        }
+    }
+
+
+    public void showNativeList(Activity activity, LayoutAdUniversalBinding ltNative) {
+        if (!nativeAds.isEmpty() && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            ltNative.llMain.setBackgroundColor(ContextCompat.getColor(activity, android.R.color.transparent));
+            ltNative.cvAdMain.setCardBackgroundColor(Color.parseColor(MyApp.getAdModel().getAdsNativeBgColor()));
+            Collections.shuffle(nativeAds);
+            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltNative.cvAdMain.getLayoutParams();
+            int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, activity.getResources().getDisplayMetrics());
+            layoutParams.setMargins(0, margin, margin, 0);
+            ltNative.cvAdMain.requestLayout();
+            NativeAdView adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small, null, false);
             AdLoader.getInstance().inflateGoogleNativeAd(activity, nativeAds.get(0), adView);
             ltNative.flAd.removeAllViews();
             ltNative.flAd.addView(adView);
@@ -529,25 +649,35 @@ public class AdLoader {
     }
 
     public void showUniversalAd(Activity activity, LayoutAdUniversalBinding ltUniversal, boolean showBanner) {
-        if (MyApp.getAdModel().getAdsBottomLayout() == 1) {
-            if (showBanner) {
+        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")  && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            if (MyApp.getAdModel().getAdsBottomLayout() == 0) {
+                if (showBanner) {
+                    showBanner(activity, ltUniversal);
+                } else {
+                    showNativeSmall(activity, ltUniversal);
+                }
+            } else if (MyApp.getAdModel().getAdsBottomLayout() == 1) {
                 showBanner(activity, ltUniversal);
-            } else {
+            } else if (MyApp.getAdModel().getAdsBottomLayout() == 2) {
                 showNativeSmall(activity, ltUniversal);
             }
-        } else if (MyApp.getAdModel().getAdsBottomLayout() == 2) {
-            showBanner(activity, ltUniversal);
-        } else if (MyApp.getAdModel().getAdsBottomLayout() == 3) {
-            showNativeSmall(activity, ltUniversal);
+        } else {
+            ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
+            ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
+            ltUniversal.tvAdSpaceSmall.setVisibility(View.GONE);
+            ltUniversal.flAd.setVisibility(View.GONE);
         }
     }
 
+
     private void showNative(Activity activity, LayoutAdUniversalBinding ltUniversal, String adType) {
-        if (MyApp.getAdModel().getAdsNative().equalsIgnoreCase("Google")) {
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltUniversal.getRoot().getLayoutParams();
-            int margin = (int) activity.getResources().getDimension(com.intuit.sdp.R.dimen._3sdp);
+        if (MyApp.getAdModel().getAdsNative().equalsIgnoreCase("Google") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            ltUniversal.llMain.setBackgroundColor(Color.parseColor(MyApp.getAdModel().getAdsBgColor()));
+            ltUniversal.cvAdMain.setCardBackgroundColor(Color.parseColor(MyApp.getAdModel().getAdsNativeBgColor()));
+            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltUniversal.cvAdMain.getLayoutParams();
+            int margin = (int) activity.getResources().getDimension(com.intuit.sdp.R.dimen._4sdp);
             layoutParams.setMargins(margin, margin, margin, margin);
-            ltUniversal.getRoot().requestLayout();
+            ltUniversal.cvAdMain.requestLayout();
             if (nativeAdPreload != null) {
                 showNativeAd(activity, ltUniversal, adType);
             } else {
@@ -564,17 +694,12 @@ public class AdLoader {
     private void showNativeAd(Activity activity, LayoutAdUniversalBinding ltUniversal, String adType) {
         if (nativeAdPreload != null) {
             AdLoader.log("NATIVE (PRELOAD) -> AD SHOW");
-            NativeAdView adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small_1, null, false);
+            NativeAdView adView;
             if (adType.equalsIgnoreCase("Small")) {
-                if (MyApp.getAdModel().getAdsNativeViewId() == 1) {
-                    adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small_1, null, false);
-                } else if (MyApp.getAdModel().getAdsNativeViewId() == 2) {
-                    adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small_2, null, false);
-                }
-            } else if (adType.equalsIgnoreCase("Large")) {
+                adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small, null, false);
+            } else {
                 adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_large, null, false);
             }
-
             AdLoader.getInstance().inflateGoogleNativeAd(activity, nativeAdPreload, adView);
             ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
             ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
@@ -589,7 +714,7 @@ public class AdLoader {
     }
 
     public void loadNativeAdPreload(Activity activity) {
-        if (getFailedCountNative() < MyApp.getAdModel().getAdsNativeFailedCount()) {
+        if (getFailedCountNative() < MyApp.getAdModel().getAdsNativeFailedCount()  && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
             if (MyApp.getAdModel().getAdsNativePreload().equalsIgnoreCase("Yes") && MyApp.getAdModel().getAdsNative().equalsIgnoreCase("Google")) {
                 nativeAdPreload = null;
                 VideoOptions videoOptions = new VideoOptions.Builder().setStartMuted(true).build();
@@ -610,12 +735,47 @@ public class AdLoader {
                     @Override
                     public void onAdClicked() {
                         super.onAdClicked();
+                        AdLoader.getInstance().closeAds();
                     }
                 }).withNativeAdOptions(adOptions).build();
 
                 AdRequest adRequest = new AdRequest.Builder().build();
                 log("NATIVE (PRELOAD) -> AD REQUEST");
                 appLoaderNativeOne.loadAd(adRequest);
+            }
+        } else {
+            log("NATIVE (PRELOAD) -> FAILED COUNTER IS " + MyApp.getAdModel().getAdsNativeFailedCount());
+        }
+    }
+
+    public void loadNativeListAds(Activity activity) {
+        if (getFailedCountNative() < MyApp.getAdModel().getAdsNativeFailedCount() && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            if (MyApp.getAdModel().getAdsNativePreload().equalsIgnoreCase("Yes") && MyApp.getAdModel().getAdsNative().equalsIgnoreCase("Google")) {
+                VideoOptions videoOptions = new VideoOptions.Builder().setStartMuted(true).build();
+                NativeAdOptions adOptions = new NativeAdOptions.Builder().setVideoOptions(videoOptions).build();
+                com.google.android.gms.ads.AdLoader appLoaderNativeOne = new com.google.android.gms.ads.AdLoader.Builder(activity, MyApp.getAdModel().getAdsNativeId()).forNativeAd(nativeAd -> {
+                    this.nativeAdPreload = nativeAd;
+                    if (nativeAds.size() < NATIVE_LIST_SIZE) {
+                        nativeAds.add(nativeAd);
+                    }
+                }).withAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError adError) {
+                        increaseFailedCountNative();
+                        log("NATIVE (PRELOAD) -> AD FAILED (" + getFailedCountNative() + " of " + MyApp.getAdModel().getAdsNativeFailedCount() + ")\nKEY: " + MyApp.getAdModel().getAdsNativeId() + "ERROR: " + adError.getMessage());
+                    }
+
+                    @Override
+                    public void onAdClicked() {
+                        super.onAdClicked();
+                        AdLoader.getInstance().closeAds();
+                    }
+
+                }).withNativeAdOptions(adOptions).build();
+
+                AdRequest adRequest = new AdRequest.Builder().build();
+                log("NATIVE (PRELOAD) -> AD REQUEST");
+                appLoaderNativeOne.loadAds(adRequest, 5);
             }
         } else {
             log("NATIVE (PRELOAD) -> FAILED COUNTER IS " + MyApp.getAdModel().getAdsNativeFailedCount());
@@ -641,14 +801,10 @@ public class AdLoader {
                 log("NATIVE -> AD LOADED");
                 resetFailedCountNative();
                 AdLoader.log("NATIVE -> AD SHOW");
-                NativeAdView adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small_1, null, false);
+                NativeAdView adView;
                 if (adType.equalsIgnoreCase("Small")) {
-                    if (MyApp.getAdModel().getAdsNativeViewId() == 1) {
-                        adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small_1, null, false);
-                    } else if (MyApp.getAdModel().getAdsNativeViewId() == 2) {
-                        adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small_2, null, false);
-                    }
-                } else if (adType.equalsIgnoreCase("Large")) {
+                    adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small, null, false);
+                } else {
                     adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_large, null, false);
                 }
                 AdLoader.getInstance().inflateGoogleNativeAd(activity, nativeAd, adView);
@@ -670,8 +826,9 @@ public class AdLoader {
                 @Override
                 public void onAdClicked() {
                     super.onAdClicked();
-                    showNative(activity, ltUniversal, adType);
+                    AdLoader.getInstance().closeAds();
                 }
+
             }).withNativeAdOptions(adOptions).build();
 
             AdRequest adRequest = new AdRequest.Builder().build();
@@ -684,6 +841,7 @@ public class AdLoader {
     }
 
     private void inflateGoogleNativeAd(Activity activity, NativeAd nativeAd, NativeAdView adView) {
+
         adView.setMediaView(adView.findViewById(R.id.ad_media));
 
         adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
@@ -698,11 +856,14 @@ public class AdLoader {
         AppCompatButton install = adView.findViewById(R.id.ad_call_to_action);
         install.setText(nativeAd.getCallToAction());
 
-        install.getBackground().setColorFilter(Color.parseColor(MyApp.getAdModel().getAdsNativeColor()), PorterDuff.Mode.SRC_ATOP);
-
+        if (adView.findViewById(R.id.ad_view) != null) {
+            ((TextView) adView.findViewById(R.id.ad_view)).getBackground().setColorFilter(Color.parseColor(MyApp.getAdModel().getAdsButtonColor()), PorterDuff.Mode.SRC_ATOP);
+        }
+        install.getBackground().setColorFilter(Color.parseColor(MyApp.getAdModel().getAdsButtonColor()), PorterDuff.Mode.SRC_ATOP);
         adView.setCallToActionView(install);
 
         if (adView.getHeadlineView() != null) {
+            ((TextView) adView.getHeadlineView()).setTextColor(Color.parseColor(MyApp.getAdModel().getAdsTextColor()));
             ((TextView) adView.getHeadlineView()).setText(nativeAd.getHeadline());
         }
 
@@ -711,6 +872,7 @@ public class AdLoader {
         }
 
         if (adView.getBodyView() != null) {
+            ((TextView) adView.getBodyView()).setTextColor(Color.parseColor(MyApp.getAdModel().getAdsTextColor()));
             if (nativeAd.getBody() == null) {
                 adView.getBodyView().setVisibility(View.GONE);
             } else {
@@ -732,20 +894,17 @@ public class AdLoader {
             if (nativeAd.getIcon() == null) {
                 adView.getIconView().setVisibility(View.GONE);
                 CardView ad_app_icon_cards = adView.findViewById(R.id.ad_app_icon_cards);
-                View vSpace = adView.findViewById(R.id.vSpace);
-                vSpace.setVisibility(View.VISIBLE);
                 ad_app_icon_cards.setVisibility(View.GONE);
             } else {
                 ((ImageView) adView.getIconView()).setImageDrawable(nativeAd.getIcon().getDrawable());
                 adView.getIconView().setVisibility(View.VISIBLE);
-                View vSpace = adView.findViewById(R.id.vSpace);
-                vSpace.setVisibility(View.GONE);
                 CardView ad_app_icon_cards = adView.findViewById(R.id.ad_app_icon_cards);
                 ad_app_icon_cards.setVisibility(View.VISIBLE);
             }
         }
 
         if (adView.getPriceView() != null) {
+            ((TextView) adView.getPriceView()).setTextColor(Color.parseColor(MyApp.getAdModel().getAdsTextColor()));
             if (nativeAd.getPrice() == null) {
                 adView.getPriceView().setVisibility(View.GONE);
             } else {
@@ -755,6 +914,7 @@ public class AdLoader {
         }
 
         if (adView.getStoreView() != null) {
+            ((TextView) adView.getStoreView()).setTextColor(Color.parseColor(MyApp.getAdModel().getAdsTextColor()));
             if (nativeAd.getStore() == null) {
                 adView.getStoreView().setVisibility(View.GONE);
             } else {
@@ -764,6 +924,7 @@ public class AdLoader {
         }
 
         if (adView.getStarRatingView() != null) {
+            ((RatingBar) adView.getStarRatingView()).getProgressDrawable().setColorFilter(Color.parseColor(MyApp.getAdModel().getAdsButtonColor()), PorterDuff.Mode.SRC_ATOP);
             if (nativeAd.getStarRating() == null) {
                 adView.getStarRatingView().setVisibility(View.GONE);
             } else {
@@ -773,6 +934,7 @@ public class AdLoader {
         }
 
         if (adView.getAdvertiserView() != null) {
+            ((TextView) adView.getAdvertiserView()).setTextColor(Color.parseColor(MyApp.getAdModel().getAdsTextColor()));
             if (nativeAd.getAdvertiser() == null) {
                 adView.getAdvertiserView().setVisibility(View.GONE);
             } else {

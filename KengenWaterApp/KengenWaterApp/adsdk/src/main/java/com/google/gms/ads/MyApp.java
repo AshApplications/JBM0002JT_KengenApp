@@ -6,6 +6,8 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import com.google.gms.ads.model.AdModel;
+
 public class MyApp extends Application {
 
 

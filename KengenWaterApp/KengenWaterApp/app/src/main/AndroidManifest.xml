@@ -50,7 +50,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activity.BannerImageActivity"
+            android:name=".ui.activity.BannerActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.google.gms.ads.AdLoader;
+import com.google.gms.ads.MyApp;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.DialogDownloadBinding;
 import com.water.alkaline.kengen.databinding.DialogInternetBinding;
@@ -76,6 +78,20 @@ public class PdfActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            if (binding.includedAd.flAd.getChildCount() <= 0) {
+                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, true);
+            }
+        } else {
+            binding.includedAd.cvAdMain.setVisibility(View.GONE);
+            binding.includedAd.flAd.setVisibility(View.GONE);
+        }
+
+    }
+
+    @Override
     public void onBackPressed() {
         uiController.onBackPressed(this);
     }
@@ -105,6 +121,7 @@ public class PdfActivity extends AppCompatActivity {
         downloadDialog.setContentView(downloadBinding.getRoot());
         downloadDialog.setCancelable(false);
         downloadDialog.setCanceledOnTouchOutside(false);
+        downloadDialog.setOnShowListener(dialogInterface -> AdLoader.getInstance().showNativeDialog(this, downloadBinding.includedAd));
         downloadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         downloadDialog.show();
@@ -186,11 +203,11 @@ public class PdfActivity extends AppCompatActivity {
         mPath = getIntent().getExtras().getString("mpath", "");
         if (mPath.startsWith("http")) {
             pdf = null;
-            if (viewModel.getbyUrl(mPath).size() > 0)
+            if (!viewModel.getbyUrl(mPath).isEmpty())
                 pdf = viewModel.getbyUrl(mPath).get(0);
         } else {
             entity = null;
-            if (viewModel.getbyPath(mPath).size() > 0)
+            if (!viewModel.getbyPath(mPath).isEmpty())
                 entity = viewModel.getbyPath(mPath).get(0);
         }
 
@@ -207,7 +224,7 @@ public class PdfActivity extends AppCompatActivity {
     public void checkDownload() {
         if (mPath.startsWith("http")) {
             DownloadEntity entity = null;
-            if (viewModel.getDownloadbyUrl(pdf.getUrl()).size() > 0)
+            if (!viewModel.getDownloadbyUrl(pdf.getUrl()).isEmpty())
                 entity = viewModel.getDownloadbyUrl(pdf.getUrl()).get(0);
 
             if (entity != null) {
@@ -227,14 +244,11 @@ public class PdfActivity extends AppCompatActivity {
         if (Constant.checkInternet(this)) {
             new RetrivePDFfromUrl().execute(mPath);
         } else {
-            network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dismiss_dialog();
-                    if (Constant.checkInternet(PdfActivity.this)) {
-                        loadFromUrl();
-                    } else dialog.show();
-                }
+            network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(v -> {
+                dismiss_dialog();
+                if (Constant.checkInternet(PdfActivity.this)) {
+                    loadFromUrl();
+                } else dialog.show();
             });
         }
     }
@@ -262,26 +276,24 @@ public class PdfActivity extends AppCompatActivity {
         dialogJump.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialogJump.getWindow().setLayout(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         dialogJump.setCancelable(true);
+        dialogJump.setOnShowListener(dialogInterface -> AdLoader.getInstance().showNativeDialog(PdfActivity.this, jumpBinding.includedAd));
         dialogJump.show();
         jumpBinding.editJump.setText(PdfActivity.this.binding.pdfview.getCurrentPage() + 1 + "");
-        jumpBinding.txtJump.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    if (jumpBinding.editJump.getText().toString().equalsIgnoreCase(""))
-                        jumpBinding.editJump.setError("Enter Page Number");
-                    else if (Integer.parseInt(jumpBinding.editJump.getText().toString()) > totPages || Integer.parseInt(jumpBinding.editJump.getText().toString()) == 0)
-                        jumpBinding.editJump.setError("Page Not Available");
-                    else {
-                        dialogJump.dismiss();
-                        PdfActivity.this.binding.pdfview.jumpTo(Integer.parseInt(jumpBinding.editJump.getText().toString()) - 1);
-                    }
-                } catch (Exception e) {
-                    Log.e("TAG", e.toString());
-                    Constant.showToast(PdfActivity.this, "Something went wrong");
+        jumpBinding.txtJump.setOnClickListener(v -> {
+            try {
+                if (jumpBinding.editJump.getText().toString().equalsIgnoreCase(""))
+                    jumpBinding.editJump.setError("Enter Page Number");
+                else if (Integer.parseInt(jumpBinding.editJump.getText().toString()) > totPages || Integer.parseInt(jumpBinding.editJump.getText().toString()) == 0)
+                    jumpBinding.editJump.setError("Page Not Available");
+                else {
+                    dialogJump.dismiss();
+                    PdfActivity.this.binding.pdfview.jumpTo(Integer.parseInt(jumpBinding.editJump.getText().toString()) - 1);
                 }
-
+            } catch (Exception e) {
+                Log.e("TAG", e.toString());
+                Constant.showToast(PdfActivity.this, "Something went wrong");
             }
+
         });
 
 

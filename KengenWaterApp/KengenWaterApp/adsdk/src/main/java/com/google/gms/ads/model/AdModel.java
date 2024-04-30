@@ -1,4 +1,4 @@
-package com.google.gms.ads;
+package com.google.gms.ads.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -57,6 +57,10 @@ public class AdModel {
     @Expose
     private String adsAppOpen = "Google";
 
+    @SerializedName("ads_on_off")
+    @Expose
+    private String adsOnOff = "Yes";
+
 
 
     @SerializedName("ads_interstitial_count")
@@ -89,18 +93,75 @@ public class AdModel {
     @Expose
     private String adsNativePreload = "None";
 
-
-    @SerializedName("ads_native_view_id")
+    @SerializedName("ads_native_dialog")
     @Expose
-    private int adsNativeViewId = 1;
+    private String adsNativeDialog = "None";
 
-    @SerializedName("ads_native_color")
+
+    @SerializedName("ads_list_view_count")
     @Expose
-    private String adsNativeColor = "None";
+    private int adsListViewCount = 10;
+
+
+    @SerializedName("ads_bg_color")
+    @Expose
+    private String adsBgColor = "None";
+
+    @SerializedName("ads_native_bg_color")
+    @Expose
+    private String adsNativeBgColor = "None";
+
+    @SerializedName("ads_button_color")
+    @Expose
+    private String adsButtonColor = "None";
+
+    @SerializedName("ads_text_color")
+    @Expose
+    private String adsTextColor = "None";
 
     @SerializedName("ads_bottom_layout")
     @Expose
     private int adsBottomLayout = 1;
+
+    public String getAdsOnOff() {
+        return adsOnOff;
+    }
+
+    public void setAdsOnOff(String adsOnOff) {
+        this.adsOnOff = adsOnOff;
+    }
+
+    public String getAdsButtonColor() {
+        return adsButtonColor;
+    }
+
+    public void setAdsButtonColor(String adsButtonColor) {
+        this.adsButtonColor = adsButtonColor;
+    }
+
+    public String getAdsNativeDialog() {
+        return adsNativeDialog;
+    }
+
+    public void setAdsNativeDialog(String adsNativeDialog) {
+        this.adsNativeDialog = adsNativeDialog;
+    }
+
+    public String getAdsBgColor() {
+        return adsBgColor;
+    }
+
+    public void setAdsBgColor(String adsBgColor) {
+        this.adsBgColor = adsBgColor;
+    }
+
+    public String getAdsTextColor() {
+        return adsTextColor;
+    }
+
+    public void setAdsTextColor(String adsTextColor) {
+        this.adsTextColor = adsTextColor;
+    }
 
     public int getAdsBottomLayout() {
         return adsBottomLayout;
@@ -190,6 +251,14 @@ public class AdModel {
         this.adsInterstitialBack = adsInterstitialBack;
     }
 
+    public int getAdsListViewCount() {
+        return adsListViewCount;
+    }
+
+    public void setAdsListViewCount(int adsListViewCount) {
+        this.adsListViewCount = adsListViewCount;
+    }
+
     public String getAdsNative() {
         return adsNative;
     }
@@ -262,20 +331,11 @@ public class AdModel {
         this.adsNativePreload = adsNativePreload;
     }
 
-    public int getAdsNativeViewId() {
-        return adsNativeViewId;
+    public String getAdsNativeBgColor() {
+        return adsNativeBgColor;
     }
 
-    public void setAdsNativeViewId(int adsNativeViewId) {
-        this.adsNativeViewId = adsNativeViewId;
+    public void setAdsNativeBgColor(String adsNativeBgColor) {
+        this.adsNativeBgColor = adsNativeBgColor;
     }
-
-    public String getAdsNativeColor() {
-        return adsNativeColor;
-    }
-
-    public void setAdsNativeColor(String adsNativeColor) {
-        this.adsNativeColor = adsNativeColor;
-    }
-
 }

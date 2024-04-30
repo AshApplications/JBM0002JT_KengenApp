@@ -13,6 +13,8 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.view.View;
 
+import com.google.gms.ads.AdLoader;
+import com.google.gms.ads.MyApp;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -37,6 +39,7 @@ import com.preference.PowerPreference;
 import com.water.alkaline.kengen.utils.uiController;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -45,6 +48,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class VideoListActivity extends AppCompatActivity {
+
     ActivityVideoListBinding binding;
 
     List<SaveEntity> list = new ArrayList<>();
@@ -56,16 +60,23 @@ public class VideoListActivity extends AppCompatActivity {
         uiController.onBackPressed(this);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            if (binding.includedAd.flAd.getChildCount() <= 0) {
+                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, false);
+            }
+        } else {
+            binding.includedAd.cvAdMain.setVisibility(View.GONE);
+            binding.includedAd.flAd.setVisibility(View.GONE);
+        }
+
+    }
+
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-
-
-        binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        binding.includedToolbar.ivBack.setOnClickListener(v -> onBackPressed());
     }
 
 
@@ -75,7 +86,6 @@ public class VideoListActivity extends AppCompatActivity {
         binding = ActivityVideoListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setBG();
-
         getStart();
     }
 
@@ -101,6 +111,7 @@ public class VideoListActivity extends AppCompatActivity {
         adapter = new VideosAdapter(this, list, binding.rvVideos, new OnVideoListener() {
             @Override
             public void onItemClick(int position, SaveEntity item) {
+                list.removeAll(Collections.singleton(null));
                 int pos = position;
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).videoId.equalsIgnoreCase(item.videoId)) {

@@ -57,6 +57,7 @@ import com.water.alkaline.kengen.utils.Constant;
 import com.water.alkaline.kengen.utils.uiController;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -128,7 +129,6 @@ public class ChannelFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
 
-
         if (activity != null) {
             subList = viewModel.getAllSubByCategory(mParam1);
             if (subList.size() > 1) {
@@ -165,7 +165,6 @@ public class ChannelFragment extends Fragment {
             }
         });
         binding.rvCats.setLayoutManager(manager);
-
         subcatAdapter = new SubcatAdapter(activity, subList, new OnSubcatListener() {
             @Override
             public void onItemClick(int position, Subcategory item) {
@@ -178,20 +177,6 @@ public class ChannelFragment extends Fragment {
         binding.rvCats.setItemViewCacheSize(100);
         checkData();
     }
-
-   /* public void refreshSubcats() {
-        if (binding.rvCats.getAdapter().getItemCount() <= 0) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    subcatAdapter.refreshAdapter(viewModel.getAllSubByCategory(mParam1));
-                    binding.includedProgress.progress.setVisibility(View.GONE);
-                    checkData();
-                }
-            }, 500);
-        }
-    }*/
-
 
     public void Channels() {
         GridLayoutManager manager = new GridLayoutManager(activity, 2);
@@ -212,7 +197,6 @@ public class ChannelFragment extends Fragment {
             }
         });
         binding.rvCats.setLayoutManager(manager);
-
         channelAdapter = new ChannelAdapter(activity, chanList, new OnChannelListener() {
             @Override
             public void onItemClick(int position, Channel item) {
@@ -221,30 +205,13 @@ public class ChannelFragment extends Fragment {
                 uiController.gotoActivity(activity, VideoListActivity.class, true, false);
             }
         });
-
         binding.rvCats.setAdapter(channelAdapter);
         binding.rvCats.setItemViewCacheSize(100);
 
         checkData();
     }
 
-/*
-    public void refreshChannels() {
-        if (binding.rvCats.getAdapter().getItemCount() <= 0) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    channelAdapter.refreshAdapter(viewModel.getAllChannelByCategory(mParam1));
-                    binding.includedProgress.progress.setVisibility(View.GONE);
-                    checkData();
-                }
-            }, 500);
-        }
-    }
-*/
-
     public void Videos() {
-
         GridLayoutManager manager = new GridLayoutManager(activity, 2);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -263,10 +230,10 @@ public class ChannelFragment extends Fragment {
             }
         });
         binding.rvCats.setLayoutManager(manager);
-
         videosAdapter = new VideosAdapter(activity, videoList, binding.rvCats, new OnVideoListener() {
             @Override
             public void onItemClick(int position, SaveEntity item) {
+                videoList.removeAll(Collections.singleton(null));
                 int pos = position;
                 for (int i = 0; i < videoList.size(); i++) {
                     if (videoList.get(i).videoId.equalsIgnoreCase(item.videoId)) {
@@ -290,33 +257,27 @@ public class ChannelFragment extends Fragment {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!PowerPreference.getDefaultFile().getString(channelId, "").equalsIgnoreCase("")) {
-                            if (isChannel) {
-                                channelAPI();
-                            } else {
-                                playlistAPI();
-                            }
+                new Handler().postDelayed(() -> {
+                    if (!PowerPreference.getDefaultFile().getString(channelId, "").equalsIgnoreCase("")) {
+                        if (isChannel) {
+                            channelAPI();
                         } else {
-                            videosAdapter.arrayList.remove(videosAdapter.arrayList.size() - 1);
-                            videosAdapter.notifyItemRemoved(videosAdapter.arrayList.size());
+                            playlistAPI();
                         }
+                    } else {
+                        videosAdapter.arrayList.remove(videosAdapter.arrayList.size() - 1);
+                        videosAdapter.notifyItemRemoved(videosAdapter.arrayList.size());
                     }
                 }, 2000);
             }
         });
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                PowerPreference.getDefaultFile().putString(channelId, "");
-                if (isChannel) {
-                    channelAPI();
-                } else {
-                    playlistAPI();
-                }
+        new Handler().postDelayed(() -> {
+            PowerPreference.getDefaultFile().putString(channelId, "");
+            if (isChannel) {
+                channelAPI();
+            } else {
+                playlistAPI();
             }
         }, 2000);
 
@@ -364,7 +325,6 @@ public class ChannelFragment extends Fragment {
 
     public void channelAPI() {
         if (checkInternet()) {
-
             RetroClient.getInstance(activity).getYouApi().channelApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), channelId, PowerPreference.getDefaultFile().getString(channelId, "")).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -393,7 +353,6 @@ public class ChannelFragment extends Fragment {
                                     }
                                 }
 
-
                                 refreshActivity();
                             } else {
                                 ErrorReponse errorReponse = new Gson().fromJson(response.body(), ErrorReponse.class);
@@ -406,7 +365,6 @@ public class ChannelFragment extends Fragment {
                                 }
                             }
                         } else {
-
                             if (response.code() == 403) {
                                 updateAPI();
                             } else {
@@ -438,7 +396,6 @@ public class ChannelFragment extends Fragment {
 
 
     public void playlistError(String error) {
-
         binding.includedProgress.cvProError.setVisibility(View.INVISIBLE);
         binding.cvIerror.setVisibility(View.VISIBLE);
         binding.txtError.setText(error);
@@ -545,7 +502,6 @@ public class ChannelFragment extends Fragment {
         binding.txtRetry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 binding.includedProgress.cvProError.setVisibility(View.VISIBLE);
                 binding.cvIerror.setVisibility(View.GONE);
                 if (isChannel) {
@@ -559,7 +515,6 @@ public class ChannelFragment extends Fragment {
 
 
     public void updateAPI() {
-
         if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsApi, false)) {
             update2Error("Please wait Sometimes");
             return;

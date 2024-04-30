@@ -16,6 +16,8 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.view.View;
 
+import com.google.gms.ads.AdLoader;
+import com.google.gms.ads.MyApp;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -44,6 +46,7 @@ import com.preference.PowerPreference;
 import com.water.alkaline.kengen.utils.uiController;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -68,18 +71,25 @@ public class ChannelActivity extends AppCompatActivity {
 
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-
-        binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        binding.includedToolbar.ivBack.setOnClickListener(v -> onBackPressed());
     }
 
     @Override
     public void onBackPressed() {
         uiController.onBackPressed(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            if (binding.includedAd.flAd.getChildCount() <= 0) {
+                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, false);
+            }
+        } else {
+            binding.includedAd.cvAdMain.setVisibility(View.GONE);
+            binding.includedAd.flAd.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -163,6 +173,7 @@ public class ChannelActivity extends AppCompatActivity {
 
         binding.rvChannels.setLayoutManager(manager);
         videosAdapter = new VideosAdapter(ChannelActivity.this, videoList, binding.rvChannels, (position, item) -> {
+            videoList.removeAll(Collections.singleton(null));
             int pos = position;
             for (int i = 0; i < videoList.size(); i++) {
                 if (videoList.get(i).videoId.equalsIgnoreCase(item.videoId)) {
@@ -170,6 +181,7 @@ public class ChannelActivity extends AppCompatActivity {
                     break;
                 }
             }
+            PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(videoList));
             Intent intent=new Intent(this,PreviewActivity.class);
             intent.putExtra(Constant.POSITION, pos);
             uiController.gotoIntent(this, intent, true, false);
@@ -177,44 +189,35 @@ public class ChannelActivity extends AppCompatActivity {
 
         binding.rvChannels.setAdapter(videosAdapter);
         binding.rvChannels.setItemViewCacheSize(100);
-        videosAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-            @Override
-            public void onLoadMore() {
-                try {
-                    videosAdapter.arrayList.add(new SaveEntity("99999", null, null, null));
-                    videosAdapter.notifyItemInserted(videosAdapter.arrayList.size() - 1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!PowerPreference.getDefaultFile().getString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "").equalsIgnoreCase("")) {
-                            if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
-                                channelAPI();
-                            } else {
-                                playlistAPI();
-                            }
-                        } else {
-                            videosAdapter.arrayList.remove(videosAdapter.arrayList.size() - 1);
-                            videosAdapter.notifyItemRemoved(videosAdapter.arrayList.size());
-                        }
-                    }
-                }, 2000);
+        videosAdapter.setOnLoadMoreListener(() -> {
+            try {
+                videosAdapter.arrayList.add(new SaveEntity("99999", null, null, null));
+                videosAdapter.notifyItemInserted(videosAdapter.arrayList.size() - 1);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
+            new Handler().postDelayed(() -> {
+                if (!PowerPreference.getDefaultFile().getString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "").equalsIgnoreCase("")) {
+                    if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
+                        channelAPI();
+                    } else {
+                        playlistAPI();
+                    }
+                } else {
+                    videosAdapter.arrayList.remove(videosAdapter.arrayList.size() - 1);
+                    videosAdapter.notifyItemRemoved(videosAdapter.arrayList.size());
+                }
+            }, 2000);
         });
 
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                PowerPreference.getDefaultFile().putString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "");
-                if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
-                    channelAPI();
-                } else {
-                    playlistAPI();
-                }
+        new Handler().postDelayed(() -> {
+            PowerPreference.getDefaultFile().putString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "");
+            if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
+                channelAPI();
+            } else {
+                playlistAPI();
             }
         }, 2000);
 
@@ -239,13 +242,10 @@ public class ChannelActivity extends AppCompatActivity {
         binding.includedProgress.cvProError.setVisibility(View.INVISIBLE);
         binding.cvIerror.setVisibility(View.VISIBLE);
         binding.txtError.setText(error);
-        binding.txtRetry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.includedProgress.cvProError.setVisibility(View.VISIBLE);
-                binding.cvIerror.setVisibility(View.GONE);
-                channelAPI();
-            }
+        binding.txtRetry.setOnClickListener(v -> {
+            binding.includedProgress.cvProError.setVisibility(View.VISIBLE);
+            binding.cvIerror.setVisibility(View.GONE);
+            channelAPI();
         });
     }
 
@@ -407,14 +407,10 @@ public class ChannelActivity extends AppCompatActivity {
         binding.includedProgress.cvProError.setVisibility(View.INVISIBLE);
         binding.cvIerror.setVisibility(View.VISIBLE);
         binding.txtError.setText(error);
-        binding.txtRetry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                binding.includedProgress.cvProError.setVisibility(View.VISIBLE);
-                binding.cvIerror.setVisibility(View.GONE);
-                updateAPI();
-            }
+        binding.txtRetry.setOnClickListener(v -> {
+            binding.includedProgress.cvProError.setVisibility(View.VISIBLE);
+            binding.cvIerror.setVisibility(View.GONE);
+            updateAPI();
         });
     }
 
@@ -422,16 +418,13 @@ public class ChannelActivity extends AppCompatActivity {
         binding.includedProgress.cvProError.setVisibility(View.INVISIBLE);
         binding.cvIerror.setVisibility(View.VISIBLE);
         binding.txtError.setText(error);
-        binding.txtRetry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.includedProgress.cvProError.setVisibility(View.VISIBLE);
-                binding.cvIerror.setVisibility(View.GONE);
-                if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
-                    channelAPI();
-                } else {
-                    playlistAPI();
-                }
+        binding.txtRetry.setOnClickListener(v -> {
+            binding.includedProgress.cvProError.setVisibility(View.VISIBLE);
+            binding.cvIerror.setVisibility(View.GONE);
+            if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
+                channelAPI();
+            } else {
+                playlistAPI();
             }
         });
     }

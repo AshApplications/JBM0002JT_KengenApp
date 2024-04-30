@@ -15,4 +15,15 @@
         <item name="android:includeFontPadding">false</item>
     </style>
 
+    <style name="fontSemibold">
+        <item name="fontFamily">@font/mfont_semibold</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="fontBold">
+        <item name="fontFamily">@font/mfont_bold</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+
 </resources>

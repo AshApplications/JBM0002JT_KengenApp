@@ -3,7 +3,7 @@ package com.water.alkaline.kengen.model.update;
 
 import java.util.List;
 
-import com.google.gms.ads.AdModel;
+import com.google.gms.ads.model.AdModel;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

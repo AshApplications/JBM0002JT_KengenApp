@@ -15,6 +15,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -31,7 +32,7 @@ import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
 import com.google.gms.ads.AdUtils;
-import com.water.alkaline.kengen.databinding.DialogExitBinding;
+import com.water.alkaline.kengen.databinding.DialogInternetBinding;
 import com.water.alkaline.kengen.ui.activity.ExitActivity;
 
 import java.io.File;
@@ -96,6 +97,46 @@ public class Constant {
                 activeNetwork.isConnectedOrConnecting();
     }
 
+
+    public static Dialog dialogNetwork;
+
+    public static DialogInternetBinding network_dialog(Activity activity) {
+        dialogNetwork = new Dialog(activity);
+        DialogInternetBinding internetBinding = DialogInternetBinding.inflate(activity.getLayoutInflater());
+        dialogNetwork.setContentView(internetBinding.getRoot());
+        if (dialogNetwork.getWindow() != null)
+            dialogNetwork.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogNetwork.setCancelable(false);
+        dialogNetwork.setCanceledOnTouchOutside(false);
+        dialogNetwork.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialogNetwork.show();
+        return internetBinding;
+    }
+
+    public static boolean netCheck(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+    }
+
+    public interface onResultListener {
+        public void onSuccess();
+    }
+
+    public static void checkInternet(Activity activity, onResultListener listener) {
+        if (Constant.netCheck(activity)) {
+            listener.onSuccess();
+        } else {
+            Constant.network_dialog(activity).txtRetry.setOnClickListener(v -> {
+                Constant.dialogNetwork.setOnDismissListener(dialogInterface -> new Handler().postDelayed(() -> checkInternet(activity, listener), 1000));
+                Constant.dialogNetwork.dismiss();
+            });
+        }
+    }
+
     public static String getPDFdisc() {
         File myCreationDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + File.separator + MyApplication.getContext().getString(R.string.app_name) + File.separator + "SavedPDF");
@@ -124,40 +165,6 @@ public class Constant {
         }
     }
 
-    public static void showRateDialog(Activity activity, boolean isAds) {
-        try {
-            Dialog mDialog = new Dialog(activity, R.style.NormalDialog);
-            DialogExitBinding exitBinding = DialogExitBinding.inflate(activity.getLayoutInflater());
-            mDialog.setContentView(exitBinding.getRoot());
-            mDialog.setCancelable(false);
-            mDialog.setCanceledOnTouchOutside(false);
-            mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            mDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
-            exitBinding.btnRate.setOnClickListener(view -> {
-                mDialog.dismiss();
-                Constant.rateUs(activity);
-            });
-
-            exitBinding.btnExiy.setOnClickListener(view -> {
-                mDialog.dismiss();
-                Intent intent = new Intent(activity, ExitActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                intent.putExtra("isAds", isAds);
-                activity.startActivity(intent);
-                activity.finish();
-
-            });
-
-            exitBinding.btnCancel.setOnClickListener(view -> {
-                mDialog.dismiss();
-            });
-            mDialog.show();
-
-        } catch (Exception e) {
-            Log.w("Catch", Objects.requireNonNull(e.getMessage()));
-        }
-    }
 
     public static void getPermissions(AppCompatActivity activity) {
         PermissionX.init(activity)

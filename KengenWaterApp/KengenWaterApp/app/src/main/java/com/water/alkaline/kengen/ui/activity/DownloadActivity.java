@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 
+import com.google.gms.ads.AdLoader;
+import com.google.gms.ads.MyApp;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.ActivityDownloadBinding;
 import com.water.alkaline.kengen.model.DownloadEntity;
@@ -35,12 +37,21 @@ public class DownloadActivity extends AppCompatActivity {
 
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-        binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
+        binding.includedToolbar.ivBack.setOnClickListener(v -> onBackPressed());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            if (binding.includedAd.flAd.getChildCount() <= 0) {
+                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, false);
             }
-        });
+        } else {
+            binding.includedAd.cvAdMain.setVisibility(View.GONE);
+            binding.includedAd.flAd.setVisibility(View.GONE);
+        }
+
     }
 
     @Override

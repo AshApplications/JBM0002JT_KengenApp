@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -17,12 +16,14 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gms.ads.AdLoader;
+import com.google.gms.ads.MyApp;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
-import com.water.alkaline.kengen.databinding.ActivityBannerImageBinding;
+import com.water.alkaline.kengen.databinding.ActivityBannerBinding;
 import com.water.alkaline.kengen.databinding.DialogDownloadBinding;
 import com.water.alkaline.kengen.library.downloader.Error;
 import com.water.alkaline.kengen.library.downloader.OnDownloadListener;
@@ -41,9 +42,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BannerImageActivity extends AppCompatActivity {
+public class BannerActivity extends AppCompatActivity {
 
-    ActivityBannerImageBinding binding;
+    ActivityBannerBinding binding;
     ArrayList<Banner> banners = new ArrayList<>();
 
     int POS = 0;
@@ -62,6 +63,19 @@ public class BannerImageActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            if (binding.includedAd.flAd.getChildCount() <= 0) {
+                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, true);
+            }
+        } else {
+            binding.includedAd.cvAdMain.setVisibility(View.GONE);
+            binding.includedAd.flAd.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         uiController.onBackPressed(this);
     }
@@ -75,6 +89,7 @@ public class BannerImageActivity extends AppCompatActivity {
         downloadDialog.setCanceledOnTouchOutside(false);
         downloadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        downloadDialog.setOnShowListener(dialogInterface -> AdLoader.getInstance().showNativeDialog(this, downloadBinding.includedAd));
         downloadDialog.show();
     }
 
@@ -82,7 +97,7 @@ public class BannerImageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityBannerImageBinding.inflate(getLayoutInflater());
+        binding = ActivityBannerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
         startPager();
@@ -105,7 +120,7 @@ public class BannerImageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 DownloadEntity entity = null;
-                if (viewModel.getDownloadbyUrl(banners.get(binding.viewpager.getCurrentItem()).getUrl()).size() > 0)
+                if (!viewModel.getDownloadbyUrl(banners.get(binding.viewpager.getCurrentItem()).getUrl()).isEmpty())
                     entity = viewModel.getDownloadbyUrl(banners.get(binding.viewpager.getCurrentItem()).getUrl()).get(0);
 
                 if (entity != null) {
@@ -120,12 +135,7 @@ public class BannerImageActivity extends AppCompatActivity {
             }
         });
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                refresh();
-            }
-        }, 500);
+        new Handler().postDelayed(this::refresh, 500);
     }
 
     public void refresh() {
@@ -139,56 +149,33 @@ public class BannerImageActivity extends AppCompatActivity {
             banners = new ArrayList<>();
         }
 
-        adapter = new VpImageAdapter(this, banners, new OnBannerListerner() {
-            @Override
-            public void onItemClick(int position, Banner item) {
-
-            }
-        });
-
-        binding.viewpager.setAdapter(adapter);
-        binding.viewpager.setCurrentItem(POS, false);
-        checkDownloadIcon(binding.viewpager.getCurrentItem());
-        checkArrow();
-        checkData();
-
-        binding.viewpager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                checkDownloadIcon(position);
-                checkArrow();
-            }
-        });
-
-        binding.ivMenuLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.viewpager.setCurrentItem(binding.viewpager.getCurrentItem() - 1, true);
-            }
-        });
-
-        binding.ivMenuRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.viewpager.setCurrentItem(binding.viewpager.getCurrentItem() + 1, true);
-            }
-        });
+        if (!banners.isEmpty()) {
+            adapter = new VpImageAdapter(this, banners, (position, item) -> {
+            });
+            binding.viewpager.setAdapter(adapter);
+            binding.viewpager.setCurrentItem(POS, false);
+            checkDownloadIcon(binding.viewpager.getCurrentItem());
+            checkArrow();
+            checkData();
+            binding.ivMenuLeft.setOnClickListener(v -> binding.viewpager.setCurrentItem(binding.viewpager.getCurrentItem() - 1, true));
+            binding.ivMenuRight.setOnClickListener(v -> binding.viewpager.setCurrentItem(binding.viewpager.getCurrentItem() + 1, true));
+            binding.viewpager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    checkDownloadIcon(position);
+                    checkArrow();
+                }
+            });
+        } else {
+            Constant.showToast(this, "Unknown Error Occurred");
+            finish();
+        }
     }
 
     public void checkArrow() {
-        if (binding.viewpager.getCurrentItem() == 0) {
-            binding.ivMenuLeft.setVisibility(View.GONE);
-        } else {
-            binding.ivMenuLeft.setVisibility(View.VISIBLE);
-        }
-
-        if (binding.viewpager.getCurrentItem() == adapter.getItemCount() - 1) {
-            binding.ivMenuRight.setVisibility(View.GONE);
-        } else {
-            binding.ivMenuRight.setVisibility(View.VISIBLE);
-        }
-
+        binding.ivMenuLeft.setVisibility(binding.viewpager.getCurrentItem() == 0 ? View.GONE : View.VISIBLE);
+        binding.ivMenuRight.setVisibility(binding.viewpager.getCurrentItem() == adapter.getItemCount() - 1 ? View.GONE : View.VISIBLE);
     }
 
     public void checkData() {
@@ -203,16 +190,11 @@ public class BannerImageActivity extends AppCompatActivity {
 
     public void checkDownloadIcon(int pos) {
         DownloadEntity entity = null;
-        if (viewModel.getDownloadbyUrl(banners.get(pos).getUrl()).size() > 0)
+        if (!viewModel.getDownloadbyUrl(banners.get(pos).getUrl()).isEmpty())
             entity = viewModel.getDownloadbyUrl(banners.get(pos).getUrl()).get(0);
 
-        if (entity != null) {
-            binding.ivDownload.setVisibility(View.GONE);
-            binding.ivShare.setVisibility(View.VISIBLE);
-        } else {
-            binding.ivDownload.setVisibility(View.VISIBLE);
-            binding.ivShare.setVisibility(View.GONE);
-        }
+        binding.ivDownload.setVisibility(entity != null ? View.GONE : View.VISIBLE);
+        binding.ivShare.setVisibility(entity != null ? View.VISIBLE : View.GONE);
     }
 
     public void shareImage(String mPath) {
@@ -233,7 +215,7 @@ public class BannerImageActivity extends AppCompatActivity {
             startActivity(Intent.createChooser(i, "Choose One"));
         } catch (Exception e) {
             e.printStackTrace();
-            Constant.showToast(BannerImageActivity.this, "Something went wrong");
+            Constant.showToast(BannerActivity.this, "Something went wrong");
         }
 
     }
@@ -259,7 +241,7 @@ public class BannerImageActivity extends AppCompatActivity {
                     @Override
                     public void onDownloadComplete() {
                         dismiss_download_dialog();
-                        Constant.showToast(BannerImageActivity.this, "Download Completes");
+                        Constant.showToast(BannerActivity.this, "Download Completes");
                         DownloadEntity entity = new DownloadEntity(banner.getName(), Constant.getImagedisc() + "/" + filename, Constant.getImagedisc() + "/" + filename, banner.getUrl(), Constant.TYPE_IMAGE);
                         viewModel.insertDownloads(entity);
                         checkDownloadIcon(binding.viewpager.getCurrentItem());
@@ -271,17 +253,14 @@ public class BannerImageActivity extends AppCompatActivity {
                     @Override
                     public void onError(Error error) {
                         Log.e("TAG", error.toString());
-                        Constant.showToast(BannerImageActivity.this, "Something went wrong");
+                        Constant.showToast(BannerActivity.this, "Something went wrong");
                         dismiss_download_dialog();
                     }
                 });
 
-        downloadBinding.txtCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PRDownloader.cancel(Integer.parseInt(banner.getId()));
-                dismiss_download_dialog();
-            }
+        downloadBinding.txtCancel.setOnClickListener(v -> {
+            PRDownloader.cancel(Integer.parseInt(banner.getId()));
+            dismiss_download_dialog();
         });
     }
 }

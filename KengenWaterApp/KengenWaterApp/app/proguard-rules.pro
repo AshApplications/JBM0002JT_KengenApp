@@ -154,6 +154,11 @@
 -keep public class com.water.alkaline.kengen.model** {
   public protected *;
 }
+
+-keepclassmembers class com.google.gms.ads.model** { <fields>; }
+-keep public class ccom.google.gms.ads.model** {
+  public protected *;
+}
 #OLD
 # Okio
 -keep class sun.misc.Unsafe { *; }

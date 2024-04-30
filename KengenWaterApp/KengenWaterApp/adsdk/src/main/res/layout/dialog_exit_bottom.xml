@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/ar_back_dialog_exit"
+    android:orientation="vertical">
+
+
+    <View
+        android:layout_width="@dimen/_75sdp"
+        android:layout_height="3dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="@drawable/ar_back_dialog_exit_line" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_20sdp" />
+
+    <include
+        android:id="@+id/ltUniversal"
+        layout="@layout/layout_ad_universal"
+        android:layout_margin="@dimen/_4sdp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_190sdp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_10sdp" />
+
+    <LinearLayout
+        android:id="@+id/btnPlayGame"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/_40sdp"
+        style="@style/fontSemibold"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:background="@drawable/ar_back_button_game"
+        android:backgroundTint="@color/colorApp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/_20sdp"
+        android:visibility="visible">
+
+        <ImageView
+            android:layout_width="@dimen/_15sdp"
+            android:layout_height="@dimen/_15sdp"
+            android:src="@drawable/ar_ic_game"
+            app:tint="@color/colorWhite" />
+
+        <TextView
+            style="@style/fontMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:gravity="center"
+            android:text="@string/ar_play_free_games"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/_12ssp" />
+
+    </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:rotation="180"
+        app:cardBackgroundColor="@color/colorWhite"
+        app:cardElevation="@dimen/_5sdp">
+
+        <TextView
+            android:id="@+id/cvExit"
+            style="@style/fontBold"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:rotation="180"
+            android:text="@string/ar_tap_here_to_exit"
+            android:textColor="#7327292C"
+            android:textSize="@dimen/_15ssp" />
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

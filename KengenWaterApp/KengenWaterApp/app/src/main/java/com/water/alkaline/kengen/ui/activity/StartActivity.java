@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.gms.ads.AdLoader;
+import com.google.gms.ads.MyApp;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.onesignal.OneSignal;
@@ -196,7 +197,12 @@ public class StartActivity extends AppCompatActivity {
                                         PowerPreference.getDefaultFile().putString(Constant.mFeeds, new Gson().toJson(updateResponse.getFeedbacks()));
                                     }
 
+                                    MyApp.setAdModel(updateResponse.getData().getAdsInfo().get(0));
                                     AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
+
+                                    PowerPreference.getDefaultFile().putString(Constant.mToken, updateResponse.getMtoken());
+                                    PowerPreference.getDefaultFile().putString(AdUtils.QUREKA, appInfo.getQureka());
+
                                     PowerPreference.getDefaultFile().putString(Constant.mKeyId, appInfo.getApiKey());
                                     PowerPreference.getDefaultFile().putString(Constant.mNotice, appInfo.getAppNotice());
 
@@ -215,12 +221,16 @@ public class StartActivity extends AppCompatActivity {
                                         }
                                     }
 
-                                    //     loadAds();
+                                    loadAds();
 
-                                    OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
-                                    OneSignal.initWithContext(MyApplication.getContext());
-                                    OneSignal.setAppId(appInfo.getOneSignalAppId());
-                                    OneSignal.sendTag("deviceId", deviceId);
+                                    try {
+                                        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
+                                        OneSignal.initWithContext(MyApplication.getContext());
+                                        OneSignal.setAppId(appInfo.getOneSignalAppId());
+                                        OneSignal.sendTag("deviceId", deviceId);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
 
                                     if (!appInfo.getTitle().equals("")) {
                                         binding.txtName.setText(appInfo.getTitle());
@@ -315,6 +325,20 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
+    public void loadAds() {
+        try {
+            ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+            ai.metaData.putString("com.google.android.gms.ads.APPLICATION_ID", MyApplication.getAdModel().getAdsAppId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        MobileAds.initialize(this, initializationStatus -> {
+        });
+        AdLoader.getInstance().loadNativeAdPreload(this);
+        AdLoader.getInstance().loadNativeListAds(this);
+        AdLoader.getInstance().loadInterstitialAds(this);
+    }
+
     public void mainAPI() {
         if (Constant.checkInternet(StartActivity.this)) {
             RetroClient.getInstance(this).getApi().dataApi(DecryptEncrypt.EncryptStr(StartActivity.this, MyApplication.updateApi(this, "", PowerPreference.getDefaultFile().getString(Constant.mToken, "123"), "", "", ""))).enqueue(new Callback<ResponseBody>() {
@@ -356,22 +380,16 @@ public class StartActivity extends AppCompatActivity {
 
 
     public void nextActivity() {
-        try {
-            ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-            ai.metaData.putString("com.google.android.gms.ads.APPLICATION_ID", MyApplication.getAdModel().getAdsAppId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        MobileAds.initialize(this, initializationStatus -> {});
-        AdLoader.getInstance().loadNativeAdPreload(this);
-        AdLoader.getInstance().loadInterstitialAds(this);
-        if (MyApplication.getAdModel().getAdsSplash().equalsIgnoreCase("AppOpen")) {
-            MyApplication.getInstance().showAdIfAvailable(this, () -> {
-                uiController.gotoActivity(this, StartActivity.class, false, true);
-            });
-        } else {
-            uiController.gotoActivity(this, StartActivity.class, false, true);
-        }
+        new Handler().postDelayed(() -> {
+            if (MyApplication.getAdModel().getAdsSplash().equalsIgnoreCase("Yes")) {
+                MyApplication.getInstance().showAdIfAvailable(this, () -> {
+                    uiController.gotoActivity(this, HomeActivity.class, false, true);
+                });
+            } else {
+                uiController.gotoActivity(this, HomeActivity.class, false, true);
+            }
+        }, 2000);
+
     }
 
     public Handler handler = new Handler(Looper.getMainLooper()) {

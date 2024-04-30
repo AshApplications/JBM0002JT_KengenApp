@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.gms.ads.AdLoader;
+import com.google.gms.ads.MyApp;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -49,16 +51,23 @@ public class FeedbackActivity extends AppCompatActivity {
         uiController.onBackPressed(this);
     }
 
-    public void setBG() {
-
-        binding.ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            if (binding.includedAd.flAd.getChildCount() <= 0) {
+                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, true);
             }
-        });
+        } else {
+            binding.includedAd.cvAdMain.setVisibility(View.GONE);
+            binding.includedAd.flAd.setVisibility(View.GONE);
+        }
+
     }
 
+    public void setBG() {
+        binding.ivBack.setOnClickListener(v -> onBackPressed());
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +85,7 @@ public class FeedbackActivity extends AppCompatActivity {
         binding.vpFeeds.setAdapter(adapter);
         binding.vpFeeds.setOffscreenPageLimit(2);
 
-        new TabLayoutMediator(binding.tabHome, binding.vpFeeds, new TabLayoutMediator.TabConfigurationStrategy() {
-            @Override
-            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                tab.setText(adapter.mFragmentTitleList.get(position));
-            }
-        }).attach();
+        new TabLayoutMediator(binding.tabHome, binding.vpFeeds, (tab, position) -> tab.setText(adapter.mFragmentTitleList.get(position))).attach();
 
         binding.vpFeeds.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -95,12 +99,7 @@ public class FeedbackActivity extends AppCompatActivity {
             }
         });
 
-        binding.ivInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FeedAPI();
-            }
-        });
+        binding.ivInfo.setOnClickListener(v -> FeedAPI());
     }
 
 
@@ -140,14 +139,11 @@ public class FeedbackActivity extends AppCompatActivity {
 
 
     public void FeedError() {
-        network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss_dialog();
-                if (Constant.checkInternet(FeedbackActivity.this)) {
-                    FeedAPI();
-                } else dialog.show();
-            }
+        network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(v -> {
+            dismiss_dialog();
+            if (Constant.checkInternet(FeedbackActivity.this)) {
+                FeedAPI();
+            } else dialog.show();
         });
     }
 

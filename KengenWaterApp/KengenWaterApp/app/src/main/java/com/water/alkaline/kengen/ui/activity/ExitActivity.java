@@ -19,12 +19,7 @@ public class ExitActivity extends AppCompatActivity {
         getWindow().setLayout(-1, -1);
         getWindow().setBackgroundDrawable(null);
         setFinishOnTouchOutside(false);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                checkAds(ExitActivity.this);
-            }
-        }, 2000);
+        new Handler().postDelayed(() -> checkAds(ExitActivity.this), 2000);
 
     }
 

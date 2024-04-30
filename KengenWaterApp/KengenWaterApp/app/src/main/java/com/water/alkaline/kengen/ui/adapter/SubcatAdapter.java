@@ -10,13 +10,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.gms.ads.AdLoader;
+import com.google.gms.ads.MyApp;
+import com.google.gms.ads.databinding.LayoutAdUniversalBinding;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.databinding.ItemImageBinding;
+import com.water.alkaline.kengen.model.main.Channel;
 import com.water.alkaline.kengen.model.main.Subcategory;
 import com.water.alkaline.kengen.ui.listener.OnSubcatListener;
 import com.water.alkaline.kengen.utils.Constant;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SubcatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -28,6 +33,7 @@ public class SubcatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         this.activity = activity;
         this.arrayList = arrayList;
         this.listener = listener;
+        setAds(false);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -39,37 +45,78 @@ public class SubcatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
+    public void setAds(boolean isAds) {
+        int PARTICLE_AD_DISPLAY_COUNT = MyApp.getAdModel().getAdsListViewCount();
+
+        if (PARTICLE_AD_DISPLAY_COUNT > 0) {
+
+            arrayList.removeAll(Collections.singleton(null));
+            ArrayList<Subcategory> tempArr = new ArrayList<>();
+
+            if (!arrayList.isEmpty()) {
+                tempArr.add(null);
+            }
+
+            for (int i = 0; i < arrayList.size(); i++) {
+                if (arrayList.size() > PARTICLE_AD_DISPLAY_COUNT) {
+                    if (i != 0 && i % PARTICLE_AD_DISPLAY_COUNT == 0) {
+                        tempArr.add(null);
+                    }
+                    tempArr.add(arrayList.get(i));
+                } else {
+                    tempArr.add(arrayList.get(i));
+                }
+            }
+
+            this.arrayList = tempArr;
+        }
+
+        if (isAds)
+            notifyDataSetChanged();
+    }
+
+
     @Override
     public int getItemViewType(int position) {
-        return Constant.STORE_TYPE;
+        return arrayList.get(position) == null ? Constant.AD_TYPE : Constant.STORE_TYPE;
     }
 
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == Constant.AD_TYPE)
+            return new AdHolder(LayoutAdUniversalBinding.inflate(LayoutInflater.from(activity), parent, false));
+        else
             return new ViewHolder(ItemImageBinding.inflate(LayoutInflater.from(activity), parent, false));
     }
 
     public void refreshAdapter(List<Subcategory> arrayList) {
         this.arrayList = arrayList;
-        notifyDataSetChanged();
+        setAds(true);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ViewHolder viewHolder = (ViewHolder) holder;
-        Glide.with(activity).load(arrayList.get(position).getUrl())
-                .placeholder(MyApplication.getPlaceHolder())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(viewHolder.binding.imgVideo);
-        viewHolder.binding.txtVideoTitle.setText(arrayList.get(position).getName());
-        viewHolder.binding.txtVideoTitle.setSelected(true);
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onItemClick(holder.getAdapterPosition(), arrayList.get(holder.getAdapterPosition()));
+        if (holder instanceof AdHolder) {
+            AdHolder adHolder = (AdHolder) holder;
+            if (adHolder.binding.flAd.getChildCount() <= 0) {
+                AdLoader.getInstance().showNativeList(activity, adHolder.binding);
             }
-        });
+        } else {
+            ViewHolder viewHolder = (ViewHolder) holder;
+            Glide.with(activity).load(arrayList.get(position).getUrl())
+                    .placeholder(MyApplication.getPlaceHolder())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(viewHolder.binding.imgVideo);
+            viewHolder.binding.txtVideoTitle.setText(arrayList.get(position).getName());
+            viewHolder.binding.txtVideoTitle.setSelected(true);
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onItemClick(holder.getAdapterPosition(), arrayList.get(holder.getAdapterPosition()));
+                }
+            });
+        }
     }
 
     @Override

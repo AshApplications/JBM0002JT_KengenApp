@@ -37,7 +37,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
         if (isAdAvailable()) {
             return;
         }
-        if (AdLoader.getFailedCountAppOpen() < MyApp.getAdModel().getAdsAppOpenFailedCount() && MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase("Google")) {
+        if (AdLoader.getFailedCountAppOpen() < MyApp.getAdModel().getAdsAppOpenFailedCount() && MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase("Google") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
             appCallback = new AppOpenAd.AppOpenAdLoadCallback() {
                 @Override
                 public void onAdLoaded(@NonNull AppOpenAd ad) {
@@ -71,7 +71,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
     }
 
     public void showAdIfAvailable() {
-        if (!AdLoader.getInstance().isInterstitialShowing && !appIsShowingAd && isAdAvailable()) {
+        if (!AdLoader.getInstance().isInterstitialShowing && !appIsShowingAd && isAdAvailable() && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
             FullScreenContentCallback fullScreenContentCallback = new FullScreenContentCallback() {
                 @Override
                 public void onAdDismissedFullScreenContent() {
@@ -82,6 +82,12 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
 
                 @Override
                 public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                }
+
+                @Override
+                public void onAdClicked() {
+                    super.onAdClicked();
+                    AdLoader.getInstance().closeAds();
                 }
 
                 @Override
@@ -104,7 +110,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
     }
 
     public void showAdIfSplashAvailable(@NonNull final Activity activity, @NonNull MyApp.OnShowAdCompleteListener onShowAdCompleteListener) {
-        if (!appIsShowingAd && isAdAvailable()) {
+        if (!appIsShowingAd && isAdAvailable() && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
             FullScreenContentCallback fullScreenContentCallback = new FullScreenContentCallback() {
                 @Override
                 public void onAdDismissedFullScreenContent() {
@@ -112,6 +118,12 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
                     appIsShowingAd = false;
                     fetchAd();
                     onShowAdCompleteListener.onShowAdComplete();
+                }
+
+                @Override
+                public void onAdClicked() {
+                    super.onAdClicked();
+                    AdLoader.getInstance().closeAds();
                 }
 
                 @Override
@@ -128,7 +140,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
             AdLoader.log("APPOPEN -> AD SHOW");
             appOpenAd.show(activity);
         } else {
-            if (AdLoader.getFailedCountAppOpen() < MyApp.getAdModel().getAdsAppOpenFailedCount() && MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase("Google")) {
+            if (AdLoader.getFailedCountAppOpen() < MyApp.getAdModel().getAdsAppOpenFailedCount() && MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase("Google") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
                 appCallback = new AppOpenAd.AppOpenAdLoadCallback() {
                     @Override
                     public void onAdLoaded(@NonNull AppOpenAd ad) {
@@ -146,6 +158,12 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
                             }
 
                             @Override
+                            public void onAdClicked() {
+                                super.onAdClicked();
+                                AdLoader.getInstance().closeAds();
+                            }
+
+                            @Override
                             public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
                                 onShowAdCompleteListener.onShowAdComplete();
                             }
@@ -159,6 +177,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
                         AdLoader.log("APPOPEN -> AD SHOW");
                         appOpenAd.show(appCurrentActivity);
                     }
+
 
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
@@ -214,7 +233,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
 
     @OnLifecycleEvent(ON_START)
     public void onStart() {
-        if (!(appCurrentActivity.getClass().getName().equalsIgnoreCase(MyApp.className)) && MyApp.isShowAds) {
+        if (!(appCurrentActivity.getClass().getName().equalsIgnoreCase(MyApp.className)) && MyApp.isShowAds && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
             showAdIfAvailable();
         }
     }

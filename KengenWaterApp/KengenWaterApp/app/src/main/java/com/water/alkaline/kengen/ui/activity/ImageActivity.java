@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.gms.ads.AdLoader;
+import com.google.gms.ads.MyApp;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
 import com.water.alkaline.kengen.databinding.ActivityImageBinding;
@@ -51,6 +53,20 @@ public class ImageActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            if (binding.includedAd.flAd.getChildCount() <= 0) {
+                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, true);
+            }
+        } else {
+            binding.includedAd.cvAdMain.setVisibility(View.GONE);
+            binding.includedAd.flAd.setVisibility(View.GONE);
+        }
+
+    }
+
+    @Override
     public void onBackPressed() {
         uiController.onBackPressed(this);
     }
@@ -64,6 +80,7 @@ public class ImageActivity extends AppCompatActivity {
         downloadDialog.setCanceledOnTouchOutside(false);
         downloadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        downloadDialog.setOnShowListener(dialogInterface -> AdLoader.getInstance().showNativeDialog(this, downloadBinding.includedAd));
         downloadDialog.show();
     }
 
@@ -82,13 +99,13 @@ public class ImageActivity extends AppCompatActivity {
         mPath = getIntent().getExtras().getString("mpath", "");
         if (mPath.startsWith("http")) {
             banner = null;
-            if (viewModel.getBannerbyUrl(mPath).size() > 0) {
+            if (!viewModel.getBannerbyUrl(mPath).isEmpty()) {
                 banner = viewModel.getBannerbyUrl(mPath).get(0);
                 Glide.with(this).load(banner.getUrl()).diskCacheStrategy(DiskCacheStrategy.ALL).into(binding.ivImage);
             }
         } else {
             entity = null;
-            if (viewModel.getDownloadbyUrl(mPath).size() > 0) {
+            if (!viewModel.getDownloadbyUrl(mPath).isEmpty()) {
                 entity = viewModel.getDownloadbyUrl(mPath).get(0);
                 Glide.with(this).load(entity.filePath).diskCacheStrategy(DiskCacheStrategy.ALL).into(binding.ivImage);
             }
@@ -101,7 +118,7 @@ public class ImageActivity extends AppCompatActivity {
     public void checkDownload() {
         if (banner != null) {
             DownloadEntity entity = null;
-            if (viewModel.getDownloadbyUrl(banner.getUrl()).size() > 0)
+            if (!viewModel.getDownloadbyUrl(banner.getUrl()).isEmpty())
                 entity = viewModel.getDownloadbyUrl(banner.getUrl()).get(0);
 
             if (entity != null) {
@@ -120,56 +137,50 @@ public class ImageActivity extends AppCompatActivity {
 
     private void listener() {
 
-        binding.llmenuDownload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (banner != null) {
-                    DownloadEntity entity = null;
-                    if (viewModel.getDownloadbyUrl(banner.getUrl()).size() > 0)
-                        entity = viewModel.getDownloadbyUrl(banner.getUrl()).get(0);
+        binding.llmenuDownload.setOnClickListener(v -> {
+            if (banner != null) {
+                DownloadEntity entity = null;
+                if (!viewModel.getDownloadbyUrl(banner.getUrl()).isEmpty())
+                    entity = viewModel.getDownloadbyUrl(banner.getUrl()).get(0);
 
-                    if (entity != null) {
-                        if (new File(entity.filePath).exists()) {
-                            shareImage(entity.filePath);
-                        } else {
-                            downloadBanner(true);
-                        }
+                if (entity != null) {
+                    if (new File(entity.filePath).exists()) {
+                        shareImage(entity.filePath);
                     } else {
                         downloadBanner(true);
                     }
                 } else {
-                    if (entity != null) {
-                        if (new File(entity.filePath).exists()) {
-                            shareImage(entity.filePath);
-                        } else {
-                            downloadBanner(true);
-                        }
+                    downloadBanner(true);
+                }
+            } else {
+                if (entity != null) {
+                    if (new File(entity.filePath).exists()) {
+                        shareImage(entity.filePath);
                     } else {
                         downloadBanner(true);
                     }
+                } else {
+                    downloadBanner(true);
                 }
             }
         });
-        binding.llmenuDownload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (banner != null) {
-                    DownloadEntity entity = null;
-                    if (viewModel.getDownloadbyUrl(banner.getUrl()).size() > 0)
-                        entity = viewModel.getDownloadbyUrl(banner.getUrl()).get(0);
+        binding.llmenuDownload.setOnClickListener(v -> {
+            if (banner != null) {
+                DownloadEntity entity = null;
+                if (viewModel.getDownloadbyUrl(banner.getUrl()).size() > 0)
+                    entity = viewModel.getDownloadbyUrl(banner.getUrl()).get(0);
 
 
-                    if (entity != null) {
-                        if (new File(entity.filePath).exists()) {
-                            shareImage(entity.filePath);
-                        } else {
-                            downloadBanner(false);
-                        }
-                    } else
+                if (entity != null) {
+                    if (new File(entity.filePath).exists()) {
+                        shareImage(entity.filePath);
+                    } else {
                         downloadBanner(false);
-                } else {
-                    Constant.showToast(ImageActivity.this, "File Already downloaded at " + entity.filePath);
-                }
+                    }
+                } else
+                    downloadBanner(false);
+            } else {
+                Constant.showToast(ImageActivity.this, "File Already downloaded at " + entity.filePath);
             }
         });
     }
@@ -212,12 +223,9 @@ public class ImageActivity extends AppCompatActivity {
                     }
                 });
 
-        downloadBinding.txtCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PRDownloader.cancel(Integer.parseInt(banner.getId()));
-                dismiss_download_dialog();
-            }
+        downloadBinding.txtCancel.setOnClickListener(v -> {
+            PRDownloader.cancel(Integer.parseInt(banner.getId()));
+            dismiss_download_dialog();
         });
     }
 

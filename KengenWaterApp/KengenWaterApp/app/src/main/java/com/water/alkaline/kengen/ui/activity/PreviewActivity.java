@@ -14,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -22,6 +23,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.gms.ads.AdLoader;
+import com.google.gms.ads.MyApp;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.water.alkaline.kengen.MyApplication;
@@ -71,6 +74,20 @@ public class PreviewActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            if (binding.includedAd.flAd.getChildCount() <= 0) {
+                AdLoader.getInstance().showNativeLarge(this, binding.includedAd);
+            }
+        } else {
+            binding.includedAd.cvAdMain.setVisibility(View.GONE);
+            binding.includedAd.flAd.setVisibility(View.GONE);
+        }
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityPreviewBinding.inflate(getLayoutInflater());
@@ -85,6 +102,7 @@ public class PreviewActivity extends AppCompatActivity {
             }.getType();
 
             mList = new Gson().fromJson(PowerPreference.getDefaultFile().getString(Constant.mList, new Gson().toJson(new ArrayList<SaveEntity>())), type);
+
             if (mList.get(mList.size() - 1).videoId.equalsIgnoreCase("99999"))
                 mList.remove(mList.size() - 1);
 
@@ -92,32 +110,37 @@ public class PreviewActivity extends AppCompatActivity {
             mList = new ArrayList<>();
         }
 
-        Glide.with(this)
-                .load(mList.get(pos).imgUrl)
-                .placeholder(MyApplication.getPlaceHolder())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(binding.frameContainer);
+        if (!mList.isEmpty()) {
+            Glide.with(this)
+                    .load(mList.get(pos).imgUrl)
+                    .placeholder(MyApplication.getPlaceHolder())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(binding.frameContainer);
 
-        binding.txtTitle.setText(Html.fromHtml(mList.get(pos).title));
+            binding.txtTitle.setText(Html.fromHtml(mList.get(pos).title));
 
-        binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+            binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
 
-        binding.btnStart.setOnClickListener(v -> {
-            uiController.gotoIntent(this,new Intent(PreviewActivity.this, PlayerActivity.class).putExtra(Constant.POSITION, pos),true,false);
-        });
+            binding.btnStart.setOnClickListener(v -> {
+                uiController.gotoIntent(this, new Intent(PreviewActivity.this, PlayerActivity.class).putExtra(Constant.POSITION, pos), true, false);
+            });
 
-        binding.btnShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareVideo();
-            }
-        });
+            binding.btnShare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    shareVideo();
+                }
+            });
 
+        } else {
+            Constant.showToast(this, "Unknown Error Occurred");
+            finish();
+        }
     }
 
 

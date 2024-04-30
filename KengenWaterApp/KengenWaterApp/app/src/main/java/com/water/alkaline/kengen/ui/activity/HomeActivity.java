@@ -23,6 +23,8 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.gms.ads.AdLoader;
+import com.google.gms.ads.MyApp;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.R;
 import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
@@ -51,13 +53,25 @@ public class HomeActivity extends AppCompatActivity {
     public AppViewModel viewModel;
     ActivityHomeBinding binding;
     String[] strings = new String[100];
-    DrawerCatAdapter adapter;
-    boolean isOpen = false;
     ViewPagerFragmentAdapter pagerFragmentAdapter;
     Bundle savedState;
 
     public void setBG() {
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            if (binding.includedAd.flAd.getChildCount() <= 0) {
+                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, true);
+            }
+        } else {
+            binding.includedAd.cvAdMain.setVisibility(View.GONE);
+            binding.includedAd.flAd.setVisibility(View.GONE);
+        }
+
     }
 
     public void setup(Activity activity, View view) {
@@ -205,7 +219,7 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Constant.showRateDialog(this, true);
+        AdLoader.showExit(this);
     }
 
 
@@ -219,15 +233,8 @@ public class HomeActivity extends AppCompatActivity {
             mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             mDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             mDialog.show();
-
             binding.txtError.setText(PowerPreference.getDefaultFile().getString(Constant.mNotice, getResources().getString(R.string.info)));
-
-            binding.txtRetry.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mDialog.dismiss();
-                }
-            });
+            binding.txtRetry.setOnClickListener(v -> mDialog.dismiss());
 
         } catch (Exception e) {
             Log.w("Catch", Objects.requireNonNull(e.getMessage()));
@@ -289,8 +296,5 @@ public class HomeActivity extends AppCompatActivity {
             }
         }).attach();
 
-
     }
-
-
 }

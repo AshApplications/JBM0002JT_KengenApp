@@ -241,9 +241,10 @@ public class BannerActivity extends AppCompatActivity {
                     @Override
                     public void onDownloadComplete() {
                         dismiss_download_dialog();
-                        Constant.showToast(BannerActivity.this, "Download Completes");
+                        Constant.showToast(BannerActivity.this, "Download Completed");
                         DownloadEntity entity = new DownloadEntity(banner.getName(), Constant.getImagedisc() + "/" + filename, Constant.getImagedisc() + "/" + filename, banner.getUrl(), Constant.TYPE_IMAGE);
                         viewModel.insertDownloads(entity);
+                        Constant.scanMedia(BannerActivity.this, entity.filePath);
                         checkDownloadIcon(binding.viewpager.getCurrentItem());
                         if (isShare) {
                             shareImage(Constant.getImagedisc() + "/" + filename);

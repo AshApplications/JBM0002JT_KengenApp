@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -213,4 +214,40 @@ public class Constant {
 
         return false;
     }
+
+    public static void scanMedia(Context context, String destpath) {
+        try {
+            MediaScannerConnection.scanFile(context,
+                    new String[]{destpath},
+                    null,
+                    (path, uri) -> {
+                    });
+            MediaScannerConnection.scanFile(context,
+                    new String[]{Constant.getImagedisc()},
+                    null,
+                    (path, uri) -> {
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void scanPdf(Context context, String destpath) {
+        try {
+            MediaScannerConnection.scanFile(context,
+                    new String[]{destpath},
+                    null,
+                    (path, uri) -> {
+                    });
+            MediaScannerConnection.scanFile(context,
+                    new String[]{Constant.getPDFdisc()},
+                    null,
+                    (path, uri) -> {
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

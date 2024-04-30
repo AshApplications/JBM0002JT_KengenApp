@@ -26,7 +26,6 @@ import com.water.alkaline.kengen.ui.adapter.FeedAdapter;
 import com.water.alkaline.kengen.utils.Constant;
 
 
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,13 +115,15 @@ public class HistoryFragment extends Fragment {
         } catch (Exception e) {
             feedbacks = new ArrayList<>();
         }
-        adapter.refresh(feedbacks);
-        binding.includedProgress.progress.setVisibility(View.GONE);
-        checkData();
+        if (adapter != null) {
+            adapter.refresh(feedbacks);
+            binding.includedProgress.progress.setVisibility(View.GONE);
+            checkData();
+        }
     }
 
     public void checkData() {
-        if (binding.rvFeeds.getAdapter() != null && binding.rvFeeds.getAdapter().getItemCount() > 0) {
+        if (adapter != null && adapter.getItemCount() > 0) {
             binding.includedProgress.llError.setVisibility(View.GONE);
         } else {
             binding.includedProgress.llError.setVisibility(View.VISIBLE);

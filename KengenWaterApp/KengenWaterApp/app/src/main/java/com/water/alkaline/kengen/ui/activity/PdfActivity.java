@@ -456,9 +456,10 @@ public class PdfActivity extends AppCompatActivity {
                     @Override
                     public void onDownloadComplete() {
                         dismiss_download_dialog();
-                        Constant.showToast(PdfActivity.this, "Download Completes");
+                        Constant.showToast(PdfActivity.this, "Download Completed");
                         DownloadEntity entity = new DownloadEntity(pdf.getName(), Constant.getPDFdisc() + "/" + filename, pdf.getImage(), pdf.getUrl(), Constant.TYPE_PDF);
                         viewModel.insertDownloads(entity);
+                        Constant.scanPdf(PdfActivity.this, entity.filePath);
                         checkDownload();
                     }
 

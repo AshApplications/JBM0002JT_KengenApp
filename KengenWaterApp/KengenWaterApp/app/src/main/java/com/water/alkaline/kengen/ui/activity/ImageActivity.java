@@ -206,7 +206,7 @@ public class ImageActivity extends AppCompatActivity {
                     @Override
                     public void onDownloadComplete() {
                         dismiss_download_dialog();
-                        Constant.showToast(ImageActivity.this, "Download Completes");
+                        Constant.showToast(ImageActivity.this, "Download Completed");
                         DownloadEntity entity = new DownloadEntity(banner.getName(), Constant.getImagedisc() + "/" + filename, Constant.getImagedisc() + "/" + filename, banner.getUrl(), Constant.TYPE_IMAGE);
                         viewModel.insertDownloads(entity);
                         checkDownload();

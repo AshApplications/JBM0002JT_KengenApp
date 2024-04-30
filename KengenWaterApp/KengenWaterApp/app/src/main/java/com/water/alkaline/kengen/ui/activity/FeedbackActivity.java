@@ -182,7 +182,7 @@ public class FeedbackActivity extends AppCompatActivity {
     }
 
     public void refresh() {
-        if (adapter != null && adapter.arrayList.size() > 0) {
+        if (adapter != null && !adapter.arrayList.isEmpty()) {
             ((HistoryFragment) adapter.arrayList.get(1)).refreshActivity();
         }
     }

@@ -99,6 +99,7 @@
             app:tabIndicatorFullWidth="false"
             app:tabIndicatorHeight="2dp"
             app:tabMode="auto"
+            android:background="@color/colorMain"
             app:tabSelectedTextColor="@color/colorWhite"
             app:tabTextAppearance="@style/TextAppearance.AppCompat.Body1"
             app:tabTextColor="#BFFFFFFF" />

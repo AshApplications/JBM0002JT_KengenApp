@@ -58,10 +58,11 @@
 
             <TextView
                 android:id="@+id/txtCancel"
-                style="@style/txtButton"
+                style="@style/txtCancelButton"
                 android:layout_width="@dimen/_100sdp"
                 android:layout_height="@dimen/_30sdp"
                 android:layout_margin="@dimen/_10sdp"
+                android:backgroundTint="@color/native_border"
                 android:background="@drawable/bg_button"
                 android:fontFamily="@font/mfont_medium"
                 android:foreground="?attr/selectableItemBackground"

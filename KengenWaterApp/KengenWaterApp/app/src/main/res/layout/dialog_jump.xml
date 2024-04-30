@@ -28,21 +28,31 @@
                 android:padding="10dp"
                 android:src="@drawable/ic_logo" />
 
-            <EditText
-                android:id="@+id/editJump"
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/filledTextField"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_35sdp"
+                android:layout_height="wrap_content"
+                app:boxCornerRadiusBottomEnd="@dimen/_5sdp"
+                app:boxCornerRadiusBottomStart="@dimen/_5sdp"
+                app:boxCornerRadiusTopEnd="@dimen/_5sdp"
+                app:boxCornerRadiusTopStart="@dimen/_5sdp"
+                app:boxStrokeColor="@color/colorMain"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxBackgroundColor="@color/colorWhite"
                 android:layout_marginHorizontal="@dimen/_20sdp"
                 android:layout_marginVertical="@dimen/_10sdp"
-                android:background="@drawable/bg_editbox"
-                android:fontFamily="@font/mfont"
-                android:hint="Jump to Page Number"
-                android:includeFontPadding="false"
-                android:maxLines="1"
-                android:padding="@dimen/_10sdp"
-                android:singleLine="true"
-                android:text=""
-                android:textColor="@color/colorBlack" />
+                android:hint="Jump to Page Number">
+
+                <!--this is the actual edit text which takes the input-->
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editJump"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -54,11 +64,12 @@
 
                 <TextView
                     android:id="@+id/txtCancel"
-                    style="@style/txtButton"
+                    style="@style/txtCancelButton"
                     android:layout_width="@dimen/_100sdp"
                     android:layout_height="@dimen/_30sdp"
                     android:layout_marginHorizontal="10dp"
                     android:layout_marginVertical="5dp"
+                    android:backgroundTint="@color/native_border"
                     android:background="@drawable/bg_button"
                     android:fontFamily="@font/mfont_medium"
                     android:foreground="?attr/selectableItemBackground"

@@ -4,6 +4,7 @@
         <item name="colorPrimary">@color/colorMain</item>
         <item name="colorPrimaryVariant">@color/colorMain</item>
         <item name="colorOnPrimary">@color/colorCommon</item>
+        <item name="colorAccent">@color/colorMain</item>
         <item name="fontFamily">@font/mfont</item>
         <item name="android:windowBackground">@drawable/bg_splash</item>
         <item name="windowActionBar">false</item>
@@ -67,6 +68,11 @@
 
     <style name="txtButton" parent="fontNormal">
         <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textSize">@dimen/_12ssp</item>
+    </style>
+
+    <style name="txtCancelButton" parent="fontNormal">
+        <item name="android:textColor">@color/colorCommon</item>
         <item name="android:textSize">@dimen/_12ssp</item>
     </style>
 

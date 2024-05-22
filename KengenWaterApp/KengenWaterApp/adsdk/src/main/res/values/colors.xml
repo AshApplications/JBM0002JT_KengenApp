@@ -4,7 +4,12 @@
     <color name="colorApp">#02adff</color>
     <color name="native_border">#E1DFDF</color>
 
+    <color name="native_background">#F5F5F5</color>
 
     <color name="colorBlack">#FF000000</color>
     <color name="colorWhite">#FFFFFFFF</color>
+
+
+    <color name="colorBGNativeStart">#1a02adff</color>
+    <color name="colorBGNativeEnd">#2602adff</color>
 </resources>

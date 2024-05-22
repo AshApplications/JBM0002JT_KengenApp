@@ -82,11 +82,19 @@ public class Constant {
     }
 
     public static void showLog(String text) {
-        Log.e("logError", text);
+        try {
+            Log.e("logError", text);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void Log(String text) {
-        Log.e("logError", text);
+        try {
+            Log.e("logError", text);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static boolean checkInternet(Context activity) {

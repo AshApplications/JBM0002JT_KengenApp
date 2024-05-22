@@ -197,7 +197,9 @@ public class StartActivity extends AppCompatActivity {
                                         PowerPreference.getDefaultFile().putString(Constant.mFeeds, new Gson().toJson(updateResponse.getFeedbacks()));
                                     }
 
+
                                     MyApp.setAdModel(updateResponse.getData().getAdsInfo().get(0));
+
                                     AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
 
                                     PowerPreference.getDefaultFile().putString(Constant.mToken, updateResponse.getMtoken());

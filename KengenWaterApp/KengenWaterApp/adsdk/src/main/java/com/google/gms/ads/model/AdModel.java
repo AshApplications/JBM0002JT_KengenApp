@@ -107,22 +107,6 @@ public class AdModel {
     private int adsListViewCount = 10;
 
 
-    @SerializedName("ads_bg_color")
-    @Expose
-    private String adsBgColor = "None";
-
-    @SerializedName("ads_native_bg_color")
-    @Expose
-    private String adsNativeBgColor = "None";
-
-    @SerializedName("ads_button_color")
-    @Expose
-    private String adsButtonColor = "None";
-
-    @SerializedName("ads_text_color")
-    @Expose
-    private String adsTextColor = "None";
-
     @SerializedName("ads_bottom_layout")
     @Expose
     private int adsBottomLayout = 1;
@@ -144,13 +128,6 @@ public class AdModel {
         this.adsOnOff = adsOnOff;
     }
 
-    public String getAdsButtonColor() {
-        return adsButtonColor;
-    }
-
-    public void setAdsButtonColor(String adsButtonColor) {
-        this.adsButtonColor = adsButtonColor;
-    }
 
     public String getAdsNativeDialog() {
         return adsNativeDialog;
@@ -160,21 +137,7 @@ public class AdModel {
         this.adsNativeDialog = adsNativeDialog;
     }
 
-    public String getAdsBgColor() {
-        return adsBgColor;
-    }
 
-    public void setAdsBgColor(String adsBgColor) {
-        this.adsBgColor = adsBgColor;
-    }
-
-    public String getAdsTextColor() {
-        return adsTextColor;
-    }
-
-    public void setAdsTextColor(String adsTextColor) {
-        this.adsTextColor = adsTextColor;
-    }
 
     public int getAdsBottomLayout() {
         return adsBottomLayout;
@@ -344,11 +307,4 @@ public class AdModel {
         this.adsNativePreload = adsNativePreload;
     }
 
-    public String getAdsNativeBgColor() {
-        return adsNativeBgColor;
-    }
-
-    public void setAdsNativeBgColor(String adsNativeBgColor) {
-        this.adsNativeBgColor = adsNativeBgColor;
-    }
 }

@@ -32,6 +32,9 @@ android {
 
 dependencies {
 
+
+    compileOnly files('libs/power-preference.aar')
+
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.6.1'
     testImplementation 'junit:junit:4.13.2'
@@ -50,5 +53,4 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
-    implementation('com.aliassadi:power-preference-lib:2.0.0')
 }

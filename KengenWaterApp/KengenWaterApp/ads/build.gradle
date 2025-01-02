@@ -4,6 +4,7 @@ plugins {
 
 android {
     compileSdk 32
+    namespace 'com.google.gms.ads'
 
     defaultConfig {
         minSdk 21

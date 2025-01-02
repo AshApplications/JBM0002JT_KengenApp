@@ -267,7 +267,7 @@ public class HomeActivity extends AppCompatActivity {
             menu.add(0, Integer.parseInt(categories.get(i).getId()), i, categories.get(i).getName()).setCheckable(true);
             switch (categories.get(i).getType()) {
                 case 0:
-                    pagerFragmentAdapter.addFragment(ChannelFragment.newInstance(HomeActivity.this, categories.get(i).getId()), categories.get(i).getName());
+                    pagerFragmentAdapter.addFragment(ChannelFragment.newInstance(HomeActivity.this, categories.get(i).getId(), "Home", false), categories.get(i).getName());
                     break;
                 case 1:
                     pagerFragmentAdapter.addFragment(PdfFragment.newInstance(HomeActivity.this, categories.get(i).getId()), categories.get(i).getName());

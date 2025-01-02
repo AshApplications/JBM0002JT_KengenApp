@@ -1,6 +1,7 @@
 package com.water.alkaline.kengen.ui.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
@@ -38,6 +39,7 @@ import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
 import com.water.alkaline.kengen.ui.adapter.ChannelAdapter;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
+import com.water.alkaline.kengen.ui.fragment.ChannelFragment;
 import com.water.alkaline.kengen.ui.listener.OnChannelListener;
 import com.water.alkaline.kengen.ui.listener.OnLoadMoreListener;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
@@ -57,15 +59,8 @@ import retrofit2.Response;
 public class ChannelActivity extends AppCompatActivity {
 
     ActivityChannelBinding binding;
-
-
-    List<Channel> chanList = new ArrayList<>();
-    ChannelAdapter channelAdapter;
-
-    List<SaveEntity> videoList = new ArrayList<>();
-    VideosAdapter videosAdapter;
-
     String catId;
+    boolean isChannel;
     public AppViewModel viewModel;
 
 
@@ -89,7 +84,6 @@ public class ChannelActivity extends AppCompatActivity {
         } else {
             binding.includedAd.cvAdMain.setVisibility(View.GONE);
             binding.includedAd.flAd.setVisibility(View.GONE);
-            refreshFragment();
         }
     }
 
@@ -98,411 +92,21 @@ public class ChannelActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityChannelBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            catId = getIntent().getExtras().getString("catId", "894398");
+            isChannel = getIntent().getExtras().getBoolean("isChannel", false);
+        }
         setBG();
-        getStart();
-    }
-
-
-    public void refreshFragment() {
-        if (!chanList.isEmpty() && channelAdapter != null) {
-            channelAdapter.refreshAdapter(chanList);
-        } else if (!videoList.isEmpty() && videosAdapter != null) {
-            videosAdapter.refreshAdapter(videoList);
+        if (!catId.equalsIgnoreCase("894398")) {
+            startApp();
         }
     }
 
-    public void getStart() {
-        catId = getIntent().getExtras().getString("catId", "894398");
-        chanList = viewModel.getAllChannelByCategory(catId);
-        if (chanList.size() > 1) {
-            Channels();
-        } else {
-            PowerPreference.getDefaultFile().putString(Constant.mChannelID, chanList.get(0).getYouid());
-            PowerPreference.getDefaultFile().putBoolean(Constant.mIsChannel, chanList.get(0).getType().equalsIgnoreCase("0"));
-            Videos();
-        }
+    public void startApp() {
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frameLayout, ChannelFragment.newInstance(this, catId, getIntent().hasExtra("isChannel") ? "Video" : "Channel", isChannel));
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
-
-
-    public void Channels() {
-        GridLayoutManager manager = new GridLayoutManager(this, 2);
-        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int i) {
-                switch (channelAdapter.getItemViewType(i)) {
-                    case Constant.STORE_TYPE:
-                        return 1;
-                    case Constant.AD_TYPE:
-                        return 2;
-                    case Constant.LOADING:
-                        return 1;
-                    default:
-                        return 1;
-
-                }
-            }
-        });
-        binding.rvChannels.setLayoutManager(manager);
-        channelAdapter = new ChannelAdapter(this, chanList, (position, item) -> {
-            PowerPreference.getDefaultFile().putString(Constant.mChannelID, item.getYouid());
-            PowerPreference.getDefaultFile().putBoolean(Constant.mIsChannel, item.getType().equalsIgnoreCase("0"));
-            uiController.gotoActivity(this, VideoListActivity.class, true, false);
-        });
-
-        binding.rvChannels.setAdapter(channelAdapter);
-        binding.rvChannels.setItemViewCacheSize(100);
-        checkData();
-    }
-
-    public void checkData() {
-        binding.includedProgress.progress.setVisibility(View.GONE);
-        if (binding.rvChannels.getAdapter() != null && binding.rvChannels.getAdapter().getItemCount() > 0) {
-            binding.includedProgress.llError.setVisibility(View.GONE);
-        } else {
-            binding.includedProgress.llError.setVisibility(View.VISIBLE);
-        }
-    }
-
-    public void Videos() {
-        GridLayoutManager manager = new GridLayoutManager(this, 2);
-        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int i) {
-                switch (videosAdapter.getItemViewType(i)) {
-                    case Constant.STORE_TYPE:
-                        return 1;
-                    case Constant.AD_TYPE:
-                        return 2;
-                    case Constant.LOADING:
-                        return 1;
-                    default:
-                        return 1;
-                }
-            }
-        });
-
-        binding.rvChannels.setLayoutManager(manager);
-        videosAdapter = new VideosAdapter(ChannelActivity.this, videoList, binding.rvChannels, (position, item) -> {
-            videoList.removeAll(Collections.singleton(null));
-            int pos = position;
-            for (int i = 0; i < videoList.size(); i++) {
-                if (videoList.get(i).videoId.equalsIgnoreCase(item.videoId)) {
-                    pos = i;
-                    break;
-                }
-            }
-            PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(videoList));
-            Intent intent=new Intent(this,PreviewActivity.class);
-            intent.putExtra(Constant.POSITION, pos);
-            uiController.gotoIntent(this, intent, true, false);
-        });
-
-        binding.rvChannels.setAdapter(videosAdapter);
-        binding.rvChannels.setItemViewCacheSize(100);
-        videosAdapter.setOnLoadMoreListener(() -> {
-            try {
-                videosAdapter.arrayList.add(new SaveEntity("99999", null, null, null));
-                videosAdapter.notifyItemInserted(videosAdapter.arrayList.size() - 1);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            new Handler().postDelayed(() -> {
-                if (!PowerPreference.getDefaultFile().getString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "").equalsIgnoreCase("")) {
-                    if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
-                        channelAPI();
-                    } else {
-                        playlistAPI();
-                    }
-                } else {
-                    videosAdapter.arrayList.remove(videosAdapter.arrayList.size() - 1);
-                    videosAdapter.notifyItemRemoved(videosAdapter.arrayList.size());
-                }
-            }, 2000);
-        });
-
-
-        new Handler().postDelayed(() -> {
-            PowerPreference.getDefaultFile().putString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "");
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
-                channelAPI();
-            } else {
-                playlistAPI();
-            }
-        }, 2000);
-
-    }
-
-    public void refreshActivity() {
-        videosAdapter.refreshAdapter(videoList);
-        checkData();
-    }
-
-    public boolean checkInternet() {
-        ConnectivityManager cm =
-                (ConnectivityManager) ChannelActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-    }
-
-
-    public void channelError(String error) {
-        binding.includedProgress.cvProError.setVisibility(View.INVISIBLE);
-        binding.cvIerror.setVisibility(View.VISIBLE);
-        binding.txtError.setText(error);
-        binding.txtRetry.setOnClickListener(v -> {
-            binding.includedProgress.cvProError.setVisibility(View.VISIBLE);
-            binding.cvIerror.setVisibility(View.GONE);
-            channelAPI();
-        });
-    }
-
-    public void channelAPI() {
-        if (checkInternet()) {
-            RetroClient.getInstance(this).getYouApi().channelApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), PowerPreference.getDefaultFile().getString(Constant.mChannelID), PowerPreference.getDefaultFile().getString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "")).enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                    try {
-                        if (response.body() != null) {
-                            if (response.body().get("error") == null) {
-                                final ChannelResponse channelResponse = new Gson().fromJson(response.body(), ChannelResponse.class);
-
-                                if (videosAdapter != null && videosAdapter.arrayList.size() != 0 && videosAdapter.arrayList.get(videosAdapter.arrayList.size() - 1).videoId.equalsIgnoreCase("99999")) {
-                                    videosAdapter.arrayList.remove(videosAdapter.arrayList.size() - 1);
-                                    videosAdapter.notifyItemRemoved(videosAdapter.arrayList.size());
-                                }
-
-                                if (channelResponse.nextPageToken != null && !channelResponse.nextPageToken.equalsIgnoreCase("")) {
-                                    PowerPreference.getDefaultFile().putString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), channelResponse.nextPageToken);
-                                } else {
-                                    PowerPreference.getDefaultFile().putString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "");
-                                }
-
-                                for (int i = 0; i < channelResponse.items.size(); i++) {
-                                    ChannelResponse.Item item = channelResponse.items.get(i);
-                                    if (!item.snippet.title.equalsIgnoreCase("Private video") && !item.snippet.title.equalsIgnoreCase("Deleted video")) {
-                                        String url = "http://i.ytimg.com/vi/" + item.id.videoId + "/hqdefault.jpg";
-                                        SaveEntity entity = new SaveEntity(item.id.videoId, item.snippet.title, item.snippet.title, url);
-                                        videoList.add(entity);
-                                    }
-                                }
-
-                                refreshActivity();
-
-                            } else {
-
-                                ErrorReponse errorReponse = new Gson().fromJson(response.body(), ErrorReponse.class);
-                                if (errorReponse.error.errors.get(0).reason.equalsIgnoreCase("quotaExceeded") ||
-                                        errorReponse.error.errors.get(0).reason.equalsIgnoreCase("forbidden")) {
-                                    updateAPI();
-                                } else {
-                                    Constant.showToast(ChannelActivity.this, "Something went Wrong");
-                                    channelError("Something went Wrong");
-                                }
-
-                            }
-                        } else {
-                            if (response.code() == 403) {
-                                updateAPI();
-                            } else {
-                                Constant.showToast(ChannelActivity.this, "Something went Wrong");
-                                channelError("Something went Wrong");
-                            }
-                        }
-
-                    } catch (Exception e) {
-                        Constant.showLog(e.toString());
-                        e.printStackTrace();
-                        Constant.showToast(ChannelActivity.this, "Something went Wrong");
-                        channelError("Something went Wrong");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    channelError("Something went Wrong");
-                }
-            });
-        } else {
-            channelError(ChannelActivity.this.getResources().getString(R.string.error_internet));
-        }
-    }
-
-
-    public void playlistError(String error) {
-        binding.includedProgress.cvProError.setVisibility(View.INVISIBLE);
-        binding.cvIerror.setVisibility(View.VISIBLE);
-        binding.txtError.setText(error);
-        binding.txtRetry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                binding.includedProgress.cvProError.setVisibility(View.VISIBLE);
-                binding.cvIerror.setVisibility(View.GONE);
-                playlistAPI();
-            }
-        });
-    }
-
-    public void playlistAPI() {
-        if (checkInternet()) {
-            RetroClient.getInstance(this).getYouApi().playlistApi(PowerPreference.getDefaultFile().getString(Constant.mKeyId), PowerPreference.getDefaultFile().getString(Constant.mChannelID), PowerPreference.getDefaultFile().getString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "")).enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                    try {
-                        if (response.body() != null) {
-                            if (response.body().get("error") == null) {
-                                final PlaylistResponse playlistResponse = new Gson().fromJson(response.body(), PlaylistResponse.class);
-
-                                if (videosAdapter != null && videosAdapter.arrayList.size() != 0 && videosAdapter.arrayList.get(videosAdapter.arrayList.size() - 1).videoId.equalsIgnoreCase("99999")) {
-                                    videosAdapter.arrayList.remove(videosAdapter.arrayList.size() - 1);
-                                    videosAdapter.notifyItemRemoved(videosAdapter.arrayList.size());
-                                }
-                                if (playlistResponse.nextPageToken != null && !playlistResponse.nextPageToken.equalsIgnoreCase("")) {
-                                    PowerPreference.getDefaultFile().putString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), playlistResponse.nextPageToken);
-                                } else {
-                                    PowerPreference.getDefaultFile().putString(PowerPreference.getDefaultFile().getString(Constant.mChannelID), "");
-                                }
-                                for (int i = 0; i < playlistResponse.items.size(); i++) {
-                                    PlaylistResponse.Item item = playlistResponse.items.get(i);
-                                    if (!item.snippet.title.equalsIgnoreCase("Private video") && !item.snippet.title.equalsIgnoreCase("Deleted video")) {
-                                        String url = "http://i.ytimg.com/vi/" + item.snippet.resourceId.videoId + "/hqdefault.jpg";
-                                        SaveEntity entity = new SaveEntity(item.snippet.resourceId.videoId, item.snippet.title, item.snippet.title, url);
-                                        videoList.add(entity);
-                                    }
-                                }
-                                refreshActivity();
-                            } else {
-
-                                ErrorReponse errorReponse = new Gson().fromJson(response.body(), ErrorReponse.class);
-                                if (errorReponse.error.errors.get(0).reason.equalsIgnoreCase("quotaExceeded") ||
-                                        errorReponse.error.errors.get(0).reason.equalsIgnoreCase("forbidden")) {
-                                    updateAPI();
-                                } else {
-                                    Constant.showToast(ChannelActivity.this, "Something went Wrong");
-                                    playlistError("Something went Wrong");
-                                }
-                            }
-                        } else {
-
-                            if (response.code() == 403) {
-                                updateAPI();
-                            } else {
-                                Constant.showToast(ChannelActivity.this, "Something went Wrong");
-                                playlistError("Something went Wrong");
-                            }
-
-                        }
-                    } catch (Exception e) {
-                        Constant.showLog(e.toString());
-                        e.printStackTrace();
-                        Constant.showToast(ChannelActivity.this, "Something went Wrong");
-                        playlistError("Something went Wrong");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    playlistError("Something went Wrong");
-                }
-            });
-        } else {
-            playlistError(ChannelActivity.this.getResources().getString(R.string.error_internet));
-        }
-    }
-
-    public void updateError(String error) {
-        binding.includedProgress.cvProError.setVisibility(View.INVISIBLE);
-        binding.cvIerror.setVisibility(View.VISIBLE);
-        binding.txtError.setText(error);
-        binding.txtRetry.setOnClickListener(v -> {
-            binding.includedProgress.cvProError.setVisibility(View.VISIBLE);
-            binding.cvIerror.setVisibility(View.GONE);
-            updateAPI();
-        });
-    }
-
-    public void update2Error(String error) {
-        binding.includedProgress.cvProError.setVisibility(View.INVISIBLE);
-        binding.cvIerror.setVisibility(View.VISIBLE);
-        binding.txtError.setText(error);
-        binding.txtRetry.setOnClickListener(v -> {
-            binding.includedProgress.cvProError.setVisibility(View.VISIBLE);
-            binding.cvIerror.setVisibility(View.GONE);
-            if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
-                channelAPI();
-            } else {
-                playlistAPI();
-            }
-        });
-    }
-
-
-    public void updateAPI() {
-        if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsApi, false)) {
-            update2Error("Please wait Sometimes");
-            return;
-        }
-
-        if (checkInternet()) {
-
-            int VERSION = 0;
-            @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-            String token = PowerPreference.getDefaultFile().getString(Constant.Token, "123abc");
-
-            PackageManager manager = getPackageManager();
-            PackageInfo info = null;
-
-            try {
-                info = manager.getPackageInfo(getPackageName(), 0);
-                VERSION = info.versionCode;
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-                Constant.showLog(e.toString());
-                VERSION = BuildConfig.VERSION_CODE;
-            }
-
-            PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, true);
-            RetroClient.getInstance(this).getApi().updateApi(DecryptEncrypt.EncryptStr(this, MyApplication.updateApi(this, deviceId, token, getPackageName(), String.valueOf(VERSION), "refresh")))
-                    .enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            try {
-                                PowerPreference.getDefaultFile().putBoolean(Constant.mIsApi, false);
-                                final UpdateResponse updateResponse = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(ChannelActivity.this, response.body().string())), UpdateResponse.class);
-
-                                if (updateResponse.getFlag()) {
-                                    AppInfo appInfo = updateResponse.getData().getAppInfo().get(0);
-                                    PowerPreference.getDefaultFile().putString(Constant.mKeyId, appInfo.getApiKey());
-
-                                    if (PowerPreference.getDefaultFile().getBoolean(Constant.mIsChannel)) {
-                                        channelAPI();
-                                    } else {
-                                        playlistAPI();
-                                    }
-                                } else {
-                                    Constant.showToast(ChannelActivity.this, "Something went Wrong");
-                                }
-
-                            } catch (Exception e) {
-                                Constant.showLog(e.toString());
-                                e.printStackTrace();
-                                Constant.showToast(ChannelActivity.this, "Something went Wrong");
-                                updateError("Something went Wrong");
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            updateError("Something went Wrong");
-                        }
-                    });
-        } else {
-            updateError(ChannelActivity.this.getResources().getString(R.string.error_internet));
-        }
-    }
-
-
 }

@@ -87,11 +87,6 @@
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activity.VideoListActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustPan"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".ui.activity.PdfActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan"

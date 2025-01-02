@@ -45,7 +45,6 @@ import com.water.alkaline.kengen.model.update.UpdateResponse;
 import com.water.alkaline.kengen.ui.activity.ChannelActivity;
 import com.water.alkaline.kengen.ui.activity.HomeActivity;
 import com.water.alkaline.kengen.ui.activity.PreviewActivity;
-import com.water.alkaline.kengen.ui.activity.VideoListActivity;
 import com.water.alkaline.kengen.ui.adapter.ChannelAdapter;
 import com.water.alkaline.kengen.ui.adapter.SubcatAdapter;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
@@ -69,7 +68,7 @@ import retrofit2.Response;
 public class ChannelFragment extends Fragment {
 
 
-    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM1 = "param1", ARG_PARAM2 = "param2", ARG_PARAM3 = "param3";
     public Dialog dialog;
     public AppViewModel viewModel;
     String channelId;
@@ -84,7 +83,7 @@ public class ChannelFragment extends Fragment {
     SubcatAdapter subcatAdapter;
     ChannelAdapter channelAdapter;
     VideosAdapter videosAdapter;
-    private String mParam1;
+    private String mParam1, mParam2;
 
     public ChannelFragment() {
     }
@@ -93,10 +92,12 @@ public class ChannelFragment extends Fragment {
         this.activity = activity;
     }
 
-    public static ChannelFragment newInstance(Activity activity, String param1) {
+    public static ChannelFragment newInstance(Activity activity, String param1, String param2, boolean param3) {
         ChannelFragment fragment = new ChannelFragment(activity);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        args.putBoolean(ARG_PARAM3, param3);
         fragment.setArguments(args);
         return fragment;
     }
@@ -106,7 +107,11 @@ public class ChannelFragment extends Fragment {
         super.onAttach(context);
         context.getPackageManager();
         if (activity == null) {
-            activity = (HomeActivity) context;
+            if (context instanceof HomeActivity) {
+                activity = (HomeActivity) context;
+            } else if (context instanceof ChannelActivity) {
+                activity = (ChannelActivity) context;
+            }
         }
     }
 
@@ -114,7 +119,9 @@ public class ChannelFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam1 = getArguments().getString(ARG_PARAM1, "");
+            mParam2 = getArguments().getString(ARG_PARAM2, "");
+            isChannel = getArguments().getBoolean(ARG_PARAM3, false);
         }
     }
 
@@ -128,7 +135,16 @@ public class ChannelFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(AppViewModel.class);
+        if (mParam2.equalsIgnoreCase("Home")) {
+            getFromSubCategory();
+        } else if (mParam2.equalsIgnoreCase("Channel")) {
+            getFromChannel();
+        } else if (mParam2.equalsIgnoreCase("Video")) {
+            getFromVideo();
+        }
+    }
 
+    public void getFromSubCategory() {
         if (activity != null) {
             subList = viewModel.getAllSubByCategory(mParam1);
             if (subList.size() > 1) {
@@ -137,12 +153,32 @@ public class ChannelFragment extends Fragment {
                 chanList = viewModel.getAllChannelByCategory(subList.get(0).getId());
                 if (chanList.size() > 1) {
                     Channels();
-                } else {
+                } else if (chanList.size() == 1) {
                     channelId = chanList.get(0).getYouid();
                     isChannel = chanList.get(0).getType().equalsIgnoreCase("0");
                     Videos();
                 }
             }
+        }
+    }
+
+    public void getFromChannel() {
+        if (activity != null) {
+            chanList = viewModel.getAllChannelByCategory(mParam1);
+            if (chanList.size() > 1) {
+                Channels();
+            } else if (chanList.size() == 1) {
+                channelId = chanList.get(0).getYouid();
+                isChannel = chanList.get(0).getType().equalsIgnoreCase("0");
+                Videos();
+            }
+        }
+    }
+
+    public void getFromVideo() {
+        if (activity != null) {
+            channelId = mParam1;
+            Videos();
         }
     }
 
@@ -178,8 +214,7 @@ public class ChannelFragment extends Fragment {
         subcatAdapter = new SubcatAdapter(activity, subList, new OnSubcatListener() {
             @Override
             public void onItemClick(int position, Subcategory item) {
-                uiController.gotoIntent(activity, new Intent(activity, ChannelActivity.class).putExtra("catId", item.getId()), true, false);
-
+               uiController.gotoIntent(activity, new Intent(activity, ChannelActivity.class).putExtra("catId", item.getId()), true, false);
             }
         });
 
@@ -210,9 +245,7 @@ public class ChannelFragment extends Fragment {
         channelAdapter = new ChannelAdapter(activity, chanList, new OnChannelListener() {
             @Override
             public void onItemClick(int position, Channel item) {
-                PowerPreference.getDefaultFile().putString(Constant.mChannelID, item.getYouid());
-                PowerPreference.getDefaultFile().putBoolean(Constant.mIsChannel, item.getType().equalsIgnoreCase("0"));
-                uiController.gotoActivity(activity, VideoListActivity.class, true, false);
+                uiController.gotoIntent(activity, new Intent(activity, ChannelActivity.class).putExtra("catId", item.getYouid()).putExtra("isChannel", item.getType().equalsIgnoreCase("0")), true, false);
             }
         });
         binding.rvCats.setAdapter(channelAdapter);

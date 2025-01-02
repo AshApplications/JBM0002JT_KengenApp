@@ -15,6 +15,9 @@ import com.water.alkaline.kengen.library.downloader.PRDownloader;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import dagger.hilt.android.HiltAndroidApp;
+
+@HiltAndroidApp
 public class MyApplication extends MyApp {
 
     public static ArrayList<Integer> arrayList = new ArrayList<>();

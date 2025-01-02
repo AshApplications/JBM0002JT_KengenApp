@@ -124,48 +124,35 @@ public class PlayerActivity extends AppCompatActivity {
 
     public void setSize() {
 
-        binding.ivShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareVideo();
-            }
-        });
+        binding.ivShare.setOnClickListener(v -> shareVideo());
 
-        binding.ivLike.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        binding.ivLike.setOnClickListener(v -> {
 
-                try {
-                    SaveEntity entity = mList.get(position);
-                    SaveEntity entity2 = null;
-                    if (viewModel.getSavebyVideoId(entity.videoId).size() > 0)
-                        entity2 = viewModel.getSavebyVideoId(entity.videoId).get(0);
+            try {
+                SaveEntity entity = mList.get(position);
+                SaveEntity entity2 = null;
+                if (!viewModel.getSavebyVideoId(entity.videoId).isEmpty())
+                    entity2 = viewModel.getSavebyVideoId(entity.videoId).get(0);
 
-                    if (entity2 != null) {
-                        viewModel.deleteSaves(entity2);
-                        checkLike();
-                        if (SaveActivity.saveActivity != null)
-                            SaveActivity.saveActivity.refreshData();
-                    } else {
-                        SaveEntity entity1 = new SaveEntity(entity.videoId, entity.title, entity.des, entity.imgUrl);
-                        viewModel.insertSaves(entity1);
-                        binding.ivLike.setSpeed(100f);
-                        binding.ivLike.playAnimation();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (entity2 != null) {
+                    viewModel.deleteSaves(entity2);
+                    checkLike();
+                    if (SaveActivity.saveActivity != null)
+                        SaveActivity.saveActivity.refreshData();
+                } else {
+                    SaveEntity entity1 = new SaveEntity(entity.videoId, entity.title, entity.des, entity.imgUrl);
+                    viewModel.insertSaves(entity1);
+                    binding.ivLike.setSpeed(100f);
+                    binding.ivLike.playAnimation();
                 }
-
-
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
+
         });
 
-        binding.ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        binding.ivBack.setOnClickListener(v -> onBackPressed());
     }
 
     public void checkLike() {
@@ -173,7 +160,7 @@ public class PlayerActivity extends AppCompatActivity {
         try {
             SaveEntity entity = mList.get(position);
             SaveEntity entity2 = null;
-            if (viewModel.getSavebyVideoId(entity.videoId).size() > 0)
+            if (!viewModel.getSavebyVideoId(entity.videoId).isEmpty())
                 entity2 = viewModel.getSavebyVideoId(entity.videoId).get(0);
 
             if (entity2 != null) {
@@ -218,23 +205,15 @@ public class PlayerActivity extends AppCompatActivity {
         binding.rvVideos.setItemViewCacheSize(100);
         binding.rvVideos.scrollToPosition(position);
 
-        refreshActivity();
-    }
-
-    public void refreshActivity() {
         videosAdapter.refreshAdapter(mList);
         binding.includedProgress.progress.setVisibility(View.GONE);
-        checkData();
-    }
 
-    public void checkData() {
-        if (binding.rvVideos.getAdapter().getItemCount() > 0) {
+        if (videosAdapter.getItemCount() > 0) {
             binding.includedProgress.llError.setVisibility(View.GONE);
         } else {
             binding.includedProgress.llError.setVisibility(View.VISIBLE);
         }
     }
-
 
     public void setPlayer() {
 

@@ -13,18 +13,18 @@ interface retroAPI {
 
     @FormUrlEncoded
     @POST("update.php")
-    fun updateApi(@Field("data") requestBody: String?): Call<ResponseBody?>?
+    fun updateApi(@Field("data") requestBody: String): Call<ResponseBody>
 
     @FormUrlEncoded
     @POST("dataApi.php")
-    fun dataApi(@Field("data") requestBody: String?): Call<ResponseBody?>?
+    fun dataApi(@Field("data") requestBody: String): Call<ResponseBody>
 
     @FormUrlEncoded
     @POST("feedApi.php")
-    fun GetfeedApi(@Field("data") requestBody: String?): Call<ResponseBody?>?
+    fun GetfeedApi(@Field("data") requestBody: String): Call<ResponseBody>
 
     @FormUrlEncoded
     @POST("feedApi.php")
-    fun SendfeedApi(@Field("data") requestBody: String?): Call<ResponseBody?>?
+    fun SendfeedApi(@Field("data") requestBody: String): Call<ResponseBody>
 
 }

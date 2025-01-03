@@ -433,7 +433,7 @@ public class ChannelFragment extends Fragment {
                 }
             });
         } else {
-            channelError(activity.getResources().getString(R.string.error_internet));
+            channelError(activity.getResources().getString(R.string.kk_error_no_internet));
         }
     }
 
@@ -519,7 +519,7 @@ public class ChannelFragment extends Fragment {
                 }
             });
         } else {
-            playlistError(activity.getResources().getString(R.string.error_internet));
+            playlistError(activity.getResources().getString(R.string.kk_error_no_internet));
         }
     }
 
@@ -617,7 +617,7 @@ public class ChannelFragment extends Fragment {
                         }
                     });
         } else {
-            updateError(activity.getResources().getString(R.string.error_internet));
+            updateError(activity.getResources().getString(R.string.kk_error_no_internet));
         }
 
     }

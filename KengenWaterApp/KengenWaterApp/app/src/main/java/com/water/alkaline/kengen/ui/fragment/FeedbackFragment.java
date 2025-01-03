@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
 import com.water.alkaline.kengen.MyApplication;
@@ -39,8 +38,6 @@ import com.water.alkaline.kengen.model.feedback.FeedbackResponse;
 import com.water.alkaline.kengen.ui.activity.FeedbackActivity;
 import com.water.alkaline.kengen.utils.Constant;
 
-
-import java.util.Objects;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -220,7 +217,7 @@ public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarC
 
 
     public void updateError() {
-        network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
+        network_dialog(getResources().getString(R.string.kk_error_no_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss_dialog();

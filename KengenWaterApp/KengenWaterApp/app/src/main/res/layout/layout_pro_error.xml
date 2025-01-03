@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginVertical="@dimen/_20sdp"
-            android:text="@string/error_nodata" />
+            android:text="@string/kk_error_no_data" />
 
     </LinearLayout>
 

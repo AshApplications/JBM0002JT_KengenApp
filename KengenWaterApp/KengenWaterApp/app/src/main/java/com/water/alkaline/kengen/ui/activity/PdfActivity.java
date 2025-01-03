@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -244,7 +243,7 @@ public class PdfActivity extends AppCompatActivity {
         if (Constant.checkInternet(this)) {
             new RetrivePDFfromUrl().execute(mPath);
         } else {
-            network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(v -> {
+            network_dialog(getResources().getString(R.string.kk_error_no_internet)).txtRetry.setOnClickListener(v -> {
                 dismiss_dialog();
                 if (Constant.checkInternet(PdfActivity.this)) {
                     loadFromUrl();

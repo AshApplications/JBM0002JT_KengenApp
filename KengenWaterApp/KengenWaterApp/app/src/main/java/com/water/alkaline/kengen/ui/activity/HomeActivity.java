@@ -33,7 +33,6 @@ import com.water.alkaline.kengen.databinding.DialogInfoBinding;
 import com.water.alkaline.kengen.library.toprightmenu.MenuItem;
 import com.water.alkaline.kengen.library.toprightmenu.TopRightMenu;
 import com.water.alkaline.kengen.model.main.Category;
-import com.water.alkaline.kengen.ui.adapter.DrawerCatAdapter;
 import com.water.alkaline.kengen.ui.adapter.ViewPagerFragmentAdapter;
 import com.water.alkaline.kengen.ui.fragment.BannerFragment;
 import com.water.alkaline.kengen.ui.fragment.ChannelFragment;
@@ -234,7 +233,7 @@ public class HomeActivity extends AppCompatActivity {
             mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             mDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             mDialog.show();
-            binding.txtError.setText(PowerPreference.getDefaultFile().getString(Constant.mNotice, getResources().getString(R.string.info)));
+            binding.txtError.setText(PowerPreference.getDefaultFile().getString(Constant.mNotice, getResources().getString(R.string.kk_info)));
             binding.txtRetry.setOnClickListener(v -> mDialog.dismiss());
 
         } catch (Exception e) {

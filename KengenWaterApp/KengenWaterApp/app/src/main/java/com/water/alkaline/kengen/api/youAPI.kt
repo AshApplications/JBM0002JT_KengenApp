@@ -8,15 +8,15 @@ import retrofit2.http.Query
 interface youAPI {
     @GET("youtube/v3/search?part=snippet&maxResults=50&order=date&type=video")
     fun channelApi(
-        @Query("key") mkey: String?,
-        @Query("channelId") mchannelId: String?,
-        @Query("pageToken") pageToken: String?
-    ): Call<JsonObject?>?
+        @Query("key") mkey: String,
+        @Query("channelId") mchannelId: String,
+        @Query("pageToken") pageToken: String
+    ): Call<JsonObject?>
 
     @GET("youtube/v3/playlistItems?part=snippet&maxResults=50")
     fun playlistApi(
-        @Query("key") mkey: String?,
-        @Query("playlistId") mplayId: String?,
-        @Query("pageToken") pageToken: String?
-    ): Call<JsonObject?>?
+        @Query("key") mkey: String,
+        @Query("playlistId") mplayId: String,
+        @Query("pageToken") pageToken: String
+    ): Call<JsonObject?>
 }

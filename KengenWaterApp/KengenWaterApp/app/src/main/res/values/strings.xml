@@ -1,15 +1,19 @@
 <resources>
-    <string name="app_name">Kengen Water</string>
+    <string name="app_name" translatable="false">Kengen Water</string>
 
-    <string name="title">Kengen&#160;</string>
-    <string name="title_sub">Water</string>
+    <string name="kk_app_title">Kengen&#160;</string>
+    <string name="kk_app_title_sub">Water</string>
 
-    <string name="splash_skip">SKIP</string>
-    <string name="splash_update">UPDATE</string>
-    <string name="error_internet">Please Check Your Internet …</string>
+    <string name="kk_splash_skip">SKIP</string>
+    <string name="kk_splash_update">UPDATE</string>
 
-    <string name="error_nodata">No Data Available …</string>
+    <string name="kk_info">This App do not host any content showing in this app. We are just embed and sharing videos from www.youtube.com. Youtube and Channel owners are the original owner and copyright holder for this content. This app doesn\'t access or use a service or Api in a manner that violates its terms of service. Enagic Company and youtube owners are original owners and copyright holder for these contents. By using this app, you are agree that the owner of this app is not the owner of any content in this app.</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="info">This App do not host any content showing in this app. We are just embed and sharing videos from www.youtube.com. Youtube and Channel owners are the original owner and copyright holder for this content. This app doesn\'t access or use a service or Api in a manner that violates its terms of service. Enagic Company and youtube owners are original owners and copyright holder for these contents. By using this app, you are agree that the owner of this app is not the owner of any content in this app.</string>
+    <string name="kk_error_unknown">An unknown error occurred</string>
+    <string name="kk_error_try_again">Something went wrong! Please try again.</string>
+    <string name="kk_error_try_later">"Something went wrong! Try Again Later."</string>
+    <string name="kk_error_no_data">No Data Available …</string>
+    <string name="kk_error_no_internet">Please Check Your Internet …</string>
+    <string name="kk_error_vpn"><![CDATA[VPN is Connected Please Turn it Off & Try Again !]]></string>
+
 </resources>

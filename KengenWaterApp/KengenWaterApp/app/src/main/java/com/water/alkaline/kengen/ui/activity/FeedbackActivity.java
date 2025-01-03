@@ -1,6 +1,5 @@
 package com.water.alkaline.kengen.ui.activity;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -11,13 +10,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.gms.ads.AdLoader;
 import com.google.gms.ads.MyApp;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
 import com.water.alkaline.kengen.MyApplication;
@@ -139,7 +136,7 @@ public class FeedbackActivity extends AppCompatActivity {
 
 
     public void FeedError() {
-        network_dialog(getResources().getString(R.string.error_internet)).txtRetry.setOnClickListener(v -> {
+        network_dialog(getResources().getString(R.string.kk_error_no_internet)).txtRetry.setOnClickListener(v -> {
             dismiss_dialog();
             if (Constant.checkInternet(FeedbackActivity.this)) {
                 FeedAPI();

@@ -30,7 +30,10 @@ import com.water.alkaline.kengen.utils.uiController;
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+
+@AndroidEntryPoint
 public class PdfFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private String mParam1;

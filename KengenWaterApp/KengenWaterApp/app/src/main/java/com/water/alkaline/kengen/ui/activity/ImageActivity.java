@@ -5,7 +5,6 @@ import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -99,14 +98,14 @@ public class ImageActivity extends AppCompatActivity {
         mPath = getIntent().getExtras().getString("mpath", "");
         if (mPath.startsWith("http")) {
             banner = null;
-            if (!viewModel.getBannerbyUrl(mPath).isEmpty()) {
-                banner = viewModel.getBannerbyUrl(mPath).get(0);
+            if (!viewModel.getBannerByUrl(mPath).isEmpty()) {
+                banner = viewModel.getBannerByUrl(mPath).get(0);
                 Glide.with(this).load(banner.getUrl()).diskCacheStrategy(DiskCacheStrategy.ALL).into(binding.ivImage);
             }
         } else {
             entity = null;
-            if (!viewModel.getDownloadbyUrl(mPath).isEmpty()) {
-                entity = viewModel.getDownloadbyUrl(mPath).get(0);
+            if (!viewModel.getDownloadByUrl(mPath).isEmpty()) {
+                entity = viewModel.getDownloadByUrl(mPath).get(0);
                 Glide.with(this).load(entity.filePath).diskCacheStrategy(DiskCacheStrategy.ALL).into(binding.ivImage);
             }
         }
@@ -118,8 +117,8 @@ public class ImageActivity extends AppCompatActivity {
     public void checkDownload() {
         if (banner != null) {
             DownloadEntity entity = null;
-            if (!viewModel.getDownloadbyUrl(banner.getUrl()).isEmpty())
-                entity = viewModel.getDownloadbyUrl(banner.getUrl()).get(0);
+            if (!viewModel.getDownloadByUrl(banner.getUrl()).isEmpty())
+                entity = viewModel.getDownloadByUrl(banner.getUrl()).get(0);
 
             if (entity != null) {
                 binding.ivDownload.setVisibility(View.GONE);
@@ -140,8 +139,8 @@ public class ImageActivity extends AppCompatActivity {
         binding.llmenuDownload.setOnClickListener(v -> {
             if (banner != null) {
                 DownloadEntity entity = null;
-                if (!viewModel.getDownloadbyUrl(banner.getUrl()).isEmpty())
-                    entity = viewModel.getDownloadbyUrl(banner.getUrl()).get(0);
+                if (!viewModel.getDownloadByUrl(banner.getUrl()).isEmpty())
+                    entity = viewModel.getDownloadByUrl(banner.getUrl()).get(0);
 
                 if (entity != null) {
                     if (new File(entity.filePath).exists()) {
@@ -167,8 +166,8 @@ public class ImageActivity extends AppCompatActivity {
         binding.llmenuDownload.setOnClickListener(v -> {
             if (banner != null) {
                 DownloadEntity entity = null;
-                if (viewModel.getDownloadbyUrl(banner.getUrl()).size() > 0)
-                    entity = viewModel.getDownloadbyUrl(banner.getUrl()).get(0);
+                if (viewModel.getDownloadByUrl(banner.getUrl()).size() > 0)
+                    entity = viewModel.getDownloadByUrl(banner.getUrl()).get(0);
 
 
                 if (entity != null) {

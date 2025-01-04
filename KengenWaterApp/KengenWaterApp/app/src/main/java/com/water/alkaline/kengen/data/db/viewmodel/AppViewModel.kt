@@ -1,178 +1,156 @@
-package com.water.alkaline.kengen.data.db.viewmodel;
+package com.water.alkaline.kengen.data.db.viewmodel
 
-import android.app.Application;
+import androidx.lifecycle.ViewModel
+import com.water.alkaline.kengen.data.db.repo.BannerRepo
+import com.water.alkaline.kengen.data.db.repo.CategoryRepo
+import com.water.alkaline.kengen.data.db.repo.ChannelRepo
+import com.water.alkaline.kengen.data.db.repo.DownloadRepo
+import com.water.alkaline.kengen.data.db.repo.PdfRepo
+import com.water.alkaline.kengen.data.db.repo.SaveRepo
+import com.water.alkaline.kengen.data.db.repo.SubCategoryRepo
+import com.water.alkaline.kengen.model.DownloadEntity
+import com.water.alkaline.kengen.model.SaveEntity
+import com.water.alkaline.kengen.model.main.Banner
+import com.water.alkaline.kengen.model.main.Category
+import com.water.alkaline.kengen.model.main.Channel
+import com.water.alkaline.kengen.model.main.Pdf
+import com.water.alkaline.kengen.model.main.Subcategory
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
+@HiltViewModel
+class AppViewModel @Inject constructor(
+    private val categoryRepo: CategoryRepo,
+    private val subCategoryRepo: SubCategoryRepo,
+    private val channelRepo: ChannelRepo,
+    private val pdfRepo: PdfRepo,
+    private val bannerRepo: BannerRepo,
+    private val downloadRepo: DownloadRepo,
+    private val saveRepo: SaveRepo
+) : ViewModel() {
 
-import com.water.alkaline.kengen.data.db.repo.BannerRepo;
-import com.water.alkaline.kengen.data.db.repo.CategoryRepo;
-import com.water.alkaline.kengen.data.db.repo.ChannelRepo;
-import com.water.alkaline.kengen.data.db.repo.DownloadRepo;
-import com.water.alkaline.kengen.data.db.repo.PdfRepo;
-import com.water.alkaline.kengen.data.db.repo.SaveRepo;
-import com.water.alkaline.kengen.data.db.repo.SubCategoryRepo;
-import com.water.alkaline.kengen.model.DownloadEntity;
-import com.water.alkaline.kengen.model.SaveEntity;
-import com.water.alkaline.kengen.model.main.Banner;
-import com.water.alkaline.kengen.model.main.Category;
-import com.water.alkaline.kengen.model.main.Channel;
-import com.water.alkaline.kengen.model.main.Pdf;
-import com.water.alkaline.kengen.model.main.Subcategory;
-
-import java.util.List;
-
-public class AppViewModel extends AndroidViewModel {
-
-    CategoryRepo categoryRepo;
-    SubCategoryRepo subCategoryRepo;
-    ChannelRepo channelRepo;
-    PdfRepo pdfRepo;
-    BannerRepo bannerRepo;
-    DownloadRepo downloadRepo;
-    SaveRepo saveRepo;
-
-    public AppViewModel(@NonNull Application application) {
-        super(application);
-        categoryRepo = new CategoryRepo(application);
-        subCategoryRepo = new SubCategoryRepo(application);
-        channelRepo = new ChannelRepo(application);
-        pdfRepo = new PdfRepo(application);
-        bannerRepo = new BannerRepo(application);
-        downloadRepo = new DownloadRepo(application);
-        saveRepo = new SaveRepo(application);
-
+    fun insertCategory(entity: List<Category>) {
+        categoryRepo.insert(entity)
     }
 
-    public void insertCategory(List<Category> entity) {
-        categoryRepo.insert(entity);
+    fun deleteAllCategory() {
+        categoryRepo.deleteAll()
     }
 
-    public void deleteAllCategory() {
-        categoryRepo.deleteAll();
+    val allCategory: List<Category>
+        get() = categoryRepo.all
+
+
+    fun insertSubCategory(entity: List<Subcategory>) {
+        subCategoryRepo.insert(entity)
     }
 
-    public List<Category> getAllCategory() {
-        return categoryRepo.getAll();
+    fun deleteAllSubCategory() {
+        subCategoryRepo.deleteAll()
     }
 
+    val allSubCategory: List<Subcategory>
+        get() = subCategoryRepo.all
 
-    public void insertSubCategory(List<Subcategory> entity) {
-        subCategoryRepo.insert(entity);
-    }
-
-    public void deleteAllSubCategory() {
-        subCategoryRepo.deleteAll();
-    }
-
-    public List<Subcategory> getAllSubCategory() {
-        return subCategoryRepo.getAll();
-    }
-
-    public List<Subcategory> getAllSubByCategory(String data) {
-        return subCategoryRepo.getAllbyCategory(data);
+    fun getAllSubByCategory(data: String): List<Subcategory> {
+        return subCategoryRepo.getAllByCategory(data)
     }
 
 
-    public void insertChannel(List<Channel> entity) {
-        channelRepo.insert(entity);
+    fun insertChannel(entity: List<Channel>) {
+        channelRepo.insert(entity)
     }
 
-    public void deleteAllChannel() {
-        channelRepo.deleteAll();
+    fun deleteAllChannel() {
+        channelRepo.deleteAll()
     }
 
-    public List<Channel> getAllChannel() {
-        return channelRepo.getAll();
-    }
+    val allChannel: List<Channel>
+        get() = channelRepo.all
 
-    public List<Channel> getAllChannelByCategory(String data) {
-        return channelRepo.getAllbyCategory(data);
-    }
-
-
-    public void insertPdf(List<Pdf> entity) {
-        pdfRepo.insert(entity);
-    }
-
-    public void deleteAllPdf() {
-        pdfRepo.deleteAll();
-    }
-
-    public List<Pdf> getAllPdf() {
-        return pdfRepo.getAll();
-    }
-
-    public List<Pdf> getAllPdfByCategory(String data) {
-        return pdfRepo.getAllbyCategory(data);
-    }
-
-    public List<Pdf> getbyUrl(String data) {
-        return pdfRepo.getbyUrl(data);
-    }
-
-    public void insertBanner(List<Banner> entity) {
-        bannerRepo.insert(entity);
-    }
-
-    public void deleteAllBanner() {
-        bannerRepo.deleteAll();
-    }
-
-    public List<Banner> getAllBanner() {
-        return bannerRepo.getAll();
-    }
-
-    public List<Banner> getAllBannerByCategory(String data) {
-        return bannerRepo.getAllbyCategory(data);
-    }
-
-    public List<Banner> getBannerbyUrl(String data) {
-        return bannerRepo.getbyUrl(data);
+    fun getAllChannelByCategory(data: String): List<Channel> {
+        return channelRepo.getAllByCategory(data)
     }
 
 
-    public void insertDownloads(DownloadEntity entity) {
-        downloadRepo.insert(entity);
+    fun insertPdf(entity: List<Pdf>) {
+        pdfRepo.insert(entity)
     }
 
-    public void deleteAllDownloads() {
-        downloadRepo.deleteAll();
+    fun deleteAllPdf() {
+        pdfRepo.deleteAll()
     }
 
-    public List<DownloadEntity> getAllDownloads() {
-        return downloadRepo.getAll();
+    val allPdf: List<Pdf>
+        get() = pdfRepo.all
+
+    fun getAllPdfByCategory(data: String): List<Pdf> {
+        return pdfRepo.getAllByCategory(data)
     }
 
-    public List<DownloadEntity> getAllbyID(int data) {
-        return downloadRepo.getAllbyID(data);
+    fun getByUrl(data: String): List<Pdf> {
+        return pdfRepo.getByUrl(data)
     }
 
-    public List<DownloadEntity> getDownloadbyUrl(String data) {
-        return downloadRepo.getbyUrl(data);
+    fun insertBanner(entity: List<Banner>) {
+        bannerRepo.insert(entity)
     }
 
-    public List<DownloadEntity> getbyPath(String data) {
-        return downloadRepo.getbyPath(data);
+    fun deleteAllBanner() {
+        bannerRepo.deleteAll()
     }
 
-    public void insertSaves(SaveEntity entity) {
-        saveRepo.insert(entity);
-    }
-    public void deleteSaves(SaveEntity entity) {
-        saveRepo.delete(entity);
+    val allBanner: List<Banner>
+        get() = bannerRepo.all
+
+    fun getAllBannerByCategory(data: String): List<Banner> {
+        return bannerRepo.getAllByCategory(data)
     }
 
-    public void deleteAllSaves() {
-        saveRepo.deleteAll();
+    fun getBannerByUrl(data: String): List<Banner> {
+        return bannerRepo.getByUrl(data)
     }
 
-    public List<SaveEntity> getAllSaves() {
-        return saveRepo.getAll();
+
+    fun insertDownloads(entity: DownloadEntity) {
+        downloadRepo.insert(entity)
     }
 
-    public List<SaveEntity> getSavebyVideoId(String data) {
-        return saveRepo.getbyVideoId(data);
+    fun deleteAllDownloads() {
+        downloadRepo.deleteAll()
     }
 
+    val allDownloads: List<DownloadEntity>
+        get() = downloadRepo.all
+
+    fun getAllbyID(data: Int): List<DownloadEntity> {
+        return downloadRepo.getAllByID(data)
+    }
+
+    fun getDownloadByUrl(data: String): List<DownloadEntity> {
+        return downloadRepo.getByUrl(data)
+    }
+
+    fun getByPath(data: String): List<DownloadEntity> {
+        return downloadRepo.getByPath(data)
+    }
+
+    fun insertSaves(entity: SaveEntity) {
+        saveRepo.insert(entity)
+    }
+
+    fun deleteSaves(entity: SaveEntity) {
+        saveRepo.delete(entity)
+    }
+
+    fun deleteAllSaves() {
+        saveRepo.deleteAll()
+    }
+
+    val allSaves: List<SaveEntity>
+        get() = saveRepo.all
+
+    fun getSaveByVideoId(data: String): List<SaveEntity> {
+        return saveRepo.getByVideoId(data)
+    }
 }

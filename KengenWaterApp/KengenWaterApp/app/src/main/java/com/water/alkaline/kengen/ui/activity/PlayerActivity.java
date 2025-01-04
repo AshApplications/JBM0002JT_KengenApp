@@ -2,14 +2,12 @@ package com.water.alkaline.kengen.ui.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiContext;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.app.Dialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -33,8 +31,6 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.customui.DefaultPlay
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.FullscreenListener;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
@@ -55,9 +51,6 @@ import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
-import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -99,7 +92,7 @@ public class PlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityPlayerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        viewModel = MyApplication.getInstance().getViewModel();
+        viewModel = new ViewModelProvider(this).get(AppViewModel.class);
         if (getIntent() != null && getIntent().hasExtra(Constant.POSITION)) {
             position = getIntent().getIntExtra(Constant.POSITION, 0);
         }
@@ -131,8 +124,8 @@ public class PlayerActivity extends AppCompatActivity {
             try {
                 SaveEntity entity = mList.get(position);
                 SaveEntity entity2 = null;
-                if (!viewModel.getSavebyVideoId(entity.videoId).isEmpty())
-                    entity2 = viewModel.getSavebyVideoId(entity.videoId).get(0);
+                if (!viewModel.getSaveByVideoId(entity.videoId).isEmpty())
+                    entity2 = viewModel.getSaveByVideoId(entity.videoId).get(0);
 
                 if (entity2 != null) {
                     viewModel.deleteSaves(entity2);
@@ -160,8 +153,8 @@ public class PlayerActivity extends AppCompatActivity {
         try {
             SaveEntity entity = mList.get(position);
             SaveEntity entity2 = null;
-            if (!viewModel.getSavebyVideoId(entity.videoId).isEmpty())
-                entity2 = viewModel.getSavebyVideoId(entity.videoId).get(0);
+            if (!viewModel.getSaveByVideoId(entity.videoId).isEmpty())
+                entity2 = viewModel.getSaveByVideoId(entity.videoId).get(0);
 
             if (entity2 != null) {
                 binding.ivLike.setProgress(1);

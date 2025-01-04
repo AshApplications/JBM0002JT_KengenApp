@@ -147,8 +147,8 @@ public class PdfActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (pdf != null) {
                     DownloadEntity entity = null;
-                    if (viewModel.getDownloadbyUrl(pdf.getUrl()).size() > 0)
-                        entity = viewModel.getDownloadbyUrl(pdf.getUrl()).get(0);
+                    if (viewModel.getDownloadByUrl(pdf.getUrl()).size() > 0)
+                        entity = viewModel.getDownloadByUrl(pdf.getUrl()).get(0);
 
                     if (entity != null) {
                         if (new File(entity.filePath).exists()) {
@@ -202,12 +202,12 @@ public class PdfActivity extends AppCompatActivity {
         mPath = getIntent().getExtras().getString("mpath", "");
         if (mPath.startsWith("http")) {
             pdf = null;
-            if (!viewModel.getbyUrl(mPath).isEmpty())
-                pdf = viewModel.getbyUrl(mPath).get(0);
+            if (!viewModel.getByUrl(mPath).isEmpty())
+                pdf = viewModel.getByUrl(mPath).get(0);
         } else {
             entity = null;
-            if (!viewModel.getbyPath(mPath).isEmpty())
-                entity = viewModel.getbyPath(mPath).get(0);
+            if (!viewModel.getByPath(mPath).isEmpty())
+                entity = viewModel.getByPath(mPath).get(0);
         }
 
         this.fitPolicy = FitPolicy.BOTH;
@@ -223,8 +223,8 @@ public class PdfActivity extends AppCompatActivity {
     public void checkDownload() {
         if (mPath.startsWith("http")) {
             DownloadEntity entity = null;
-            if (!viewModel.getDownloadbyUrl(pdf.getUrl()).isEmpty())
-                entity = viewModel.getDownloadbyUrl(pdf.getUrl()).get(0);
+            if (!viewModel.getDownloadByUrl(pdf.getUrl()).isEmpty())
+                entity = viewModel.getDownloadByUrl(pdf.getUrl()).get(0);
 
             if (entity != null) {
                 binding.ivDownload.setVisibility(View.GONE);

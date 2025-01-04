@@ -28,8 +28,6 @@ public class MyApplication extends MyApp {
         System.loadLibrary("native-lib");
     }
 
-    public AppViewModel viewModel;
-
     public static MyApplication getInstance() {
         return instance;
     }
@@ -53,12 +51,6 @@ public class MyApplication extends MyApp {
     public static native String updateApi(Context context, String text1, String text2, String text3, String text4, String text5);
     public static native String sendFeedApi(Context context, String text1, String text2, String text3, String text4);
 
-
-    public AppViewModel getViewModel() {
-        if (viewModel == null)
-            viewModel = new AppViewModel(this);
-        return viewModel;
-    }
 
     @Override
     public void onCreate() {

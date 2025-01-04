@@ -30,11 +30,13 @@ import com.water.alkaline.kengen.ui.fragment.HistoryFragment;
 import com.water.alkaline.kengen.utils.Constant;
 import com.water.alkaline.kengen.utils.uiController;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class FeedbackActivity extends AppCompatActivity {
 
     ActivityFeedbackBinding binding;

@@ -1,38 +1,27 @@
-package com.water.alkaline.kengen.data.db.repo;
+package com.water.alkaline.kengen.data.db.repo
 
-import android.app.Application;
+import com.water.alkaline.kengen.data.db.dao.PdfDao
+import com.water.alkaline.kengen.model.main.Pdf
+import javax.inject.Inject
 
-import com.water.alkaline.kengen.data.db.AppDB;
-import com.water.alkaline.kengen.data.db.dao.PdfDao;
-import com.water.alkaline.kengen.model.main.Pdf;
+class PdfRepo @Inject constructor(val dao: PdfDao){
 
-import java.util.List;
-
-public class PdfRepo {
-    PdfDao dao;
-
-    public PdfRepo(Application application) {
-        AppDB database = AppDB.getInstance(application);
-        dao = database.pdfDao();
+    fun insert(entity: List<Pdf?>?) {
+        dao.insert(entity)
     }
 
-    public void insert(List<Pdf> entity) {
-        dao.insert(entity);
+    fun deleteAll() {
+        dao.deleteAll()
     }
 
-    public void deleteAll() {
-        dao.deleteAll();
+    val all: List<Pdf>
+        get() = dao.all
+
+    fun getAllByCategory(data: String?): List<Pdf> {
+        return dao.getAllbyCategory(data)
     }
 
-    public List<Pdf> getAll() {
-        return dao.getAll();
-    }
-
-    public List<Pdf> getAllbyCategory(String data) {
-        return dao.getAllbyCategory(data);
-    }
-
-    public List<Pdf> getbyUrl(String data) {
-        return dao.getbyUrl(data);
+    fun getByUrl(data: String?): List<Pdf> {
+        return dao.getbyUrl(data)
     }
 }

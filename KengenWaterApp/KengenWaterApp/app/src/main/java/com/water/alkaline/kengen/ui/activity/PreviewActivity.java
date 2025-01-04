@@ -44,6 +44,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class PreviewActivity extends AppCompatActivity {
 
     ActivityPreviewBinding binding;

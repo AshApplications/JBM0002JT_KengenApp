@@ -39,11 +39,13 @@ import com.water.alkaline.kengen.ui.activity.FeedbackActivity;
 import com.water.alkaline.kengen.utils.Constant;
 
 
+import dagger.hilt.android.AndroidEntryPoint;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarChangeListener {
 
     FragmentFeedbackBinding binding;

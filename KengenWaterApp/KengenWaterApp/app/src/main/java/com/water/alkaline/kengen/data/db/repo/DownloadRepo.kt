@@ -1,42 +1,31 @@
-package com.water.alkaline.kengen.data.db.repo;
+package com.water.alkaline.kengen.data.db.repo
 
-import android.app.Application;
+import com.water.alkaline.kengen.data.db.dao.DownloadDao
+import com.water.alkaline.kengen.model.DownloadEntity
+import javax.inject.Inject
 
-import com.water.alkaline.kengen.data.db.AppDB;
-import com.water.alkaline.kengen.data.db.dao.DownloadDao;
-import com.water.alkaline.kengen.model.DownloadEntity;
+class DownloadRepo @Inject constructor(val dao: DownloadDao) {
 
-import java.util.List;
-
-public class DownloadRepo {
-    DownloadDao dao;
-
-    public DownloadRepo(Application application) {
-        AppDB database = AppDB.getInstance(application);
-        dao = database.downloadDao();
+    fun insert(entity: DownloadEntity?) {
+        dao.insert(entity)
     }
 
-    public void insert(DownloadEntity entity) {
-        dao.insert(entity);
+    fun deleteAll() {
+        dao.deleteAll()
     }
 
-    public void deleteAll() {
-        dao.deleteAll();
+    val all: List<DownloadEntity>
+        get() = dao.all
+
+    fun getAllByID(data: Int): List<DownloadEntity> {
+        return dao.getAllbyID(data)
     }
 
-    public List<DownloadEntity> getAll() {
-        return dao.getAll();
+    fun getByUrl(data: String?): List<DownloadEntity> {
+        return dao.getbyUrl(data)
     }
 
-    public List<DownloadEntity> getAllbyID(int data) {
-        return dao.getAllbyID(data);
-    }
-
-    public List<DownloadEntity> getbyUrl(String data) {
-        return dao.getbyUrl(data);
-    }
-
-    public List<DownloadEntity> getbyPath(String data) {
-        return dao.getbyPath(data);
+    fun getByPath(data: String?): List<DownloadEntity> {
+        return dao.getbyPath(data)
     }
 }

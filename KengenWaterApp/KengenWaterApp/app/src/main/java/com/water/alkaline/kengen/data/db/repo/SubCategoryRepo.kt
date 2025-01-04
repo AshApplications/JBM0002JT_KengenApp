@@ -1,35 +1,23 @@
-package com.water.alkaline.kengen.data.db.repo;
+package com.water.alkaline.kengen.data.db.repo
 
-import android.app.Application;
+import com.water.alkaline.kengen.data.db.dao.SubcatDao
+import com.water.alkaline.kengen.model.main.Subcategory
+import javax.inject.Inject
 
-import com.water.alkaline.kengen.data.db.AppDB;
-import com.water.alkaline.kengen.data.db.dao.SubcatDao;
-import com.water.alkaline.kengen.model.main.Subcategory;
+class SubCategoryRepo @Inject constructor(val dao: SubcatDao){
 
-import java.util.List;
-
-public class SubCategoryRepo {
-    SubcatDao dao;
-
-    public SubCategoryRepo(Application application) {
-        AppDB database = AppDB.getInstance(application);
-        dao = database.subcatDao();
+    fun insert(entity: List<Subcategory?>?) {
+        dao.insert(entity)
     }
 
-    public void insert(List<Subcategory> entity) {
-        dao.insert(entity);
+    fun deleteAll() {
+        dao.deleteAll()
     }
 
-    public void deleteAll() {
-        dao.deleteAll();
-    }
+    val all: List<Subcategory>
+        get() = dao.all
 
-    public List<Subcategory> getAll() {
-        return dao.getAll();
+    fun getAllByCategory(data: String?): List<Subcategory> {
+        return dao.getAllbyCategory(data)
     }
-
-    public List<Subcategory> getAllbyCategory(String data) {
-        return dao.getAllbyCategory(data);
-    }
-
 }

@@ -1,39 +1,27 @@
-package com.water.alkaline.kengen.data.db.repo;
+package com.water.alkaline.kengen.data.db.repo
 
-import android.app.Application;
+import com.water.alkaline.kengen.data.db.dao.BannerDao
+import com.water.alkaline.kengen.model.main.Banner
+import javax.inject.Inject
 
-import com.water.alkaline.kengen.data.db.AppDB;
-import com.water.alkaline.kengen.data.db.dao.BannerDao;
-import com.water.alkaline.kengen.model.main.Banner;
+class BannerRepo @Inject constructor(val dao: BannerDao) {
 
-import java.util.List;
-
-public class BannerRepo {
-    BannerDao dao;
-
-    public BannerRepo(Application application) {
-        AppDB database = AppDB.getInstance(application);
-        dao = database.bannerDao();
+    fun insert(entity: List<Banner?>?) {
+        dao.insert(entity)
     }
 
-    public void insert(List<Banner> entity) {
-        dao.insert(entity);
+    fun deleteAll() {
+        dao.deleteAll()
     }
 
-    public void deleteAll() {
-        dao.deleteAll();
+    val all: List<Banner>
+        get() = dao.all
+
+    fun getAllByCategory(data: String?): List<Banner> {
+        return dao.getAllbyCategory(data)
     }
 
-    public List<Banner> getAll() {
-        return dao.getAll();
-    }
-
-    public List<Banner> getAllbyCategory(String data) {
-        return dao.getAllbyCategory(data);
-    }
-
-
-    public List<Banner> getbyUrl(String data) {
-        return dao.getbyUrl(data);
+    fun getByUrl(data: String?): List<Banner> {
+        return dao.getbyUrl(data)
     }
 }

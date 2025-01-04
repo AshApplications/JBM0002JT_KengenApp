@@ -33,7 +33,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+
+@AndroidEntryPoint
 public class BannerFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";

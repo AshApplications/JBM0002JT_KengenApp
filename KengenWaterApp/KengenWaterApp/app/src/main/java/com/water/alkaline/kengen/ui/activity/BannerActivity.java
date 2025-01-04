@@ -33,7 +33,6 @@ import com.water.alkaline.kengen.library.downloader.Progress;
 import com.water.alkaline.kengen.model.DownloadEntity;
 import com.water.alkaline.kengen.model.main.Banner;
 import com.water.alkaline.kengen.ui.adapter.VpImageAdapter;
-import com.water.alkaline.kengen.ui.listener.OnBannerListerner;
 import com.water.alkaline.kengen.utils.Constant;
 import com.water.alkaline.kengen.utils.uiController;
 
@@ -120,8 +119,8 @@ public class BannerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 DownloadEntity entity = null;
-                if (!viewModel.getDownloadbyUrl(banners.get(binding.viewpager.getCurrentItem()).getUrl()).isEmpty())
-                    entity = viewModel.getDownloadbyUrl(banners.get(binding.viewpager.getCurrentItem()).getUrl()).get(0);
+                if (!viewModel.getDownloadByUrl(banners.get(binding.viewpager.getCurrentItem()).getUrl()).isEmpty())
+                    entity = viewModel.getDownloadByUrl(banners.get(binding.viewpager.getCurrentItem()).getUrl()).get(0);
 
                 if (entity != null) {
                     if (new File(entity.filePath).exists()) {
@@ -190,8 +189,8 @@ public class BannerActivity extends AppCompatActivity {
 
     public void checkDownloadIcon(int pos) {
         DownloadEntity entity = null;
-        if (!viewModel.getDownloadbyUrl(banners.get(pos).getUrl()).isEmpty())
-            entity = viewModel.getDownloadbyUrl(banners.get(pos).getUrl()).get(0);
+        if (!viewModel.getDownloadByUrl(banners.get(pos).getUrl()).isEmpty())
+            entity = viewModel.getDownloadByUrl(banners.get(pos).getUrl()).get(0);
 
         binding.ivDownload.setVisibility(entity != null ? View.GONE : View.VISIBLE);
         binding.ivShare.setVisibility(entity != null ? View.VISIBLE : View.GONE);

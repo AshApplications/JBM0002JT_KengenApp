@@ -1,36 +1,27 @@
-package com.water.alkaline.kengen.data.db.repo;
+package com.water.alkaline.kengen.data.db.repo
 
-import android.app.Application;
+import com.water.alkaline.kengen.data.db.dao.SaveDao
+import com.water.alkaline.kengen.model.SaveEntity
+import javax.inject.Inject
 
-import com.water.alkaline.kengen.data.db.AppDB;
-import com.water.alkaline.kengen.data.db.dao.SaveDao;
-import com.water.alkaline.kengen.model.SaveEntity;
+class SaveRepo @Inject constructor(val dao: SaveDao){
 
-import java.util.List;
-
-public class SaveRepo {
-    SaveDao dao;
-
-    public SaveRepo(Application application) {
-        AppDB database = AppDB.getInstance(application);
-        dao = database.saveDao();
+    fun insert(entity: SaveEntity?) {
+        dao.insert(entity)
     }
 
-    public void insert(SaveEntity entity) {
-        dao.insert(entity);
-    }
-    public void delete(SaveEntity entity) {
-        dao.delete(entity);
-    }
-    public void deleteAll() {
-        dao.deleteAll();
+    fun delete(entity: SaveEntity?) {
+        dao.delete(entity)
     }
 
-    public List<SaveEntity> getAll() {
-        return dao.getAll();
+    fun deleteAll() {
+        dao.deleteAll()
     }
 
-    public List<SaveEntity> getbyVideoId(String data) {
-        return dao.getbyVideoId(data);
+    val all: List<SaveEntity>
+        get() = dao.all
+
+    fun getByVideoId(data: String?): List<SaveEntity> {
+        return dao.getbyVideoId(data)
     }
 }

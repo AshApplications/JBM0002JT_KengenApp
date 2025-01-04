@@ -27,8 +27,6 @@ import com.water.alkaline.kengen.model.main.Subcategory;
 @Database(entities = {Category.class, Subcategory.class, Channel.class, Pdf.class, Banner.class, DownloadEntity.class, SaveEntity.class}, version = 2, exportSchema = false)
 public abstract class AppDB extends RoomDatabase {
 
-    private static AppDB instance;
-
     public abstract CategoryDao categoryDao();
     public abstract SubcatDao subcatDao();
     public abstract ChannelDao channelDao();
@@ -36,23 +34,4 @@ public abstract class AppDB extends RoomDatabase {
     public abstract BannerDao bannerDao();
     public abstract DownloadDao downloadDao();
     public abstract SaveDao saveDao();
-
-    public static synchronized AppDB getInstance(Context context) {
-        if (instance == null) {
-            instance = Room.databaseBuilder(context.getApplicationContext(),
-                     AppDB.class, "kangenWaterApp")
-                    .fallbackToDestructiveMigration()
-                    .allowMainThreadQueries()
-                    .addCallback(roomCallback)
-                    .build();
-        }
-        return instance;
-    }
-
-    private static Callback roomCallback = new Callback() {
-        @Override
-        public void onCreate(@NonNull SupportSQLiteDatabase db) {
-            super.onCreate(db);
-        }
-    };
 }

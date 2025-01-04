@@ -1,34 +1,23 @@
-package com.water.alkaline.kengen.data.db.repo;
+package com.water.alkaline.kengen.data.db.repo
 
-import android.app.Application;
+import com.water.alkaline.kengen.data.db.dao.ChannelDao
+import com.water.alkaline.kengen.model.main.Channel
+import javax.inject.Inject
 
-import com.water.alkaline.kengen.data.db.AppDB;
-import com.water.alkaline.kengen.data.db.dao.ChannelDao;
-import com.water.alkaline.kengen.model.main.Channel;
+class ChannelRepo @Inject constructor(val dao: ChannelDao) {
 
-import java.util.List;
-
-public class ChannelRepo {
-    ChannelDao dao;
-
-    public ChannelRepo(Application application) {
-        AppDB database = AppDB.getInstance(application);
-        dao = database.channelDao();
+    fun insert(entity: List<Channel?>?) {
+        dao.insert(entity)
     }
 
-    public void insert(List<Channel> entity) {
-        dao.insert(entity);
+    fun deleteAll() {
+        dao.deleteAll()
     }
 
-    public void deleteAll() {
-        dao.deleteAll();
-    }
+    val all: List<Channel>
+        get() = dao.all
 
-    public List<Channel> getAll() {
-        return dao.getAll();
-    }
-
-    public List<Channel> getAllbyCategory(String data) {
-        return dao.getAllbyCategory(data);
+    fun getAllByCategory(data: String?): List<Channel> {
+        return dao.getAllbyCategory(data)
     }
 }

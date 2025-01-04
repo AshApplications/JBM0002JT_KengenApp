@@ -1,31 +1,19 @@
-package com.water.alkaline.kengen.data.db.repo;
+package com.water.alkaline.kengen.data.db.repo
 
-import android.app.Application;
+import com.water.alkaline.kengen.data.db.dao.CategoryDao
+import com.water.alkaline.kengen.model.main.Category
+import javax.inject.Inject
 
-import com.water.alkaline.kengen.data.db.AppDB;
-import com.water.alkaline.kengen.data.db.dao.CategoryDao;
-import com.water.alkaline.kengen.model.main.Category;
+class CategoryRepo @Inject constructor(val dao: CategoryDao) {
 
-import java.util.List;
-
-public class CategoryRepo {
-    CategoryDao dao;
-
-    public CategoryRepo(Application application) {
-        AppDB database = AppDB.getInstance(application);
-        dao = database.categoryDao();
+    fun insert(entity: List<Category?>?) {
+        dao.insert(entity)
     }
 
-    public void insert(List<Category> entity) {
-        dao.insert(entity);
+    fun deleteAll() {
+        dao.deleteAll()
     }
 
-    public void deleteAll() {
-        dao.deleteAll();
-    }
-
-    public List<Category> getAll() {
-        return dao.getAll();
-    }
-
+    val all: List<Category>
+        get() = dao.all
 }

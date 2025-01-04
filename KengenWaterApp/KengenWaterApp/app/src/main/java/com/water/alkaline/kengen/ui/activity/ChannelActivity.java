@@ -51,11 +51,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class ChannelActivity extends AppCompatActivity {
 
     ActivityChannelBinding binding;

@@ -4,6 +4,8 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
@@ -22,7 +24,14 @@ fun View.onSingleClick(debounceTime: Long = 1500, action: () -> Unit) {
     })
 }
 
-fun Context.showNetworkDialog(text: String = resources.getString(R.string.kk_error_unknown)): DialogInternetBinding {
+fun delayTask(delay: Long = 2000, action: () -> Unit) {
+    Handler(Looper.getMainLooper()).postDelayed(action, delay)
+}
+
+fun Context.showNetworkDialog(
+    text: String = resources.getString(R.string.kk_error_unknown),
+    action: () -> Unit
+) {
     val dialog = Dialog(this, R.style.NormalDialog)
     val binding = DialogInternetBinding.inflate(
         LayoutInflater.from(this)
@@ -35,7 +44,12 @@ fun Context.showNetworkDialog(text: String = resources.getString(R.string.kk_err
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT
     )
-    dialog.show()
     binding.txtError.text = text
-    return binding
+    binding.txtRetry.onSingleClick {
+        dialog.setOnDismissListener {
+            action()
+        }
+        dialog.dismiss()
+    }
+    dialog.show()
 }

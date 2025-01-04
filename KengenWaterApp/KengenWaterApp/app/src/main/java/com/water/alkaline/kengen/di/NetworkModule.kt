@@ -1,13 +1,12 @@
 package com.water.alkaline.kengen.di
 
 import android.content.Context
-import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.preference.PowerPreference
 import com.water.alkaline.kengen.MyApplication
-import com.water.alkaline.kengen.api.retroAPI
-import com.water.alkaline.kengen.data.db.AppDB
+import com.water.alkaline.kengen.api.RetroAPI
+import com.water.alkaline.kengen.api.YouAPI
 import com.water.alkaline.kengen.utils.Constant
 import dagger.Module
 import dagger.Provides
@@ -96,16 +95,16 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun providesRetroAPI(@Named("Retro") retrofit: Retrofit.Builder): retroAPI {
+    fun providesRetroAPI(@Named("Retro") retrofit: Retrofit.Builder): RetroAPI {
         return retrofit.addConverterFactory(GsonConverterFactory.create()).build()
-            .create(retroAPI::class.java)
+            .create(RetroAPI::class.java)
     }
 
     @Singleton
     @Provides
-    fun providesYouAPI(@Named("You") retrofit: Retrofit.Builder): retroAPI {
+    fun providesYouAPI(@Named("You") retrofit: Retrofit.Builder): YouAPI {
         return retrofit.addConverterFactory(GsonConverterFactory.create()).build()
-            .create(retroAPI::class.java)
+            .create(YouAPI::class.java)
     }
 
 }

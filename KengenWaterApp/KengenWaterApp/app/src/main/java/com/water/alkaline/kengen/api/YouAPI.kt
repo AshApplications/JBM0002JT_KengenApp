@@ -5,7 +5,7 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface youAPI {
+interface YouAPI {
     @GET("youtube/v3/search?part=snippet&maxResults=50&order=date&type=video")
     fun channelApi(
         @Query("key") mkey: String,

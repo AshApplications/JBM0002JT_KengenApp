@@ -1,133 +1,129 @@
-package com.water.alkaline.kengen.ui.fragment;
+package com.water.alkaline.kengen.ui.fragment
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
-
-import android.os.Handler;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
-import com.water.alkaline.kengen.databinding.FragmentPdfBinding;
-import com.water.alkaline.kengen.model.main.Pdf;
-import com.water.alkaline.kengen.ui.activity.HomeActivity;
-import com.water.alkaline.kengen.ui.activity.PdfActivity;
-import com.water.alkaline.kengen.ui.adapter.PdfAdapter;
-import com.water.alkaline.kengen.ui.listener.OnPdfListener;
-import com.water.alkaline.kengen.utils.Constant;
-import com.water.alkaline.kengen.utils.uiController;
-
-
-import java.util.ArrayList;
-import java.util.List;
-
-import dagger.hilt.android.AndroidEntryPoint;
-
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel
+import com.water.alkaline.kengen.databinding.FragmentPdfBinding
+import com.water.alkaline.kengen.model.main.Pdf
+import com.water.alkaline.kengen.ui.activity.HomeActivity
+import com.water.alkaline.kengen.ui.activity.PdfActivity
+import com.water.alkaline.kengen.ui.adapter.PdfAdapter
+import com.water.alkaline.kengen.ui.base.BaseFragment
+import com.water.alkaline.kengen.utils.Constant
+import com.water.alkaline.kengen.utils.delayTask
+import com.water.alkaline.kengen.utils.uiController
+import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-public class PdfFragment extends Fragment {
-    private static final String ARG_PARAM1 = "param1";
-    private String mParam1;
-    FragmentPdfBinding binding;
-    Activity activity;
+class PdfFragment : BaseFragment {
 
-    List<Pdf> list = new ArrayList<>();
-    PdfAdapter adapter;
+    private val binding by lazy {
+        FragmentPdfBinding.inflate(layoutInflater)
+    }
+    private lateinit var activity: Activity
+    private lateinit var mParam1: String
+    
+    var list: MutableList<Pdf> = mutableListOf()
+  
+    private lateinit var adapter: PdfAdapter
+    private lateinit var appViewModel: AppViewModel
 
-    public AppViewModel viewModel;
+    constructor()
 
-    public PdfFragment() {
+    constructor(activity: Activity) {
+        this.activity = activity
     }
 
-    public PdfFragment(Activity activity) {
-        this.activity = activity;
-    }
 
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        context.setMainContext()
         if (activity == null) {
-            activity = (HomeActivity) context;
+            activity = context as HomeActivity
         }
     }
 
-    public static PdfFragment newInstance(Activity activity, String param1) {
-        PdfFragment fragment = new PdfFragment(activity);
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (arguments != null) {
+            mParam1 = requireArguments().getString(ARG_PARAM1).toString()
         }
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup parent, Bundle savedInstanseState) {
-        binding = FragmentPdfBinding.inflate(getLayoutInflater());
-        return binding.getRoot();
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+        savedInstanseState: Bundle?
+    ): View {
+        return binding.root
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-        if (activity != null) {
-            adapter = new PdfAdapter(activity, list, (position, item) -> uiController.gotoIntent(activity, new Intent(activity, PdfActivity.class).putExtra("mpath", item.getUrl()), true, false));
-            GridLayoutManager manager = new GridLayoutManager(activity, 2);
-            manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                @Override
-                public int getSpanSize(int i) {
-                    switch (adapter.getItemViewType(i)) {
-                        case Constant.STORE_TYPE:
-                            return 1;
-                        case Constant.AD_TYPE:
-                            return 2;
-                        case Constant.LOADING:
-                            return 1;
-                        default:
-                            return 1;
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        appViewModel = ViewModelProvider(this)[AppViewModel::class.java]
+        setAdapter()
+        refreshFragment()
+    }
+    
+    fun setAdapter()
+    {
+        adapter = PdfAdapter(activity, list) { position: Int, item: Pdf ->
+            uiController.gotoIntent(
+                activity,
+                Intent(activity, PdfActivity::class.java).putExtra("mpath", item.url),
+                true,
+                false
+            )
+        }
+        val manager = GridLayoutManager(activity, 2)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(i: Int): Int {
+                return when (adapter.getItemViewType(i)) {
+                    Constant.STORE_TYPE -> 1
+                    Constant.AD_TYPE -> 2
+                    Constant.LOADING -> 1
+                    else -> 1
 
-                    }
                 }
-            });
-            binding.rvPdfs.setLayoutManager(manager);
-            binding.rvPdfs.setAdapter(adapter);
-            binding.rvPdfs.setItemViewCacheSize(100);
-            refreshFragment();
+            }
+        }
+        binding.rvPdfs.layoutManager = manager
+        binding.rvPdfs.adapter = adapter
+        binding.rvPdfs.setItemViewCacheSize(100)
+    }
+
+    fun refreshFragment() {
+        delayTask(500) {
+            adapter.refreshAdapter(appViewModel.getAllPdfByCategory(mParam1))
+            binding.includedProgress.progress.visibility = View.GONE
+            checkData()
         }
     }
 
-    public void refreshFragment() {
-        if (adapter != null) {
-            new Handler().postDelayed(() -> {
-                adapter.refreshAdapter(viewModel.getAllPdfByCategory(mParam1));
-                binding.includedProgress.progress.setVisibility(View.GONE);
-                checkData();
-            }, 500);
-        }
-    }
-
-    public void checkData() {
-        if (binding.rvPdfs.getAdapter() != null && binding.rvPdfs.getAdapter().getItemCount() > 0) {
-            binding.includedProgress.llError.setVisibility(View.GONE);
+    private fun checkData() {
+        if (binding.rvPdfs.adapter != null && binding.rvPdfs.adapter!!.itemCount > 0) {
+            binding.includedProgress.llError.visibility = View.GONE
         } else {
-            binding.includedProgress.llError.setVisibility(View.VISIBLE);
+            binding.includedProgress.llError.visibility = View.VISIBLE
+        }
+    }
+
+    companion object {
+        private const val ARG_PARAM1 = "param1"
+        @JvmStatic
+        fun newInstance(activity: Activity, param1: String): PdfFragment {
+            val fragment = PdfFragment(activity)
+            val args = Bundle()
+            args.putString(ARG_PARAM1, param1)
+            fragment.arguments = args
+            return fragment
         }
     }
 }

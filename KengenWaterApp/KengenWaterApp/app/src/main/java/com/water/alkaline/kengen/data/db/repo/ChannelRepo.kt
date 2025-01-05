@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class ChannelRepo @Inject constructor(val dao: ChannelDao) {
 
-    fun insert(entity: List<Channel?>?) {
+    fun insert(entity: List<Channel>) {
         dao.insert(entity)
     }
 
@@ -14,10 +14,10 @@ class ChannelRepo @Inject constructor(val dao: ChannelDao) {
         dao.deleteAll()
     }
 
-    val all: List<Channel>
+    val all: MutableList<Channel>
         get() = dao.all
 
-    fun getAllByCategory(data: String?): List<Channel> {
+    fun getAllByCategory(data: String): MutableList<Channel> {
         return dao.getAllbyCategory(data)
     }
 }

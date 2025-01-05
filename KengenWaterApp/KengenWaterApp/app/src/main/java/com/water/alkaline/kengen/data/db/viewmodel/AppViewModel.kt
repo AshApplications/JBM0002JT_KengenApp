@@ -29,7 +29,7 @@ class AppViewModel @Inject constructor(
     private val saveRepo: SaveRepo
 ) : ViewModel() {
 
-    fun insertCategory(entity: List<Category>) {
+    fun insertCategory(entity: MutableList<Category>) {
         categoryRepo.insert(entity)
     }
 
@@ -37,11 +37,10 @@ class AppViewModel @Inject constructor(
         categoryRepo.deleteAll()
     }
 
-    val allCategory: List<Category>
+    val allCategory: MutableList<Category>
         get() = categoryRepo.all
 
-
-    fun insertSubCategory(entity: List<Subcategory>) {
+    fun insertSubCategory(entity: MutableList<Subcategory>) {
         subCategoryRepo.insert(entity)
     }
 
@@ -49,15 +48,11 @@ class AppViewModel @Inject constructor(
         subCategoryRepo.deleteAll()
     }
 
-    val allSubCategory: List<Subcategory>
-        get() = subCategoryRepo.all
-
-    fun getAllSubByCategory(data: String): List<Subcategory> {
+    fun getAllSubByCategory(data: String): MutableList<Subcategory> {
         return subCategoryRepo.getAllByCategory(data)
     }
 
-
-    fun insertChannel(entity: List<Channel>) {
+    fun insertChannel(entity: MutableList<Channel>) {
         channelRepo.insert(entity)
     }
 
@@ -65,15 +60,11 @@ class AppViewModel @Inject constructor(
         channelRepo.deleteAll()
     }
 
-    val allChannel: List<Channel>
-        get() = channelRepo.all
-
-    fun getAllChannelByCategory(data: String): List<Channel> {
+    fun getAllChannelByCategory(data: String): MutableList<Channel> {
         return channelRepo.getAllByCategory(data)
     }
 
-
-    fun insertPdf(entity: List<Pdf>) {
+    fun insertPdf(entity: MutableList<Pdf>) {
         pdfRepo.insert(entity)
     }
 
@@ -81,18 +72,15 @@ class AppViewModel @Inject constructor(
         pdfRepo.deleteAll()
     }
 
-    val allPdf: List<Pdf>
-        get() = pdfRepo.all
-
-    fun getAllPdfByCategory(data: String): List<Pdf> {
+    fun getAllPdfByCategory(data: String): MutableList<Pdf> {
         return pdfRepo.getAllByCategory(data)
     }
 
-    fun getByUrl(data: String): List<Pdf> {
+    fun getByUrl(data: String): MutableList<Pdf> {
         return pdfRepo.getByUrl(data)
     }
 
-    fun insertBanner(entity: List<Banner>) {
+    fun insertBanner(entity: MutableList<Banner>) {
         bannerRepo.insert(entity)
     }
 
@@ -100,38 +88,26 @@ class AppViewModel @Inject constructor(
         bannerRepo.deleteAll()
     }
 
-    val allBanner: List<Banner>
-        get() = bannerRepo.all
-
-    fun getAllBannerByCategory(data: String): List<Banner> {
+    fun getAllBannerByCategory(data: String): MutableList<Banner> {
         return bannerRepo.getAllByCategory(data)
     }
 
-    fun getBannerByUrl(data: String): List<Banner> {
+    fun getBannerByUrl(data: String): MutableList<Banner> {
         return bannerRepo.getByUrl(data)
     }
-
 
     fun insertDownloads(entity: DownloadEntity) {
         downloadRepo.insert(entity)
     }
 
-    fun deleteAllDownloads() {
-        downloadRepo.deleteAll()
-    }
-
-    val allDownloads: List<DownloadEntity>
+    val allDownloads: MutableList<DownloadEntity>
         get() = downloadRepo.all
 
-    fun getAllbyID(data: Int): List<DownloadEntity> {
-        return downloadRepo.getAllByID(data)
-    }
-
-    fun getDownloadByUrl(data: String): List<DownloadEntity> {
+    fun getDownloadByUrl(data: String): MutableList<DownloadEntity> {
         return downloadRepo.getByUrl(data)
     }
 
-    fun getByPath(data: String): List<DownloadEntity> {
+    fun getByPath(data: String): MutableList<DownloadEntity> {
         return downloadRepo.getByPath(data)
     }
 
@@ -143,14 +119,10 @@ class AppViewModel @Inject constructor(
         saveRepo.delete(entity)
     }
 
-    fun deleteAllSaves() {
-        saveRepo.deleteAll()
-    }
-
-    val allSaves: List<SaveEntity>
+    val allSaves: MutableList<SaveEntity>
         get() = saveRepo.all
 
-    fun getSaveByVideoId(data: String): List<SaveEntity> {
+    fun getSaveByVideoId(data: String): MutableList<SaveEntity> {
         return saveRepo.getByVideoId(data)
     }
 }

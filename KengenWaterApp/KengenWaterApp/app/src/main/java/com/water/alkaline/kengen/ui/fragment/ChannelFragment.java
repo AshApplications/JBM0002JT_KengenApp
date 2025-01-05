@@ -88,6 +88,7 @@ public class ChannelFragment extends Fragment {
     private String mParam1, mParam2;
 
     public ChannelFragment() {
+
     }
 
     public ChannelFragment(Activity activity) {

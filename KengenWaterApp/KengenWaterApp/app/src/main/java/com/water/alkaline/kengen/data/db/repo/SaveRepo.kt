@@ -6,11 +6,11 @@ import javax.inject.Inject
 
 class SaveRepo @Inject constructor(val dao: SaveDao){
 
-    fun insert(entity: SaveEntity?) {
+    fun insert(entity: SaveEntity) {
         dao.insert(entity)
     }
 
-    fun delete(entity: SaveEntity?) {
+    fun delete(entity: SaveEntity) {
         dao.delete(entity)
     }
 
@@ -18,10 +18,10 @@ class SaveRepo @Inject constructor(val dao: SaveDao){
         dao.deleteAll()
     }
 
-    val all: List<SaveEntity>
+    val all: MutableList<SaveEntity>
         get() = dao.all
 
-    fun getByVideoId(data: String?): List<SaveEntity> {
+    fun getByVideoId(data: String): MutableList<SaveEntity> {
         return dao.getbyVideoId(data)
     }
 }

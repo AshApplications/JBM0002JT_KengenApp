@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class DownloadRepo @Inject constructor(val dao: DownloadDao) {
 
-    fun insert(entity: DownloadEntity?) {
+    fun insert(entity: DownloadEntity) {
         dao.insert(entity)
     }
 
@@ -14,18 +14,18 @@ class DownloadRepo @Inject constructor(val dao: DownloadDao) {
         dao.deleteAll()
     }
 
-    val all: List<DownloadEntity>
+    val all: MutableList<DownloadEntity>
         get() = dao.all
 
-    fun getAllByID(data: Int): List<DownloadEntity> {
+    fun getAllByID(data: Int): MutableList<DownloadEntity> {
         return dao.getAllbyID(data)
     }
 
-    fun getByUrl(data: String?): List<DownloadEntity> {
+    fun getByUrl(data: String): MutableList<DownloadEntity> {
         return dao.getbyUrl(data)
     }
 
-    fun getByPath(data: String?): List<DownloadEntity> {
+    fun getByPath(data: String): MutableList<DownloadEntity> {
         return dao.getbyPath(data)
     }
 }

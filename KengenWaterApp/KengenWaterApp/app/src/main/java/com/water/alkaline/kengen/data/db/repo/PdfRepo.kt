@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class PdfRepo @Inject constructor(val dao: PdfDao){
 
-    fun insert(entity: List<Pdf?>?) {
+    fun insert(entity: List<Pdf>) {
         dao.insert(entity)
     }
 
@@ -14,14 +14,14 @@ class PdfRepo @Inject constructor(val dao: PdfDao){
         dao.deleteAll()
     }
 
-    val all: List<Pdf>
+    val all: MutableList<Pdf>
         get() = dao.all
 
-    fun getAllByCategory(data: String?): List<Pdf> {
+    fun getAllByCategory(data: String): MutableList<Pdf> {
         return dao.getAllbyCategory(data)
     }
 
-    fun getByUrl(data: String?): List<Pdf> {
+    fun getByUrl(data: String): MutableList<Pdf> {
         return dao.getbyUrl(data)
     }
 }

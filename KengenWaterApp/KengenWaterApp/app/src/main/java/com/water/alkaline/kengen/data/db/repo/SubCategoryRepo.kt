@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class SubCategoryRepo @Inject constructor(val dao: SubcatDao){
 
-    fun insert(entity: List<Subcategory?>?) {
+    fun insert(entity: List<Subcategory>) {
         dao.insert(entity)
     }
 
@@ -14,10 +14,10 @@ class SubCategoryRepo @Inject constructor(val dao: SubcatDao){
         dao.deleteAll()
     }
 
-    val all: List<Subcategory>
+    val all: MutableList<Subcategory>
         get() = dao.all
 
-    fun getAllByCategory(data: String?): List<Subcategory> {
+    fun getAllByCategory(data: String): MutableList<Subcategory> {
         return dao.getAllbyCategory(data)
     }
 }

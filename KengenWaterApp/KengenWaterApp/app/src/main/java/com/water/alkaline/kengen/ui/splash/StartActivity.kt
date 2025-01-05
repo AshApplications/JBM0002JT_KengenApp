@@ -36,6 +36,7 @@ import com.water.alkaline.kengen.model.NetworkResult
 import com.water.alkaline.kengen.model.main.MainResponse
 import com.water.alkaline.kengen.model.update.UpdateResponse
 import com.water.alkaline.kengen.ui.activity.HomeActivity
+import com.water.alkaline.kengen.ui.base.BaseActivity
 import com.water.alkaline.kengen.utils.Constant
 import com.water.alkaline.kengen.utils.delayTask
 import com.water.alkaline.kengen.utils.onSingleClick
@@ -44,7 +45,7 @@ import com.water.alkaline.kengen.utils.uiController
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class StartActivity() : AppCompatActivity() {
+class StartActivity : BaseActivity() {
     private val binding by lazy {
         ActivityStartBinding.inflate(layoutInflater)
     }
@@ -200,13 +201,6 @@ class StartActivity() : AppCompatActivity() {
     }
     
     private fun parseUpdateData(updateResponse: UpdateResponse) {
-
-        if (updateResponse.feedbacks != null) {
-            PowerPreference.getDefaultFile().putString(
-                Constant.mFeeds,
-                Gson().toJson(updateResponse.feedbacks)
-            )
-        }
 
         MyApp.setAdModel(updateResponse.data.adsInfo[0])
 

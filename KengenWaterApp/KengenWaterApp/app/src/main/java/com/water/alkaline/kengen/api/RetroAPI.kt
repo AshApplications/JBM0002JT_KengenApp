@@ -19,10 +19,10 @@ interface RetroAPI {
 
     @FormUrlEncoded
     @POST("feedApi.php")
-    suspend fun GetfeedApi(@Field("data") requestBody: String): Response<ResponseBody>
+    suspend fun getFeedApi(@Field("data") requestBody: String): Response<ResponseBody>
 
     @FormUrlEncoded
     @POST("feedApi.php")
-    suspend fun SendfeedApi(@Field("data") requestBody: String): Response<ResponseBody>
+    suspend fun sendFeedApi(@Field("data") requestBody: String): Response<ResponseBody>
 
 }

@@ -4,31 +4,30 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.water.alkaline.kengen.api.RetroAPI
 import com.water.alkaline.kengen.model.NetworkResult
-import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Response
 import javax.inject.Inject
 
-class StartRepo @Inject constructor(private val retroAPI: RetroAPI) {
+class FeedRepo  @Inject constructor(private val retroAPI: RetroAPI) {
 
-    private val _updateData = MutableLiveData<NetworkResult<ResponseBody>>()
-    val updateData: LiveData<NetworkResult<ResponseBody>>
-        get() = _updateData
+    private val _sendFeedData = MutableLiveData<NetworkResult<ResponseBody>>()
+    val sendFeedData: LiveData<NetworkResult<ResponseBody>>
+        get() = _sendFeedData
 
-    private val _mainData = MutableLiveData<NetworkResult<ResponseBody>>()
-    val mainData: LiveData<NetworkResult<ResponseBody>>
-        get() = _mainData
+    private val _getFeedData = MutableLiveData<NetworkResult<ResponseBody>>()
+    val getFeedData: LiveData<NetworkResult<ResponseBody>>
+        get() = _getFeedData
 
-    suspend fun fetchUpdateData(requestBody: String) {
-        handleResponse(retroAPI.updateApi(requestBody),_updateData)
+    suspend fun sendData(requestBody: String) {
+        handleResponse(retroAPI.sendFeedApi(requestBody),_sendFeedData)
     }
 
-    suspend fun fetchMainData(requestBody: String) {
-        handleResponse(retroAPI.dataApi(requestBody),_mainData)
+    suspend fun fetchData(requestBody: String) {
+        handleResponse(retroAPI.getFeedApi(requestBody),_getFeedData)
     }
 
-    private fun handleResponse(response: Response<ResponseBody>,data: MutableLiveData<NetworkResult<ResponseBody>>) {
+    private fun handleResponse(response: Response<ResponseBody>, data: MutableLiveData<NetworkResult<ResponseBody>>) {
         if (response.isSuccessful && response.body() != null) {
             data.postValue(NetworkResult.Success(response.body()!!))
         } else if (response.errorBody() != null) {
@@ -38,4 +37,5 @@ class StartRepo @Inject constructor(private val retroAPI: RetroAPI) {
             data.postValue(NetworkResult.Error("Something Went Wrong"))
         }
     }
+
 }

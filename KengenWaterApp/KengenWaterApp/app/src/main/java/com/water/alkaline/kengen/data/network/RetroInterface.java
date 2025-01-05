@@ -17,10 +17,6 @@ public interface RetroInterface {
     Call<ResponseBody> updateApi(@Field("data") String requestBody);
 
     @FormUrlEncoded
-    @POST("dataApi.php")
-    Call<ResponseBody> dataApi(@Field("data") String requestBody);
-
-    @FormUrlEncoded
     @POST("feedApi.php")
     Call<ResponseBody> GetfeedApi(@Field("data") String requestBody);
 

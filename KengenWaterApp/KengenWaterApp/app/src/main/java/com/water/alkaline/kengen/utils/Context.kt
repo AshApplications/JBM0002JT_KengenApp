@@ -29,7 +29,7 @@ fun delayTask(delay: Long = 2000, action: () -> Unit) {
 }
 
 fun Context.showNetworkDialog(
-    text: String = resources.getString(R.string.kk_error_unknown),
+    text: String? = resources.getString(R.string.kk_error_unknown),
     action: () -> Unit
 ) {
     val dialog = Dialog(this, R.style.NormalDialog)

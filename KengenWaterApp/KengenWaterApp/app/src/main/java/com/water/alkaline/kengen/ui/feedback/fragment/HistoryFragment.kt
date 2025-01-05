@@ -1,136 +1,124 @@
-package com.water.alkaline.kengen.ui.fragment;
+package com.water.alkaline.kengen.ui.feedback.fragment
 
-import android.app.Activity;
-import android.content.Context;
-import android.os.Bundle;
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
+import com.water.alkaline.kengen.databinding.FragmentHistoryBinding
+import com.water.alkaline.kengen.model.feedback.Feedback
+import com.water.alkaline.kengen.ui.base.BaseFragment
+import com.water.alkaline.kengen.ui.feedback.FeedbackActivity
+import com.water.alkaline.kengen.utils.Constant
+import com.water.alkaline.kengen.utils.FeedBacksEvent
+import com.water.alkaline.kengen.utils.NewFeedBackEvent
+import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-
-import android.os.Handler;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.preference.PowerPreference;
-import com.water.alkaline.kengen.R;
-import com.water.alkaline.kengen.databinding.FragmentHistoryBinding;
-import com.water.alkaline.kengen.library.ItemOffsetDecoration;
-import com.water.alkaline.kengen.model.feedback.Feedback;
-import com.water.alkaline.kengen.ui.activity.FeedbackActivity;
-import com.water.alkaline.kengen.ui.adapter.FeedAdapter;
-import com.water.alkaline.kengen.utils.Constant;
-
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
-import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class HistoryFragment extends Fragment {
+class HistoryFragment : BaseFragment {
+
+    private val binding by lazy {
+        FragmentHistoryBinding.inflate(layoutInflater)
+    }
+    private lateinit var activity: FeedbackActivity
+    private lateinit var adapter: FeedAdapter
 
 
-    FragmentHistoryBinding binding;
-    Activity activity;
-    List<Feedback> feedbacks = new ArrayList<>();
-    FeedAdapter adapter;
+    constructor()
 
-    public HistoryFragment(Activity activity) {
-        this.activity = activity;
+    constructor(activity: FeedbackActivity) {
+        this.activity = activity
     }
 
-
-    public HistoryFragment() {
-    }
-
-    public static HistoryFragment newInstance(Activity activity) {
-        return new HistoryFragment(activity);
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        context.setMainContext()
         if (activity == null) {
-            activity = (FeedbackActivity) context;
+            activity = context as FeedbackActivity
         }
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return binding.root
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentHistoryBinding.inflate(getLayoutInflater(), container, false);
-        return binding.getRoot();
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setAdapter()
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
 
-        if (activity != null) {
-            GridLayoutManager manager = new GridLayoutManager(activity, 1);
-            manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                @Override
-                public int getSpanSize(int i) {
-                    switch (adapter.getItemViewType(i)) {
-                        case Constant.STORE_TYPE:
-                            return 1;
-                        case Constant.AD_TYPE:
-                            return 1;
-                        case Constant.LOADING:
-                            return 1;
-                        default:
-                            return 1;
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
 
-                    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onNewFeedBackEvent(event: NewFeedBackEvent) {
+        adapter.addItem(event.model)
+        checkData()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onFeedBacksEvent(event: FeedBacksEvent) {
+        refreshActivity(event.feedbacks)
+    }
+
+
+    fun setAdapter() {
+        val manager = GridLayoutManager(activity, 1)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(i: Int): Int {
+                return when (adapter.getItemViewType(i)) {
+                    Constant.STORE_TYPE -> 1
+                    Constant.AD_TYPE -> 1
+                    Constant.LOADING -> 1
+                    else -> 1
+
                 }
-            });
-            binding.rvFeeds.setLayoutManager(manager);
-            adapter = new FeedAdapter(activity, feedbacks);
-            binding.rvFeeds.setAdapter(adapter);
-            binding.rvFeeds.setItemViewCacheSize(100);
-
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    refreshActivity();
-                }
-            }, 500);
+            }
         }
+        binding.rvFeeds.layoutManager = manager
+        adapter = FeedAdapter(
+            activity,
+            mutableListOf()
+        )
+        binding.rvFeeds.adapter = adapter
+        binding.rvFeeds.setItemViewCacheSize(100)
     }
 
-    public void refreshActivity() {
-        try {
-            Type type = new TypeToken<List<Feedback>>() {
-            }.getType();
-
-            feedbacks = new Gson().fromJson(PowerPreference.getDefaultFile().getString(Constant.mFeeds, new Gson().toJson(new ArrayList<Feedback>())), type);
-        } catch (Exception e) {
-            feedbacks = new ArrayList<>();
-        }
-        if (adapter != null) {
-            adapter.refresh(feedbacks);
-            binding.includedProgress.progress.setVisibility(View.GONE);
-            checkData();
-        }
+    private fun refreshActivity(feedbacks: List<Feedback>) {
+        adapter.refresh(feedbacks)
+        binding.includedProgress.progress.visibility = View.GONE
+        checkData()
     }
 
-    public void checkData() {
-        if (adapter != null && adapter.getItemCount() > 0) {
-            binding.includedProgress.llError.setVisibility(View.GONE);
+    @Subscribe
+
+    private fun checkData() {
+        if (adapter.itemCount > 0) {
+            binding.includedProgress.llError.visibility = View.GONE
         } else {
-            binding.includedProgress.llError.setVisibility(View.VISIBLE);
+            binding.includedProgress.llError.visibility = View.VISIBLE
         }
     }
 
+    companion object {
+        @JvmStatic
+        fun newInstance(activity: FeedbackActivity): HistoryFragment {
+            return HistoryFragment(activity)
+        }
+    }
 }

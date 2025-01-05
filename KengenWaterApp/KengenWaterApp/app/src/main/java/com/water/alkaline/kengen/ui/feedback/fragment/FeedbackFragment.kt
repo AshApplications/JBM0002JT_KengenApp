@@ -1,274 +1,215 @@
-package com.water.alkaline.kengen.ui.fragment;
+package com.water.alkaline.kengen.ui.feedback.fragment
 
-import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
-import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
-
-import android.provider.Settings;
-import android.text.InputFilter;
-import android.text.Spanned;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RatingBar;
-import android.widget.Toast;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.preference.PowerPreference;
-import com.water.alkaline.kengen.Encrypt.DecryptEncrypt;
-import com.water.alkaline.kengen.MyApplication;
-import com.water.alkaline.kengen.R;
-import com.water.alkaline.kengen.data.network.RetroClient;
-import com.water.alkaline.kengen.databinding.DialogInternetBinding;
-import com.water.alkaline.kengen.databinding.DialogLoadingBinding;
-import com.water.alkaline.kengen.databinding.FragmentFeedbackBinding;
-import com.water.alkaline.kengen.library.ViewAnimator.AnimationListener;
-import com.water.alkaline.kengen.library.ViewAnimator.ViewAnimator;
-import com.water.alkaline.kengen.model.feedback.FeedbackResponse;
-import com.water.alkaline.kengen.ui.activity.FeedbackActivity;
-import com.water.alkaline.kengen.utils.Constant;
-
-
-import dagger.hilt.android.AndroidEntryPoint;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Bundle
+import android.provider.Settings
+import android.text.InputFilter
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.RatingBar
+import android.widget.RatingBar.OnRatingBarChangeListener
+import android.widget.Toast
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
+import androidx.lifecycle.ViewModelProvider
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.preference.PowerPreference
+import com.water.alkaline.kengen.Encrypt.DecryptEncrypt
+import com.water.alkaline.kengen.MyApplication
+import com.water.alkaline.kengen.R
+import com.water.alkaline.kengen.data.network.RetroClient
+import com.water.alkaline.kengen.databinding.FragmentFeedbackBinding
+import com.water.alkaline.kengen.library.ViewAnimator.ViewAnimator
+import com.water.alkaline.kengen.model.NetworkResult
+import com.water.alkaline.kengen.model.feedback.FeedbackResponse
+import com.water.alkaline.kengen.ui.feedback.FeedbackActivity
+import com.water.alkaline.kengen.ui.base.BaseFragment
+import com.water.alkaline.kengen.ui.feedback.FeedbackViewModel
+import com.water.alkaline.kengen.utils.Constant
+import com.water.alkaline.kengen.utils.FeedBacksEvent
+import com.water.alkaline.kengen.utils.NewFeedBackEvent
+import com.water.alkaline.kengen.utils.showNetworkDialog
+import dagger.hilt.android.AndroidEntryPoint
+import okhttp3.ResponseBody
+import org.greenrobot.eventbus.EventBus
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @AndroidEntryPoint
-public class FeedbackFragment extends Fragment implements RatingBar.OnRatingBarChangeListener {
+class FeedbackFragment : BaseFragment, OnRatingBarChangeListener {
+    private val binding by lazy {
+        FragmentFeedbackBinding.inflate(layoutInflater)
+    }
+    private lateinit var activity: FeedbackActivity
+    private var isAnimated: Boolean = false
+    private lateinit var feedbackViewModel: FeedbackViewModel
 
-    FragmentFeedbackBinding binding;
-    FeedbackActivity activity;
-    boolean isAnimated = false;
+    constructor()
 
-    public Dialog dialog;
-    public Dialog loaderDialog;
-
-    public FeedbackFragment() {
+    constructor(activity: FeedbackActivity) {
+        this.activity = activity
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        context.setMainContext()
         if (activity == null) {
-            activity = (FeedbackActivity) context;
+            activity = context as FeedbackActivity
         }
     }
 
-    public void dismiss_loader_dialog() {
-        if (loaderDialog != null && loaderDialog.isShowing())
-            loaderDialog.dismiss();
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return binding.root
     }
 
-    public void loader_dialog() {
-        loaderDialog = new Dialog(activity, R.style.NormalDialog);
-        DialogLoadingBinding loadingBinding = DialogLoadingBinding.inflate(getLayoutInflater());
-        loaderDialog.setContentView(loadingBinding.getRoot());
-        loaderDialog.setCancelable(false);
-        loaderDialog.setCanceledOnTouchOutside(false);
-        loaderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        loaderDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        loaderDialog.show();
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initializeUI()
+        bindObservers()
     }
 
+    private fun bindObservers() {
+        feedbackViewModel = ViewModelProvider(activity)[FeedbackViewModel::class.java]
+        feedbackViewModel.sendFeedData.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkResult.Success -> {
+                    hideDialog()
+                    try {
+                        val response = GsonBuilder().create().fromJson(
+                            (DecryptEncrypt.DecryptStr(
+                                activity, it.data!!.string()
+                            )), FeedbackResponse::class.java
+                        )
+                       if (response != null) {
+                           EventBus.getDefault().post(NewFeedBackEvent(response.feedbacks[0]))
+                           Toast.makeText(activity, "feedback submitted", Toast.LENGTH_SHORT)
+                               .show()
+                           binding.txtComments.setText("")
+                            return@observe
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
 
-    public void dismiss_dialog() {
-        if (dialog != null && dialog.isShowing())
-            dialog.dismiss();
-    }
+                    activity.showNetworkDialog(getString(R.string.kk_error_try_again)) {
 
-    public DialogInternetBinding network_dialog(String text) {
-        dialog = new Dialog(activity, R.style.NormalDialog);
-        DialogInternetBinding binding = DialogInternetBinding.inflate(getLayoutInflater());
-        dialog.setContentView(binding.getRoot());
-        dialog.setCancelable(false);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        dialog.show();
-        binding.txtError.setText(text);
-        return binding;
-    }
-
-
-    public FeedbackFragment(FeedbackActivity activity) {
-        this.activity = activity;
-
-    }
-
-    public static FeedbackFragment newInstance(FeedbackActivity activity) {
-        return new FeedbackFragment(activity);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentFeedbackBinding.inflate(getLayoutInflater(), container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        if (activity != null) {
-            disableEmojiInTitle();
-            initializeUI();
-        }
-    }
-
-    private void disableEmojiInTitle() {
-        InputFilter emojiFilter = new InputFilter() {
-            @Override
-            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-                for (int index = start; index < end - 1; index++) {
-                    int type = Character.getType(source.charAt(index));
-
-                    if (type == Character.SURROGATE) {
-                        return "";
                     }
                 }
-                return null;
+
+                is NetworkResult.Error -> {
+                    hideDialog()
+                    Constant.showLog(it.message)
+                    activity.showNetworkDialog(it.message) {
+
+                    }
+                }
+
+                is NetworkResult.Loading -> {
+                    showDialog()
+                }
             }
-        };
-        binding.txtComments.setFilters(new InputFilter[]{emojiFilter});
+        }
     }
 
-    public void initializeUI() {
-        binding.ratingBar.setRating(0);
-        binding.layoutForm.setVisibility(View.INVISIBLE);
-
-        binding.ratingBar.setOnRatingBarChangeListener(this);
-
-        binding.btnSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onSubmitClick();
+    private fun initializeUI() {
+        disableEmojiInTitle()
+        binding.ratingBar.rating = 0f
+        binding.layoutForm.visibility = View.INVISIBLE
+        binding.ratingBar.onRatingBarChangeListener = this
+        binding.btnSubmit.setOnClickListener {
+            if (binding.txtComments.text.toString().equals("", ignoreCase = true)) {
+                Toast.makeText(activity, "Plz Enter Something", Toast.LENGTH_SHORT).show()
+            } else {
+                sendFeedback()
             }
-        });
+        }
     }
 
-    @Override
-    public void onRatingChanged(RatingBar ratingBar, float value, boolean b) {
+    private fun disableEmojiInTitle() {
+        val emojiFilter = InputFilter { source, start, end, dest, dstart, dend ->
+            for (index in start until (end - 1)) {
+                val type = Character.getType(source[index])
+
+                if (type == Character.SURROGATE.toInt()) {
+                    return@InputFilter ""
+                }
+            }
+            null
+        }
+        binding.txtComments.filters = arrayOf(emojiFilter)
+    }
+
+    override fun onRatingChanged(ratingBar: RatingBar, value: Float, b: Boolean) {
         if (!isAnimated) {
-            binding.layoutForm.setVisibility(View.VISIBLE);
-
+            binding.layoutForm.visibility = View.VISIBLE
             ViewAnimator
-                    .animate(binding.lblHowHappy)
-                    .dp().translationY(0, -75)
-                    .duration(350)
-                    .interpolator(new LinearOutSlowInInterpolator())
-                    .andAnimate(ratingBar)
-                    .dp().translationY(0, -75)
-                    .duration(450)
-                    .interpolator(new LinearOutSlowInInterpolator())
-                    .andAnimate(binding.layoutForm)
-                    .dp().translationY(0, -75)
-                    .singleInterpolator(new LinearOutSlowInInterpolator())
-                    .duration(450)
-                    .alpha(0, 1)
-                    .interpolator(new FastOutSlowInInterpolator())
-                    .andAnimate(binding.lblWeHearFeedback)
-                    .dp().translationY(0, -20)
-                    .interpolator(new LinearOutSlowInInterpolator())
-                    .duration(300)
-                    .alpha(0, 1)
-                    .andAnimate(binding.txtComments)
-                    .dp().translationY(30, -30)
-                    .interpolator(new LinearOutSlowInInterpolator())
-                    .duration(550)
-                    .alpha(0, 1)
-                    .andAnimate(binding.btnSubmit)
-                    .dp().translationY(60, -35)
-                    .interpolator(new LinearOutSlowInInterpolator())
-                    .duration(800)
-                    .alpha(0, 1)
-                    .onStop(new AnimationListener.Stop() {
-                        @Override
-                        public void onStop() {
-                            isAnimated = true;
-                        }
-                    })
-                    .start();
+                .animate(binding.lblHowHappy)
+                .dp().translationY(0f, -75f)
+                .duration(350)
+                .interpolator(LinearOutSlowInInterpolator())
+                .andAnimate(ratingBar)
+                .dp().translationY(0f, -75f)
+                .duration(450)
+                .interpolator(LinearOutSlowInInterpolator())
+                .andAnimate(binding.layoutForm)
+                .dp().translationY(0f, -75f)
+                .singleInterpolator(LinearOutSlowInInterpolator())
+                .duration(450)
+                .alpha(0f, 1f)
+                .interpolator(FastOutSlowInInterpolator())
+                .andAnimate(binding.lblWeHearFeedback)
+                .dp().translationY(0f, -20f)
+                .interpolator(LinearOutSlowInInterpolator())
+                .duration(300)
+                .alpha(0f, 1f)
+                .andAnimate(binding.txtComments)
+                .dp().translationY(30f, -30f)
+                .interpolator(LinearOutSlowInInterpolator())
+                .duration(550)
+                .alpha(0f, 1f)
+                .andAnimate(binding.btnSubmit)
+                .dp().translationY(60f, -35f)
+                .interpolator(LinearOutSlowInInterpolator())
+                .duration(800)
+                .alpha(0f, 1f)
+                .onStop { isAnimated = true }
+                .start()
         }
     }
 
-    public void onSubmitClick() {
-        if (binding.txtComments.getText().toString().equalsIgnoreCase("")) {
-            Toast.makeText(activity, "Plz Enter Something", Toast.LENGTH_SHORT).show();
-        } else {
-            sendFeedback();
+    private fun sendFeedback() {
+        @SuppressLint("HardwareIds") val deviceId = Settings.Secure.getString(
+            activity.contentResolver, Settings.Secure.ANDROID_ID
+        )
+        feedbackViewModel.sendFeedData(
+            DecryptEncrypt.EncryptStr(
+                activity, DecryptEncrypt.EncryptStr(
+                    activity, MyApplication.sendFeedApi(
+                        activity,
+                        deviceId,
+                        PowerPreference.getDefaultFile().getString(
+                            Constant.mToken, "123"
+                        ),
+                        binding.txtComments.text.toString(),
+                        binding.ratingBar.rating.toString()
+                    )
+                )
+            )
+        )
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance(activity: FeedbackActivity): FeedbackFragment {
+            return FeedbackFragment(activity)
         }
     }
-
-
-    public void updateError() {
-        network_dialog(getResources().getString(R.string.kk_error_no_internet)).txtRetry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss_dialog();
-                if (Constant.checkInternet(activity)) {
-                    sendFeedback();
-                } else dialog.show();
-            }
-        });
-    }
-
-    public void sendFeedback() {
-        if (Constant.checkInternet(activity)) {
-            loader_dialog();
-            @SuppressLint("HardwareIds") String deviceId = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-            RetroClient.getInstance(activity).getApi().SendfeedApi(DecryptEncrypt.EncryptStr(activity, MyApplication.sendFeedApi(activity, deviceId, PowerPreference.getDefaultFile().getString(Constant.mToken, "123"), binding.txtComments.getText().toString(), String.valueOf(binding.ratingBar.getRating()))))
-                    .enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            dismiss_loader_dialog();
-                            if (response.isSuccessful() && response.body() != null) {
-                                try {
-                                    final FeedbackResponse response1 = new GsonBuilder().create().fromJson((DecryptEncrypt.DecryptStr(activity, response.body().string())), FeedbackResponse.class);
-                                    if (response1 != null && response1.feedbacks != null)
-                                        PowerPreference.getDefaultFile().putString(Constant.mFeeds, new Gson().toJson(response1.feedbacks));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            Toast.makeText(activity, "feedback submitted", Toast.LENGTH_SHORT).show();
-                            animate();
-                            activity.refresh();
-
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            dismiss_loader_dialog();
-                            Toast.makeText(activity, "feedback submitted", Toast.LENGTH_SHORT).show();
-                            animate();
-                        }
-                    });
-        } else {
-            updateError();
-        }
-    }
-
-    public void animate() {
-        binding.txtComments.setText("");
-    }
-
-
 }

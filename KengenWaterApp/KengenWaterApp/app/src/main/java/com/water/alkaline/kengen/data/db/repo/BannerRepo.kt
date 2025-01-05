@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class BannerRepo @Inject constructor(val dao: BannerDao) {
 
-    fun insert(entity: List<Banner?>?) {
+    fun insert(entity: MutableList<Banner>) {
         dao.insert(entity)
     }
 
@@ -14,14 +14,14 @@ class BannerRepo @Inject constructor(val dao: BannerDao) {
         dao.deleteAll()
     }
 
-    val all: List<Banner>
+    val all: MutableList<Banner>
         get() = dao.all
 
-    fun getAllByCategory(data: String?): List<Banner> {
+    fun getAllByCategory(data: String): MutableList<Banner> {
         return dao.getAllbyCategory(data)
     }
 
-    fun getByUrl(data: String?): List<Banner> {
+    fun getByUrl(data: String): MutableList<Banner> {
         return dao.getbyUrl(data)
     }
 }

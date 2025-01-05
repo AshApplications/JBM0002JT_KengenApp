@@ -5,19 +5,18 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.water.alkaline.kengen.R
-import com.water.alkaline.kengen.databinding.DialogInternetBinding
 import com.water.alkaline.kengen.databinding.DialogLoadingBinding
 
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseFragment : Fragment() {
 
     private lateinit var loaderDialog: Dialog
+    private lateinit var context: Context
 
     private fun initDialog() {
-        loaderDialog = Dialog(this, R.style.NormalDialog)
+        loaderDialog = Dialog(context, R.style.NormalDialog)
         val loadingBinding: DialogLoadingBinding = DialogLoadingBinding.inflate(layoutInflater)
         loaderDialog.setContentView(loadingBinding.getRoot())
         loaderDialog.setCancelable(false)
@@ -39,8 +38,12 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
+    fun Context.setMainContext() {
+        context = this
+        initDialog()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initDialog()
     }
 }

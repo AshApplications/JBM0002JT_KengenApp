@@ -1,4 +1,4 @@
-package com.water.alkaline.kengen.ui.adapter;
+package com.water.alkaline.kengen.ui.feedback.fragment;
 
 import android.app.Activity;
 import android.util.TypedValue;
@@ -17,6 +17,7 @@ import com.water.alkaline.kengen.databinding.ItemFeedbackBinding;
 import com.water.alkaline.kengen.model.feedback.Feedback;
 import com.water.alkaline.kengen.model.main.Banner;
 import com.water.alkaline.kengen.model.main.Channel;
+import com.water.alkaline.kengen.ui.adapter.AdHolder;
 import com.water.alkaline.kengen.utils.Constant;
 
 
@@ -39,6 +40,11 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void refresh(List<Feedback> feedbacks) {
         this.arrayList = feedbacks;
+        setAds(true);
+    }
+
+    public void addItem(Feedback feedback) {
+        this.arrayList.add(0,feedback);
         setAds(true);
     }
 

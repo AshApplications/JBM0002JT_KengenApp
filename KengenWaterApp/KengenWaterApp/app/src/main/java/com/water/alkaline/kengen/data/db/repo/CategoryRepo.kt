@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class CategoryRepo @Inject constructor(val dao: CategoryDao) {
 
-    fun insert(entity: List<Category?>?) {
+    fun insert(entity: List<Category>) {
         dao.insert(entity)
     }
 
@@ -14,6 +14,6 @@ class CategoryRepo @Inject constructor(val dao: CategoryDao) {
         dao.deleteAll()
     }
 
-    val all: List<Category>
+    val all: MutableList<Category>
         get() = dao.all
 }

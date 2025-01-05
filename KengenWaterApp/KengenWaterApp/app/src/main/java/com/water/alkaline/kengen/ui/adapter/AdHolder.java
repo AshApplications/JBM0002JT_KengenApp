@@ -9,7 +9,7 @@ import com.google.gms.ads.databinding.LayoutAdUniversalBinding;
 
 public class AdHolder extends RecyclerView.ViewHolder {
 
-    LayoutAdUniversalBinding binding;
+    public LayoutAdUniversalBinding binding;
 
     public AdHolder(@NonNull LayoutAdUniversalBinding itemView) {
         super(itemView.getRoot());

@@ -34,6 +34,7 @@ import com.water.alkaline.kengen.library.toprightmenu.MenuItem;
 import com.water.alkaline.kengen.library.toprightmenu.TopRightMenu;
 import com.water.alkaline.kengen.model.main.Category;
 import com.water.alkaline.kengen.ui.adapter.ViewPagerFragmentAdapter;
+import com.water.alkaline.kengen.ui.feedback.FeedbackActivity;
 import com.water.alkaline.kengen.ui.fragment.BannerFragment;
 import com.water.alkaline.kengen.ui.fragment.ChannelFragment;
 import com.water.alkaline.kengen.ui.fragment.PdfFragment;

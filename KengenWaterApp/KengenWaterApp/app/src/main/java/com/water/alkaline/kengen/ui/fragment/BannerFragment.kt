@@ -1,150 +1,137 @@
-package com.water.alkaline.kengen.ui.fragment;
+package com.water.alkaline.kengen.ui.fragment
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
-
-import android.os.Handler;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.google.gson.Gson;
-import com.preference.PowerPreference;
-import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
-import com.water.alkaline.kengen.databinding.FragmentBannerBinding;
-import com.water.alkaline.kengen.model.main.Banner;
-import com.water.alkaline.kengen.ui.activity.HomeActivity;
-import com.water.alkaline.kengen.ui.activity.BannerActivity;
-import com.water.alkaline.kengen.ui.adapter.BannerAdapter;
-import com.water.alkaline.kengen.utils.Constant;
-import com.water.alkaline.kengen.utils.uiController;
-
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
-import dagger.hilt.android.AndroidEntryPoint;
-
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import com.google.gson.Gson
+import com.preference.PowerPreference
+import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel
+import com.water.alkaline.kengen.databinding.FragmentBannerBinding
+import com.water.alkaline.kengen.model.main.Banner
+import com.water.alkaline.kengen.ui.activity.BannerActivity
+import com.water.alkaline.kengen.ui.activity.HomeActivity
+import com.water.alkaline.kengen.ui.adapter.BannerAdapter
+import com.water.alkaline.kengen.ui.base.BaseFragment
+import com.water.alkaline.kengen.utils.Constant
+import com.water.alkaline.kengen.utils.delayTask
+import com.water.alkaline.kengen.utils.uiController
+import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-public class BannerFragment extends Fragment {
+class BannerFragment : BaseFragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private String mParam1;
-    FragmentBannerBinding binding;
-    Activity activity;
+    private val binding by lazy {
+        FragmentBannerBinding.inflate(layoutInflater)
+    }
+    private lateinit var activity: Activity
+    private lateinit var mParam1: String
 
-    List<Banner> list = new ArrayList<>();
-    BannerAdapter adapter;
-    public AppViewModel viewModel;
+    var list: MutableList<Banner> = mutableListOf()
 
+    private lateinit var adapter: BannerAdapter
+    private lateinit var appViewModel: AppViewModel
 
-    public BannerFragment() {
+    constructor()
+
+    constructor(activity: Activity) {
+        this.activity = activity
     }
 
-    public BannerFragment(Activity activity) {
-        this.activity = activity;
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        context.setMainContext()
         if (activity == null) {
-            activity = (HomeActivity) context;
+            activity = context as HomeActivity
         }
     }
 
-    public static BannerFragment newInstance(Activity activity, String param1) {
-        BannerFragment fragment = new BannerFragment(activity);
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (arguments != null) {
+            mParam1 = requireArguments().getString(ARG_PARAM1).toString()
         }
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup parent, Bundle savedInstanseState) {
-        binding = FragmentBannerBinding.inflate(getLayoutInflater());
-        return binding.getRoot();
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        parent: ViewGroup?,
+        savedInstanseState: Bundle?
+    ): View {
+        return binding.root
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(AppViewModel.class);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        appViewModel = ViewModelProvider(this)[AppViewModel::class.java]
+        setAdapter()
+        refreshFragment()
+    }
 
-        if (activity != null) {
-            adapter = new BannerAdapter(activity, list, (position, item) -> {
-                list.removeAll(Collections.singleton(null));
-                int pos = position;
-                for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i).getId().equalsIgnoreCase(item.getId())) {
-                        pos = i;
-                        break;
-                    }
+    fun setAdapter() {
+        adapter = BannerAdapter(activity, list) { position: Int, item: Banner ->
+            list.removeAll(setOf<Any?>(null))
+            var pos = position
+            for (i in list.indices) {
+                if (list[i].id.equals(item.id, ignoreCase = true)) {
+                    pos = i
+                    break
                 }
-                PowerPreference.getDefaultFile().putString(Constant.mBanners, new Gson().toJson(list));
-                Intent intent = new Intent(activity, BannerActivity.class);
-                intent.putExtra("POS", pos);
-                intent.putExtra("PAGE", Constant.LIVE);
-                uiController.gotoIntent(activity, intent, true, false);
-            });
-            GridLayoutManager manager = new GridLayoutManager(activity, 2);
-            manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                @Override
-                public int getSpanSize(int i) {
-                    switch (adapter.getItemViewType(i)) {
-                        case Constant.STORE_TYPE:
-                            return 1;
-                        case Constant.AD_TYPE:
-                            return 2;
-                        default:
-                            return 1;
+            }
+            PowerPreference.getDefaultFile().putString(Constant.mBanners, Gson().toJson(list))
+            val intent = Intent(activity, BannerActivity::class.java)
+            intent.putExtra("POS", pos)
+            intent.putExtra("PAGE", Constant.LIVE)
+            uiController.gotoIntent(activity, intent, true, false)
+        }
+        val manager = GridLayoutManager(activity, 2)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(i: Int): Int {
+                return when (adapter.getItemViewType(i)) {
+                    Constant.STORE_TYPE -> 1
+                    Constant.AD_TYPE -> 2
+                    else -> 1
 
-                    }
                 }
-            });
-            binding.rvBanners.setLayoutManager(manager);
-            binding.rvBanners.setAdapter(adapter);
-            binding.rvBanners.setItemViewCacheSize(100);
-            refreshFragment();
+            }
+        }
+        binding.rvBanners.layoutManager = manager
+        binding.rvBanners.adapter = adapter
+        binding.rvBanners.setItemViewCacheSize(100)
+    }
+
+    fun refreshFragment() {
+        delayTask(500) {
+            list = appViewModel.getAllBannerByCategory(mParam1)
+            adapter.refreshAdapter(list)
+            binding.includedProgress.progress.visibility = View.GONE
+            checkData()
         }
     }
 
-    public void refreshFragment() {
-        if (adapter != null) {
-            new Handler().postDelayed(() -> {
-                list = viewModel.getAllBannerByCategory(mParam1);
-                adapter.refreshAdapter(list);
-                binding.includedProgress.progress.setVisibility(View.GONE);
-                checkData();
-            }, 500);
-        }
-    }
-
-    public void checkData() {
-        if (binding.rvBanners.getAdapter() != null && binding.rvBanners.getAdapter().getItemCount() > 0) {
-            binding.includedProgress.llError.setVisibility(View.GONE);
+    private fun checkData() {
+        if (binding.rvBanners.adapter != null && binding.rvBanners.adapter!!.itemCount > 0) {
+            binding.includedProgress.llError.visibility = View.GONE
         } else {
-            binding.includedProgress.llError.setVisibility(View.VISIBLE);
+            binding.includedProgress.llError.visibility = View.VISIBLE
+        }
+    }
+
+    companion object {
+        private const val ARG_PARAM1 = "param1"
+
+        @JvmStatic
+        fun newInstance(activity: Activity, param1: String): BannerFragment {
+            val fragment = BannerFragment(activity)
+            val args = Bundle()
+            args.putString(ARG_PARAM1, param1)
+            fragment.arguments = args
+            return fragment
         }
     }
 }

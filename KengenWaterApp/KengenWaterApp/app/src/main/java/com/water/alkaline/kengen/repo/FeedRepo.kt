@@ -13,7 +13,7 @@ import org.json.JSONObject
 import retrofit2.Response
 import javax.inject.Inject
 
-class FeedRepo  @Inject constructor(@ApplicationContext val context: Context) {
+class FeedRepo @Inject constructor(@ApplicationContext val context: Context) {
 
     private val _sendFeedData = MutableLiveData<NetworkResult<ResponseBody>>()
     val sendFeedData: LiveData<NetworkResult<ResponseBody>>
@@ -24,14 +24,27 @@ class FeedRepo  @Inject constructor(@ApplicationContext val context: Context) {
         get() = _getFeedData
 
     suspend fun sendData(requestBody: String) {
-        handleResponse(RetroClient.getInstance(context).api.feedApi(requestBody),_sendFeedData)
+        try {
+            handleResponse(RetroClient.getInstance(context).api.feedApi(requestBody), _sendFeedData)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _sendFeedData.postValue(NetworkResult.Error("Something Went Wrong"))
+        }
     }
 
     suspend fun fetchData(requestBody: String) {
-        handleResponse(RetroClient.getInstance(context).api.feedApi(requestBody),_getFeedData)
+        try {
+            handleResponse(RetroClient.getInstance(context).api.feedApi(requestBody), _getFeedData)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _getFeedData.postValue(NetworkResult.Error("Something Went Wrong"))
+        }
     }
 
-    private fun handleResponse(response: Response<ResponseBody>, data: MutableLiveData<NetworkResult<ResponseBody>>) {
+    private fun handleResponse(
+        response: Response<ResponseBody>,
+        data: MutableLiveData<NetworkResult<ResponseBody>>
+    ) {
         if (response.isSuccessful && response.body() != null) {
             data.postValue(NetworkResult.Success(response.body()!!))
         } else if (response.errorBody() != null) {

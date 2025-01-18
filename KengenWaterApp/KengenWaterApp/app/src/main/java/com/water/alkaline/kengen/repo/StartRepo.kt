@@ -25,11 +25,21 @@ class StartRepo @Inject constructor(@ApplicationContext val context: Context) {
         get() = _mainData
 
     suspend fun fetchUpdateData(requestBody: String) {
-        handleResponse(RetroClient.getInstance(context).api.updateApi(requestBody), _updateData)
+        try {
+            handleResponse(RetroClient.getInstance(context).api.updateApi(requestBody), _updateData)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _updateData.postValue(NetworkResult.Error("Something Went Wrong"))
+        }
     }
 
     suspend fun fetchMainData(requestBody: String) {
-        handleResponse(RetroClient.getInstance(context).api.dataApi(requestBody), _mainData)
+        try {
+            handleResponse(RetroClient.getInstance(context).api.dataApi(requestBody), _mainData)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _mainData.postValue(NetworkResult.Error("Something Went Wrong"))
+        }
     }
 
     private fun handleResponse(

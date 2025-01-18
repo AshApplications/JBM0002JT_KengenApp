@@ -23,7 +23,12 @@ class HomeRepo @Inject constructor(@ApplicationContext val context: Context) {
 
 
     suspend fun fetchUpdateData(requestBody: String) {
-        handleResponse(RetroClient.getInstance(context).api.updateApi(requestBody), _updateData)
+        try {
+            handleResponse(RetroClient.getInstance(context).api.updateApi(requestBody), _updateData)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _updateData.postValue(NetworkResult.Error("Something Went Wrong"))
+        }
     }
 
     suspend fun fetchChannelData(
@@ -31,13 +36,18 @@ class HomeRepo @Inject constructor(@ApplicationContext val context: Context) {
         mChannelId: String,
         pageToken: String
     ) {
-        handleResponse(
-            RetroClient.getInstance(context).youApi.channelApi(
-                mKey,
-                mChannelId,
-                pageToken
-            ), _videoData
-        )
+        try {
+            handleResponse(
+                RetroClient.getInstance(context).youApi.channelApi(
+                    mKey,
+                    mChannelId,
+                    pageToken
+                ), _videoData
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _videoData.postValue(NetworkResult.Error("Something Went Wrong"))
+        }
     }
 
     suspend fun fetchPlayData(
@@ -45,13 +55,18 @@ class HomeRepo @Inject constructor(@ApplicationContext val context: Context) {
         mPlayId: String,
         pageToken: String
     ) {
-        handleResponse(
-            RetroClient.getInstance(context).youApi.playlistApi(
-                mKey,
-                mPlayId,
-                pageToken
-            ), _videoData
-        )
+        try {
+            handleResponse(
+                RetroClient.getInstance(context).youApi.playlistApi(
+                    mKey,
+                    mPlayId,
+                    pageToken
+                ), _videoData
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _videoData.postValue(NetworkResult.Error("Something Went Wrong"))
+        }
     }
 
     private fun handleResponse(

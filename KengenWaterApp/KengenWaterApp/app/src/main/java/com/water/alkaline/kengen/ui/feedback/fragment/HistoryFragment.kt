@@ -20,27 +20,17 @@ import org.greenrobot.eventbus.ThreadMode
 
 
 @AndroidEntryPoint
-class HistoryFragment : BaseFragment {
+class HistoryFragment : BaseFragment() {
 
     private val binding by lazy {
         FragmentHistoryBinding.inflate(layoutInflater)
     }
-    private lateinit var activity: FeedbackActivity
     private lateinit var adapter: FeedAdapter
 
-
-    constructor()
-
-    constructor(activity: FeedbackActivity) {
-        this.activity = activity
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         context.setMainContext()
-        if (activity == null) {
-            activity = context as FeedbackActivity
-        }
     }
 
     override fun onCreateView(
@@ -77,8 +67,8 @@ class HistoryFragment : BaseFragment {
     }
 
 
-    fun setAdapter() {
-        val manager = GridLayoutManager(activity, 1)
+    private fun setAdapter() {
+        val manager = GridLayoutManager(appContext, 1)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(i: Int): Int {
                 return when (adapter.getItemViewType(i)) {
@@ -92,7 +82,7 @@ class HistoryFragment : BaseFragment {
         }
         binding.rvFeeds.layoutManager = manager
         adapter = FeedAdapter(
-            activity,
+            appContext,
             mutableListOf()
         )
         binding.rvFeeds.adapter = adapter
@@ -112,13 +102,6 @@ class HistoryFragment : BaseFragment {
             binding.includedProgress.llError.visibility = View.GONE
         } else {
             binding.includedProgress.llError.visibility = View.VISIBLE
-        }
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(activity: FeedbackActivity): HistoryFragment {
-            return HistoryFragment(activity)
         }
     }
 }

@@ -2,7 +2,7 @@
 <!-- START xml_defaults -->
 <defaultsMap>
     <entry>
-        <key>url</key>
+        <key>main_url</key>
         <value>https://www.googleapis.com/</value>
     </entry>
 </defaultsMap>

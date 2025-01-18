@@ -12,7 +12,7 @@ public class ChannelResponse {
     @SerializedName("nextPageToken")
     @Expose
     @Nullable
-    public String nextPageToken;
+    public String nextPageToken = "";
 
     @SerializedName("pageInfo")
     @Expose
@@ -60,7 +60,6 @@ public class ChannelResponse {
         @Expose
         @Nullable
         public Snippet snippet;
-
 
 
         public class Snippet {

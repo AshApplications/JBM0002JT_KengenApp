@@ -630,14 +630,14 @@ public class AdLoader {
     }
 
 
-    public void showNativeList(Activity activity, LayoutAdUniversalBinding ltNative) {
+    public void showNativeList(Context activity, LayoutAdUniversalBinding ltNative) {
         if (!nativeAds.isEmpty() && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
             Collections.shuffle(nativeAds);
             ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltNative.cvAdMain.getLayoutParams();
             int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, activity.getResources().getDisplayMetrics());
             layoutParams.setMargins(0, margin, margin, 0);
             ltNative.cvAdMain.requestLayout();
-            NativeAdView adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small, null, false);
+            NativeAdView adView = (NativeAdView) LayoutInflater.from(activity).inflate(R.layout.ad_google_native_small, null, false);
             AdLoader.getInstance().inflateGoogleNativeAd(activity, nativeAds.get(0), adView);
             ltNative.flAd.removeAllViews();
             ltNative.flAd.addView(adView);
@@ -800,9 +800,9 @@ public class AdLoader {
                 AdLoader.log("NATIVE -> AD SHOW");
                 NativeAdView adView;
                 if (adType.equalsIgnoreCase("Small")) {
-                    adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_small, null, false);
+                    adView = (NativeAdView) LayoutInflater.from(activity).inflate(R.layout.ad_google_native_small, null, false);
                 } else {
-                    adView = (NativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_google_native_large, null, false);
+                    adView = (NativeAdView) LayoutInflater.from(activity).inflate(R.layout.ad_google_native_large, null, false);
                 }
                 AdLoader.getInstance().inflateGoogleNativeAd(activity, nativeAd, adView);
                 ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
@@ -837,7 +837,7 @@ public class AdLoader {
         }
     }
 
-    private void inflateGoogleNativeAd(Activity activity, NativeAd nativeAd, NativeAdView adView) {
+    private void inflateGoogleNativeAd(Context activity, NativeAd nativeAd, NativeAdView adView) {
 
         adView.setMediaView(adView.findViewById(R.id.ad_media));
 

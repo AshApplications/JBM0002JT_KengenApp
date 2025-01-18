@@ -13,10 +13,10 @@ import com.water.alkaline.kengen.databinding.DialogLoadingBinding
 abstract class BaseFragment : Fragment() {
 
     private lateinit var loaderDialog: Dialog
-    private lateinit var context: Context
+    lateinit var appContext: Context
 
     private fun initDialog() {
-        loaderDialog = Dialog(context, R.style.NormalDialog)
+        loaderDialog = Dialog(appContext, R.style.NormalDialog)
         val loadingBinding: DialogLoadingBinding = DialogLoadingBinding.inflate(layoutInflater)
         loaderDialog.setContentView(loadingBinding.getRoot())
         loaderDialog.setCancelable(false)
@@ -39,7 +39,7 @@ abstract class BaseFragment : Fragment() {
     }
 
     fun Context.setMainContext() {
-        context = this
+        appContext = this
         initDialog()
     }
 

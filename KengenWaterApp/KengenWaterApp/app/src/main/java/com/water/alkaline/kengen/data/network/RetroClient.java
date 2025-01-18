@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
+import com.water.alkaline.kengen.api.RetroAPI;
+import com.water.alkaline.kengen.api.YouAPI;
 import com.water.alkaline.kengen.utils.Constant;
 
 import java.util.concurrent.TimeUnit;
@@ -21,10 +23,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetroClient {
 
-    private static RetroClient retrofitCLient;
+    private static RetroClient retrofitClient;
 
-    private Retrofit retroMain;
-    private Retrofit retrofit2;
+    private final Retrofit retroMain;
+    private final Retrofit retrofit2;
 
     public RetroClient(Context context) {
 
@@ -71,18 +73,18 @@ public class RetroClient {
     }
 
     public static synchronized RetroClient getInstance(Context context) {
-        if (retrofitCLient == null) {
-            retrofitCLient = new RetroClient(context);
+        if (retrofitClient == null) {
+            retrofitClient = new RetroClient(context);
         }
-        return retrofitCLient;
+        return retrofitClient;
     }
 
-    public RetroInterface getApi() {
-        return retroMain.create(RetroInterface.class);
+    public RetroAPI getApi() {
+        return retroMain.create(RetroAPI.class);
     }
 
-    public RetroInterface getYouApi() {
-        return retrofit2.create(RetroInterface.class);
+    public YouAPI getYouApi() {
+        return retrofit2.create(YouAPI.class);
     }
 
 }

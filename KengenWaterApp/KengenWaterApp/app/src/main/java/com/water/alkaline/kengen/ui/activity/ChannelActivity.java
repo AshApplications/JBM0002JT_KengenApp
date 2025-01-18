@@ -39,7 +39,7 @@ import com.water.alkaline.kengen.model.update.AppInfo;
 import com.water.alkaline.kengen.model.update.UpdateResponse;
 import com.water.alkaline.kengen.ui.adapter.ChannelAdapter;
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
-import com.water.alkaline.kengen.ui.fragment.ChannelFragment;
+import com.water.alkaline.kengen.ui.home.fragment.ChannelFragment;
 import com.water.alkaline.kengen.ui.listener.OnChannelListener;
 import com.water.alkaline.kengen.ui.listener.OnLoadMoreListener;
 import com.water.alkaline.kengen.ui.listener.OnVideoListener;
@@ -105,9 +105,8 @@ public class ChannelActivity extends AppCompatActivity {
     }
 
     public void startApp() {
-
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frameLayout, ChannelFragment.newInstance(this, catId, getIntent().hasExtra("isChannel") ? "Video" : "Channel", isChannel));
+        transaction.replace(R.id.frameLayout, ChannelFragment.newInstance( catId, getIntent().hasExtra("isChannel") ? "Video" : "Channel", isChannel));
         transaction.addToBackStack(null);
         transaction.commit();
     }

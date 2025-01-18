@@ -41,26 +41,17 @@ import retrofit2.Callback
 import retrofit2.Response
 
 @AndroidEntryPoint
-class FeedbackFragment : BaseFragment, OnRatingBarChangeListener {
+class FeedbackFragment : BaseFragment(), OnRatingBarChangeListener {
+
     private val binding by lazy {
         FragmentFeedbackBinding.inflate(layoutInflater)
     }
-    private lateinit var activity: FeedbackActivity
     private var isAnimated: Boolean = false
     private lateinit var feedbackViewModel: FeedbackViewModel
-
-    constructor()
-
-    constructor(activity: FeedbackActivity) {
-        this.activity = activity
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         context.setMainContext()
-        if (activity == null) {
-            activity = context as FeedbackActivity
-        }
     }
 
     override fun onCreateView(
@@ -77,7 +68,7 @@ class FeedbackFragment : BaseFragment, OnRatingBarChangeListener {
     }
 
     private fun bindObservers() {
-        feedbackViewModel = ViewModelProvider(activity)[FeedbackViewModel::class.java]
+        feedbackViewModel = ViewModelProvider(this)[FeedbackViewModel::class.java]
         feedbackViewModel.sendFeedData.observe(viewLifecycleOwner) {
             when (it) {
                 is NetworkResult.Success -> {
@@ -85,21 +76,21 @@ class FeedbackFragment : BaseFragment, OnRatingBarChangeListener {
                     try {
                         val response = GsonBuilder().create().fromJson(
                             (DecryptEncrypt.DecryptStr(
-                                activity, it.data!!.string()
+                                appContext, it.data!!.string()
                             )), FeedbackResponse::class.java
                         )
-                       if (response != null) {
-                           EventBus.getDefault().post(NewFeedBackEvent(response.feedbacks[0]))
-                           Toast.makeText(activity, "feedback submitted", Toast.LENGTH_SHORT)
-                               .show()
-                           binding.txtComments.setText("")
+                        if (response != null) {
+                            EventBus.getDefault().post(NewFeedBackEvent(response.feedbacks[0]))
+                            Toast.makeText(activity, "feedback submitted", Toast.LENGTH_SHORT)
+                                .show()
+                            binding.txtComments.setText("")
                             return@observe
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
 
-                    activity.showNetworkDialog(getString(R.string.kk_error_try_again)) {
+                    appContext.showNetworkDialog(getString(R.string.kk_error_try_again)) {
 
                     }
                 }
@@ -107,7 +98,7 @@ class FeedbackFragment : BaseFragment, OnRatingBarChangeListener {
                 is NetworkResult.Error -> {
                     hideDialog()
                     Constant.showLog(it.message)
-                    activity.showNetworkDialog(it.message) {
+                    appContext.showNetworkDialog(it.message) {
 
                     }
                 }
@@ -187,29 +178,20 @@ class FeedbackFragment : BaseFragment, OnRatingBarChangeListener {
 
     private fun sendFeedback() {
         @SuppressLint("HardwareIds") val deviceId = Settings.Secure.getString(
-            activity.contentResolver, Settings.Secure.ANDROID_ID
+            appContext.contentResolver, Settings.Secure.ANDROID_ID
         )
         feedbackViewModel.sendFeedData(
             DecryptEncrypt.EncryptStr(
-                activity, DecryptEncrypt.EncryptStr(
-                    activity, MyApplication.sendFeedApi(
-                        activity,
-                        deviceId,
-                        PowerPreference.getDefaultFile().getString(
-                            Constant.mToken, "123"
-                        ),
-                        binding.txtComments.text.toString(),
-                        binding.ratingBar.rating.toString()
-                    )
+                appContext, MyApplication.sendFeedApi(
+                    appContext,
+                    deviceId,
+                    PowerPreference.getDefaultFile().getString(
+                        Constant.mToken, "123"
+                    ),
+                    binding.txtComments.text.toString(),
+                    binding.ratingBar.rating.toString()
                 )
             )
         )
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(activity: FeedbackActivity): FeedbackFragment {
-            return FeedbackFragment(activity)
-        }
     }
 }

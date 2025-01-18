@@ -2,6 +2,7 @@ package com.water.alkaline.kengen.ui.adapter;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,18 +31,18 @@ import java.util.HashMap;
 import java.util.List;
 
 public class BannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    Activity activity;
+    Context activity;
     List<Banner> arrayList = new ArrayList<>();
     OnBannerListerner listener;
 
-    public BannerAdapter(Activity activity, List<Banner> arrayList, OnBannerListerner listener) {
+    public BannerAdapter(Context activity, List<Banner> arrayList, OnBannerListerner listener) {
         this.activity = activity;
         this.arrayList = arrayList;
         this.listener = listener;
         setAds(false);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         ItemImageBinding binding;
 

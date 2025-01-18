@@ -2,6 +2,7 @@ package com.water.alkaline.kengen.ui.adapter;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.text.Html;
 import android.util.Log;
 import android.util.TypedValue;
@@ -37,7 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class VideosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    Activity activity;
+    Context activity;
     public List<SaveEntity> arrayList = new ArrayList<>();
     OnVideoListener listener;
     HashMap<Integer, Integer> hashMap = new HashMap<>();
@@ -45,7 +46,7 @@ public class VideosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private OnLoadMoreListener onLoadMoreListener;
     private boolean isLoading;
 
-    public VideosAdapter(Activity activity, List<SaveEntity> arrayList, RecyclerView recyclerView, OnVideoListener listener) {
+    public VideosAdapter(Context activity, List<SaveEntity> arrayList, RecyclerView recyclerView, OnVideoListener listener) {
         this.activity = activity;
         this.arrayList = arrayList;
         this.listener = listener;

@@ -2,6 +2,7 @@ package com.water.alkaline.kengen.ui.adapter;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,11 +30,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class ChannelAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    Activity activity;
+    Context activity;
     List<Channel> arrayList = new ArrayList<>();
     OnChannelListener listener;
 
-    public ChannelAdapter(Activity activity, List<Channel> arrayList, OnChannelListener listener) {
+    public ChannelAdapter(Context activity, List<Channel> arrayList, OnChannelListener listener) {
         this.activity = activity;
         this.arrayList = arrayList;
         this.listener = listener;

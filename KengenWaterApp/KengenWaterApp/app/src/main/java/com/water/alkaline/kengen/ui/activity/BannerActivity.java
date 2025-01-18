@@ -41,6 +41,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class BannerActivity extends AppCompatActivity {
 
     ActivityBannerBinding binding;

@@ -1,6 +1,7 @@
 package com.water.alkaline.kengen.ui.adapter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,20 +31,20 @@ import java.util.HashMap;
 import java.util.List;
 
 public class PdfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    Activity activity;
+    Context activity;
     List<Pdf> arrayList = new ArrayList<>();
     OnPdfListener listener;
 
     HashMap<Integer, Integer> hashMap = new HashMap<>();
 
-    public PdfAdapter(Activity activity, List<Pdf> arrayList, OnPdfListener listener) {
+    public PdfAdapter(Context activity, List<Pdf> arrayList, OnPdfListener listener) {
         this.activity = activity;
         this.arrayList = arrayList;
         this.listener = listener;
         setAds(false);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ItemImageBinding binding;
 
         public ViewHolder(ItemImageBinding itemView) {

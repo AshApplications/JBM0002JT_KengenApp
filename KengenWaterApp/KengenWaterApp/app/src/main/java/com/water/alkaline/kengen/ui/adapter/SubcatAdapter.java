@@ -1,6 +1,7 @@
 package com.water.alkaline.kengen.ui.adapter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,11 +26,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class SubcatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    Activity activity;
+    Context activity;
     List<Subcategory> arrayList = new ArrayList<>();
     OnSubcatListener listener;
 
-    public SubcatAdapter(Activity activity, List<Subcategory> arrayList, OnSubcatListener listener) {
+    public SubcatAdapter(Context activity, List<Subcategory> arrayList, OnSubcatListener listener) {
         this.activity = activity;
         this.arrayList = arrayList;
         this.listener = listener;

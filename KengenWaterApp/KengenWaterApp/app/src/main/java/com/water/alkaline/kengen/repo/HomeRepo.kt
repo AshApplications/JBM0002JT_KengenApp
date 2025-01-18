@@ -1,35 +1,57 @@
 package com.water.alkaline.kengen.repo
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.water.alkaline.kengen.api.RetroAPI
 import com.water.alkaline.kengen.data.network.RetroClient
 import com.water.alkaline.kengen.model.NetworkResult
 import dagger.hilt.android.qualifiers.ApplicationContext
-import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Response
 import javax.inject.Inject
 
-class StartRepo @Inject constructor(@ApplicationContext val context: Context) {
+class HomeRepo @Inject constructor(@ApplicationContext val context: Context) {
 
     private val _updateData = MutableLiveData<NetworkResult<ResponseBody>>()
     val updateData: LiveData<NetworkResult<ResponseBody>>
         get() = _updateData
 
-    private val _mainData = MutableLiveData<NetworkResult<ResponseBody>>()
-    val mainData: LiveData<NetworkResult<ResponseBody>>
-        get() = _mainData
+    private val _videoData = MutableLiveData<NetworkResult<ResponseBody>>()
+    val videoData: LiveData<NetworkResult<ResponseBody>>
+        get() = _videoData
+
 
     suspend fun fetchUpdateData(requestBody: String) {
         handleResponse(RetroClient.getInstance(context).api.updateApi(requestBody), _updateData)
     }
 
-    suspend fun fetchMainData(requestBody: String) {
-        handleResponse(RetroClient.getInstance(context).api.dataApi(requestBody), _mainData)
+    suspend fun fetchChannelData(
+        mKey: String,
+        mChannelId: String,
+        pageToken: String
+    ) {
+        handleResponse(
+            RetroClient.getInstance(context).youApi.channelApi(
+                mKey,
+                mChannelId,
+                pageToken
+            ), _videoData
+        )
+    }
+
+    suspend fun fetchPlayData(
+        mKey: String,
+        mPlayId: String,
+        pageToken: String
+    ) {
+        handleResponse(
+            RetroClient.getInstance(context).youApi.playlistApi(
+                mKey,
+                mPlayId,
+                pageToken
+            ), _videoData
+        )
     }
 
     private fun handleResponse(
@@ -45,4 +67,5 @@ class StartRepo @Inject constructor(@ApplicationContext val context: Context) {
             data.postValue(NetworkResult.Error("Something Went Wrong"))
         }
     }
+
 }

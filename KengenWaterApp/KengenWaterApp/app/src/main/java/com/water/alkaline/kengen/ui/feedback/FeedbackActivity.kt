@@ -1,7 +1,9 @@
 package com.water.alkaline.kengen.ui.feedback
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Message
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
@@ -48,6 +50,7 @@ class FeedbackActivity : BaseActivity() {
     private lateinit var adapter: ViewPagerFragmentAdapter
     private lateinit var feedbackViewModel: FeedbackViewModel
 
+    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         uiController.onBackPressed(this)
     }
@@ -79,10 +82,10 @@ class FeedbackActivity : BaseActivity() {
         binding.ivInfo.setOnClickListener { fetchFeedbacks() }
     }
 
-    fun setAdapter() {
+    private fun setAdapter() {
         adapter = ViewPagerFragmentAdapter(supportFragmentManager, lifecycle)
-        adapter.addFragment(FeedbackFragment.newInstance(this), "Feedbacks")
-        adapter.addFragment(HistoryFragment.newInstance(this), "History")
+        adapter.addFragment(FeedbackFragment(), "Feedbacks")
+        adapter.addFragment(HistoryFragment(), "History")
         binding.vpFeeds.adapter = adapter
         binding.vpFeeds.offscreenPageLimit = 2
         TabLayoutMediator(
@@ -146,11 +149,14 @@ class FeedbackActivity : BaseActivity() {
     }
 
     private fun fetchFeedbacks() {
+        @SuppressLint("HardwareIds") val deviceId = Settings.Secure.getString(
+            contentResolver, Settings.Secure.ANDROID_ID
+        )
         feedbackViewModel.fetchData(
             DecryptEncrypt.EncryptStr(
                 this@FeedbackActivity, MyApplication.sendFeedApi(
                     this,
-                    "",
+                    deviceId,
                     PowerPreference.getDefaultFile().getString(Constant.mToken, "123"),
                     "",
                     ""

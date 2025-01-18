@@ -1,6 +1,7 @@
 package com.water.alkaline.kengen.ui.feedback.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -27,12 +28,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    Activity activity;
+    Context activity;
     public List<Feedback> arrayList = new ArrayList<>();
 
     HashMap<Integer, Integer> hashMap = new HashMap<>();
 
-    public FeedAdapter(Activity activity, List<Feedback> feedbacks) {
+    public FeedAdapter(Context activity, List<Feedback> feedbacks) {
         this.activity = activity;
         this.arrayList = feedbacks;
         setAds(false);

@@ -1,15 +1,19 @@
 package com.water.alkaline.kengen.repo
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.water.alkaline.kengen.api.RetroAPI
+import com.water.alkaline.kengen.data.network.RetroClient
 import com.water.alkaline.kengen.model.NetworkResult
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Response
 import javax.inject.Inject
 
-class FeedRepo  @Inject constructor(private val retroAPI: RetroAPI) {
+class FeedRepo  @Inject constructor(@ApplicationContext val context: Context) {
 
     private val _sendFeedData = MutableLiveData<NetworkResult<ResponseBody>>()
     val sendFeedData: LiveData<NetworkResult<ResponseBody>>
@@ -20,11 +24,11 @@ class FeedRepo  @Inject constructor(private val retroAPI: RetroAPI) {
         get() = _getFeedData
 
     suspend fun sendData(requestBody: String) {
-        handleResponse(retroAPI.sendFeedApi(requestBody),_sendFeedData)
+        handleResponse(RetroClient.getInstance(context).api.feedApi(requestBody),_sendFeedData)
     }
 
     suspend fun fetchData(requestBody: String) {
-        handleResponse(retroAPI.getFeedApi(requestBody),_getFeedData)
+        handleResponse(RetroClient.getInstance(context).api.feedApi(requestBody),_getFeedData)
     }
 
     private fun handleResponse(response: Response<ResponseBody>, data: MutableLiveData<NetworkResult<ResponseBody>>) {

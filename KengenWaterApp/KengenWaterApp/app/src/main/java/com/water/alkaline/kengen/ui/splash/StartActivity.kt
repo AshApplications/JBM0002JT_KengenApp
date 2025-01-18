@@ -12,7 +12,6 @@ import android.os.Message
 import android.provider.Settings
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.ads.MobileAds
@@ -21,7 +20,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gms.ads.AdLoader
 import com.google.gms.ads.AdUtils
 import com.google.gms.ads.MyApp
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.onesignal.OneSignal
 import com.preference.PowerPreference
@@ -35,7 +33,7 @@ import com.water.alkaline.kengen.library.ViewAnimator.ViewAnimator
 import com.water.alkaline.kengen.model.NetworkResult
 import com.water.alkaline.kengen.model.main.MainResponse
 import com.water.alkaline.kengen.model.update.UpdateResponse
-import com.water.alkaline.kengen.ui.activity.HomeActivity
+import com.water.alkaline.kengen.ui.home.HomeActivity
 import com.water.alkaline.kengen.ui.base.BaseActivity
 import com.water.alkaline.kengen.utils.Constant
 import com.water.alkaline.kengen.utils.delayTask
@@ -164,10 +162,9 @@ class StartActivity : BaseActivity() {
                 .setMinimumFetchIntervalInSeconds(3600)
                 .build()
             mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings)
-            mFirebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
             mFirebaseRemoteConfig.fetchAndActivate().addOnCompleteListener {
                 PowerPreference.getDefaultFile()
-                    .putString(Constant.apiKey, mFirebaseRemoteConfig.getValue("url").asString())
+                    .putString(Constant.apiKey, mFirebaseRemoteConfig.getValue("main_url").asString())
                 fetchUpdateData()
             }
         } else {

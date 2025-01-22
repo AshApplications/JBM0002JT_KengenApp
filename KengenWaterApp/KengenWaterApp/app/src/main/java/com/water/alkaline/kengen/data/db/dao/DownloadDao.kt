@@ -1,32 +1,29 @@
-package com.water.alkaline.kengen.data.db.dao;
+package com.water.alkaline.kengen.data.db.dao
 
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-
-import com.water.alkaline.kengen.model.DownloadEntity;
-
-import java.util.List;
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.water.alkaline.kengen.model.DownloadEntity
 
 @Dao
-public interface DownloadDao {
+interface DownloadDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(DownloadEntity entity);
+    fun insert(entity: DownloadEntity)
 
     @Query("DELETE from tbl_downloads")
-    void deleteAll();
+    fun deleteAll()
 
-    @Query("SELECT * from tbl_downloads")
-    List<DownloadEntity> getAll();
+    @get:Query("SELECT * from tbl_downloads")
+    val all: MutableList<DownloadEntity>
 
     @Query("SELECT * from tbl_downloads where id = :data")
-    List<DownloadEntity> getAllbyID(int data);
+    fun getAllbyID(data: Int): MutableList<DownloadEntity>
 
     @Query("SELECT * from tbl_downloads where url = :data")
-    List<DownloadEntity> getbyUrl(String data);
+    fun getbyUrl(data: String): MutableList<DownloadEntity>
 
     @Query("SELECT * from tbl_downloads where filePath = :data")
-    List<DownloadEntity> getbyPath(String data);
+    fun getbyPath(data: String): MutableList<DownloadEntity>
 }
 

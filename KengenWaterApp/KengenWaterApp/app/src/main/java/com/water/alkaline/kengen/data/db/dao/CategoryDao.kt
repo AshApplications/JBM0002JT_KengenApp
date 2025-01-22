@@ -1,22 +1,20 @@
-package com.water.alkaline.kengen.data.db.dao;
+package com.water.alkaline.kengen.data.db.dao
 
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-
-import com.water.alkaline.kengen.model.main.Category;
-
-import java.util.List;
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.water.alkaline.kengen.model.main.Category
 
 @Dao
-public interface CategoryDao {
+interface CategoryDao {
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(List<Category> entity);
+    fun insert(entity: List<Category>)
 
     @Query("DELETE from tbl_category")
-    void deleteAll();
+    fun deleteAll()
 
-    @Query("SELECT * from tbl_category")
-    List<Category> getAll();
+    @get:Query("SELECT * from tbl_category")
+    val all: MutableList<Category>
 }

@@ -1,30 +1,26 @@
-package com.water.alkaline.kengen.data.db.dao;
+package com.water.alkaline.kengen.data.db.dao
 
-import androidx.room.Dao;
-import androidx.room.Delete;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-
-import com.water.alkaline.kengen.model.SaveEntity;
-
-import java.util.List;
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.water.alkaline.kengen.model.SaveEntity
 
 @Dao
-public interface SaveDao {
+interface SaveDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(SaveEntity entity);
+    fun insert(entity: SaveEntity)
 
     @Delete
-    void delete(SaveEntity entity);
+    fun delete(entity: SaveEntity)
 
     @Query("DELETE from tbl_likes")
-    void deleteAll();
+    fun deleteAll()
 
-
-    @Query("SELECT * from tbl_likes")
-    List<SaveEntity> getAll();
+    @get:Query("SELECT * from tbl_likes")
+    val all: MutableList<SaveEntity>
 
     @Query("SELECT * from tbl_likes where videoId = :data")
-    List<SaveEntity> getbyVideoId(String data);
+    fun getbyVideoId(data: String): MutableList<SaveEntity>
 }

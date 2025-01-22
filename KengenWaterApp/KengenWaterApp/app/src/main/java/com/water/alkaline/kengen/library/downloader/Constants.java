@@ -16,10 +16,6 @@
 
 package com.water.alkaline.kengen.library.downloader;
 
-/**
- * Created by amitshekhar on 13/11/17.
- */
-
 public final class Constants {
 
     private Constants() {

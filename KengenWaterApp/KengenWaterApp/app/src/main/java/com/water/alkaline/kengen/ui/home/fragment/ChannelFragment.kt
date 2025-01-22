@@ -40,6 +40,7 @@ import com.water.alkaline.kengen.ui.adapter.SubcatAdapter
 import com.water.alkaline.kengen.ui.adapter.VideosAdapter
 import com.water.alkaline.kengen.ui.base.BaseFragment
 import com.water.alkaline.kengen.utils.Constant
+import com.water.alkaline.kengen.utils.delayTask
 import com.water.alkaline.kengen.utils.uiController
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.ResponseBody
@@ -383,9 +384,12 @@ class ChannelFragment : BaseFragment() {
                     if (appContext is HomeActivity)
                         appContext as HomeActivity
                     else
-                        appContext as ChannelActivity, Intent(appContext, PreviewActivity::class.java).putExtra(
+                        appContext as ChannelActivity,
+                    Intent(appContext, PreviewActivity::class.java).putExtra(
                         Constant.POSITION, pos
-                    ), true, false
+                    ),
+                    true,
+                    false
                 )
             }
         val manager = GridLayoutManager(appContext, 2)
@@ -410,22 +414,21 @@ class ChannelFragment : BaseFragment() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            Handler(Looper.getMainLooper()).postDelayed({
-                if (!PowerPreference.getDefaultFile().getString(channelId, "")
-                        .equals("", ignoreCase = true)
+            delayTask {
+                if (!pageToken.equals("", ignoreCase = true)
                 ) {
                     getVideoData()
                 } else {
                     videosAdapter!!.arrayList.removeAt(videosAdapter!!.arrayList.size - 1)
                     videosAdapter!!.notifyItemRemoved(videosAdapter!!.arrayList.size)
                 }
-            }, 2000)
+            }
         }
 
-        Handler(Looper.getMainLooper()).postDelayed({
+        delayTask {
             pageToken = ""
             getVideoData()
-        }, 2000)
+        }
     }
 
     private fun refreshActivity() {

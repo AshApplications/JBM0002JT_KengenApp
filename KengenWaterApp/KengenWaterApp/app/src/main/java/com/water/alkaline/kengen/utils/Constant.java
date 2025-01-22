@@ -107,46 +107,6 @@ public class Constant {
                 activeNetwork.isConnectedOrConnecting();
     }
 
-
-    public static Dialog dialogNetwork;
-
-    public static DialogInternetBinding network_dialog(Activity activity) {
-        dialogNetwork = new Dialog(activity);
-        DialogInternetBinding internetBinding = DialogInternetBinding.inflate(activity.getLayoutInflater());
-        dialogNetwork.setContentView(internetBinding.getRoot());
-        if (dialogNetwork.getWindow() != null)
-            dialogNetwork.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialogNetwork.setCancelable(false);
-        dialogNetwork.setCanceledOnTouchOutside(false);
-        dialogNetwork.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        dialogNetwork.show();
-        return internetBinding;
-    }
-
-    public static boolean netCheck(Context context) {
-        ConnectivityManager cm =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-    }
-
-    public interface onResultListener {
-        public void onSuccess();
-    }
-
-    public static void checkInternet(Activity activity, onResultListener listener) {
-        if (Constant.netCheck(activity)) {
-            listener.onSuccess();
-        } else {
-            Constant.network_dialog(activity).txtRetry.setOnClickListener(v -> {
-                Constant.dialogNetwork.setOnDismissListener(dialogInterface -> new Handler().postDelayed(() -> checkInternet(activity, listener), 1000));
-                Constant.dialogNetwork.dismiss();
-            });
-        }
-    }
-
     public static String getPDFdisc() {
         File myCreationDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + File.separator + MyApplication.getContext().getString(R.string.app_name) + File.separator + "SavedPDF");
@@ -174,7 +134,6 @@ public class Constant {
             activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + activity.getPackageName())));
         }
     }
-
 
     public static void getPermissions(AppCompatActivity activity) {
         PermissionX.init(activity)

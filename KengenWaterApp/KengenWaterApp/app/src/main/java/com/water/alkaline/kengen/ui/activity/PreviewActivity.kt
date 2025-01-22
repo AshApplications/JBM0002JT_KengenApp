@@ -1,212 +1,174 @@
-package com.water.alkaline.kengen.ui.activity;
+package com.water.alkaline.kengen.ui.activity
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
-import android.app.Dialog;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Bundle;
-import android.text.Html;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
-import com.google.gms.ads.AdLoader;
-import com.google.gms.ads.MyApp;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.water.alkaline.kengen.MyApplication;
-import com.water.alkaline.kengen.R;
-import com.water.alkaline.kengen.databinding.ActivityPreviewBinding;
-import com.water.alkaline.kengen.databinding.DialogLoadingBinding;
-import com.water.alkaline.kengen.library.ActionListeners;
-import com.water.alkaline.kengen.library.ViewToImage;
-import com.water.alkaline.kengen.model.SaveEntity;
-import com.water.alkaline.kengen.utils.Constant;
-import com.preference.PowerPreference;
-import com.water.alkaline.kengen.utils.uiController;
-
-
-import java.io.File;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
-import dagger.hilt.android.AndroidEntryPoint;
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.os.Bundle
+import android.text.Html
+import android.util.Log
+import android.view.View
+import android.widget.Toast
+import androidx.core.content.FileProvider
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import com.google.gms.ads.AdLoader
+import com.google.gms.ads.MyApp
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.preference.PowerPreference
+import com.water.alkaline.kengen.MyApplication
+import com.water.alkaline.kengen.R
+import com.water.alkaline.kengen.databinding.ActivityPreviewBinding
+import com.water.alkaline.kengen.library.ActionListeners
+import com.water.alkaline.kengen.library.ViewToImage
+import com.water.alkaline.kengen.model.SaveEntity
+import com.water.alkaline.kengen.ui.base.BaseActivity
+import com.water.alkaline.kengen.utils.Constant
+import com.water.alkaline.kengen.utils.onSingleClick
+import com.water.alkaline.kengen.utils.uiController
+import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 
 @AndroidEntryPoint
-public class PreviewActivity extends AppCompatActivity {
+class PreviewActivity : BaseActivity() {
 
-    ActivityPreviewBinding binding;
-    ArrayList<SaveEntity> mList = new ArrayList<>();
-    int pos = 0;
+    private val binding by lazy {
+        ActivityPreviewBinding.inflate(layoutInflater)
+    }
+    private var mList: ArrayList<SaveEntity> = ArrayList()
+    private var pos: Int = 0
 
-    Dialog loaderDialog;
-
-    public void dismiss_loader_dialog() {
-        if (loaderDialog != null && loaderDialog.isShowing())
-            loaderDialog.dismiss();
+    override fun onBackPressed() {
+        uiController.onBackPressed(this)
     }
 
-    @Override
-    public void onBackPressed() {
-        uiController.onBackPressed(this);
-    }
-
-    public void loader_dialog() {
-        loaderDialog = new Dialog(this, R.style.NormalDialog);
-        DialogLoadingBinding loadingBinding = DialogLoadingBinding.inflate(getLayoutInflater());
-        loaderDialog.setContentView(loadingBinding.getRoot());
-        loaderDialog.setCancelable(false);
-        loaderDialog.setCanceledOnTouchOutside(false);
-        loaderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        loaderDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        loaderDialog.show();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
-            if (binding.includedAd.flAd.getChildCount() <= 0) {
-                AdLoader.getInstance().showNativeLarge(this, binding.includedAd);
+    override fun onResume() {
+        super.onResume()
+        if (MyApp.getAdModel().adsOnOff.equals("Yes", ignoreCase = true)) {
+            if (binding.includedAd.flAd.childCount <= 0) {
+                AdLoader.getInstance().showNativeLarge(this, binding.includedAd)
             }
         } else {
-            binding.includedAd.cvAdMain.setVisibility(View.GONE);
-            binding.includedAd.flAd.setVisibility(View.GONE);
+            binding.includedAd.cvAdMain.visibility = View.GONE
+            binding.includedAd.flAd.visibility = View.GONE
         }
-
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityPreviewBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(binding.root)
 
-        if (getIntent() != null && getIntent().hasExtra(Constant.POSITION)) {
-            pos = getIntent().getIntExtra(Constant.POSITION, 0);
+        if (intent != null && intent.hasExtra(Constant.POSITION)) {
+            pos = intent.getIntExtra(Constant.POSITION, 0)
         }
 
         try {
-            Type type = new TypeToken<List<SaveEntity>>() {
-            }.getType();
+            val type = object : TypeToken<List<SaveEntity?>?>() {
+            }.type
 
-            mList = new Gson().fromJson(PowerPreference.getDefaultFile().getString(Constant.mList, new Gson().toJson(new ArrayList<SaveEntity>())), type);
+            mList = Gson().fromJson(
+                PowerPreference.getDefaultFile().getString(
+                    Constant.mList, Gson().toJson(
+                        ArrayList<SaveEntity>()
+                    )
+                ), type
+            )
 
-            if (mList.get(mList.size() - 1).videoId.equalsIgnoreCase("99999"))
-                mList.remove(mList.size() - 1);
-
-        } catch (Exception e) {
-            mList = new ArrayList<>();
+            if (mList[mList.size - 1].videoId.equals("99999", ignoreCase = true)) mList.removeAt(
+                mList.size - 1
+            )
+        } catch (e: Exception) {
+            mList = ArrayList()
         }
 
-        if (!mList.isEmpty()) {
+        if (mList.isNotEmpty()) {
             Glide.with(this)
-                    .load(mList.get(pos).imgUrl)
-                    .placeholder(MyApplication.getPlaceHolder())
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(binding.frameContainer);
-
-            binding.txtTitle.setText(Html.fromHtml(mList.get(pos).title));
-
-            binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onBackPressed();
-                }
-            });
-
-            binding.btnStart.setOnClickListener(v -> {
-                uiController.gotoIntent(this, new Intent(PreviewActivity.this, PlayerActivity.class).putExtra(Constant.POSITION, pos), true, false);
-            });
-
-            binding.btnShare.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    shareVideo();
-                }
-            });
-
+                .load(mList[pos].imgUrl)
+                .placeholder(MyApplication.getPlaceHolder())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(binding.frameContainer)
+            binding.txtTitle.text = Html.fromHtml(mList.get(pos).title)
+            binding.includedToolbar.ivBack.setOnClickListener(View.OnClickListener { onBackPressed() })
+            binding.btnStart.setOnClickListener {
+                uiController.gotoIntent(
+                    this,
+                    Intent(
+                        this@PreviewActivity,
+                        PlayerActivity::class.java
+                    ).putExtra(Constant.POSITION, pos),
+                    true,
+                    false
+                )
+            }
+            binding.btnShare.setOnClickListener {
+                shareVideo()
+            }
         } else {
-            Constant.showToast(this, "Unknown Error Occurred");
-            finish();
+            Constant.showToast(this, "Unknown Error Occurred")
+            finish()
         }
     }
 
 
-    public void shareVideo() {
-        loader_dialog();
-        String path = "";
-
-        path = mList.get(pos).imgUrl;
-
+    private fun shareVideo() {
+        showLoadingDialog()
+        var path: String? = ""
+        path = mList[pos].imgUrl
         Glide.with(this).asBitmap().load(path)
-                .into(new CustomTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        saveBitmap(resource);
-                    }
+            .into(object : CustomTarget<Bitmap?>() {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap?>?
+                ) {
+                    saveBitmap(resource)
+                }
 
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-                        Toast.makeText(PreviewActivity.this, "Something went Wrong", Toast.LENGTH_SHORT).show();
-                        dismiss_loader_dialog();
-                    }
-                });
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    hideLoadingDialog()
+                }
+            })
     }
 
-    public void saveBitmap(Bitmap bitmap) {
-        new ViewToImage(PreviewActivity.this, bitmap, new ActionListeners() {
-            @Override
-            public void convertedWithSuccess(Bitmap var1, String var2) {
-                shareIImage(var2);
+    fun saveBitmap(bitmap: Bitmap?) {
+        ViewToImage(this@PreviewActivity, bitmap, object : ActionListeners {
+            override fun convertedWithSuccess(var1: Bitmap, var2: String) {
+                hideLoadingDialog()
+                shareIImage(var2)
             }
 
-            @Override
-            public void convertedWithError(String var1) {
-                Toast.makeText(PreviewActivity.this, "Something went Wrong", Toast.LENGTH_SHORT).show();
-                dismiss_loader_dialog();
+            override fun convertedWithError(var1: String) {
+                 Toast.makeText(this@PreviewActivity, "Something went Wrong", Toast.LENGTH_SHORT)
+                    .show()
+                hideLoadingDialog()
             }
-        });
+        })
     }
 
-    public void shareIImage(String mPath) {
+    fun shareIImage(mPath: String?) {
         try {
-            Intent i = new Intent(Intent.ACTION_SEND);
-            i.setType("image/*");
-            i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name));
+            val i = Intent(Intent.ACTION_SEND)
+            i.setType("image/*")
+            i.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.app_name))
 
-            String title = mList.get(pos).title;
-            String sAux = PowerPreference.getDefaultFile().getString(Constant.vidShareMsg, "");
+            val title = mList[pos].title
+            var sAux = PowerPreference.getDefaultFile().getString(Constant.vidShareMsg, "")
 
-            String sAux2 = "https://play.google.com/store/apps/details?id=" + getPackageName();
-            sAux = title + "\n\n" + sAux + "\n\n" + sAux2;
+            val sAux2 = "https://play.google.com/store/apps/details?id=" + packageName
+            sAux = title + "\n\n" + sAux + "\n\n" + sAux2
 
-            Uri fileUri = FileProvider.getUriForFile(getApplicationContext(),
-                    getPackageName() + ".fileprovider", new File(mPath));
-            i.putExtra(Intent.EXTRA_TEXT, sAux);
-            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            i.putExtra(Intent.EXTRA_STREAM, fileUri);
-            startActivity(Intent.createChooser(i, "Choose One"));
-            dismiss_loader_dialog();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(PreviewActivity.this, "Something went Wrong", Toast.LENGTH_SHORT).show();
-            dismiss_loader_dialog();
+            val fileUri = FileProvider.getUriForFile(
+                applicationContext,
+                packageName + ".fileprovider", File(mPath)
+            )
+            i.putExtra(Intent.EXTRA_TEXT, sAux)
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            i.putExtra(Intent.EXTRA_STREAM, fileUri)
+            startActivity(Intent.createChooser(i, "Choose One"))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this@PreviewActivity, "Something went Wrong", Toast.LENGTH_SHORT).show()
         }
-
     }
 }

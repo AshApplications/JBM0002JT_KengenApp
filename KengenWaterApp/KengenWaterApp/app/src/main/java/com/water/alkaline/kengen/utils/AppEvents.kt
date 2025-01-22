@@ -10,3 +10,6 @@ data class FeedBacksEvent(
     val feedbacks: List<Feedback>,
 )
 
+
+class RefreshSavedEvent()
+

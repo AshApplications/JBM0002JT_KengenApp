@@ -1,394 +1,364 @@
-package com.water.alkaline.kengen.ui.activity;
+package com.water.alkaline.kengen.ui.activity
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
+import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.Toast
+import androidx.core.content.FileProvider
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.customui.DefaultPlayerUiController
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerState
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
+import com.preference.PowerPreference
+import com.water.alkaline.kengen.R
+import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel
+import com.water.alkaline.kengen.databinding.ActivityPlayerBinding
+import com.water.alkaline.kengen.library.ActionListeners
+import com.water.alkaline.kengen.library.ViewToImage
+import com.water.alkaline.kengen.model.SaveEntity
+import com.water.alkaline.kengen.ui.adapter.VideosAdapter
+import com.water.alkaline.kengen.ui.base.BaseActivity
+import com.water.alkaline.kengen.utils.Constant
+import com.water.alkaline.kengen.utils.RefreshSavedEvent
+import com.water.alkaline.kengen.utils.uiController
+import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
+import java.io.File
 
-import android.app.Dialog;
-import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.Toast;
+@AndroidEntryPoint
+class PlayerActivity : BaseActivity() {
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.customui.DefaultPlayerUiController;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions;
-import com.water.alkaline.kengen.MyApplication;
-import com.water.alkaline.kengen.R;
-import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
-import com.water.alkaline.kengen.databinding.ActivityPlayerBinding;
-import com.water.alkaline.kengen.databinding.DialogLoadingBinding;
-import com.water.alkaline.kengen.library.ActionListeners;
-import com.water.alkaline.kengen.library.ViewToImage;
-import com.water.alkaline.kengen.model.SaveEntity;
-import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
-import com.water.alkaline.kengen.ui.listener.OnVideoListener;
-import com.water.alkaline.kengen.utils.Constant;
-import com.preference.PowerPreference;
-import com.water.alkaline.kengen.utils.uiController;
-
-
-import java.io.File;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
-public class PlayerActivity extends AppCompatActivity {
-
-    ActivityPlayerBinding binding;
-
-    List<SaveEntity> mList = new ArrayList<>();
-    boolean isFullScreen = false;
-
-    VideosAdapter videosAdapter;
-
-    YouTubePlayer vPlayer;
-    boolean isPause = false;
-
-    AppViewModel viewModel;
-    int position = 0;
-
-    Dialog loaderDialog;
-
-    public void dismiss_loader_dialog() {
-        if (loaderDialog != null && loaderDialog.isShowing()) {
-            loaderDialog.dismiss();
-        }
+    private val binding by lazy {
+        ActivityPlayerBinding.inflate(layoutInflater)
+    }
+    private val viewModel by lazy {
+        ViewModelProvider(this)[AppViewModel::class.java]
     }
 
-    public void loader_dialog() {
-        loaderDialog = new Dialog(this, R.style.NormalDialog);
-        DialogLoadingBinding loadingBinding = DialogLoadingBinding.inflate(getLayoutInflater());
-        loaderDialog.setContentView(loadingBinding.getRoot());
-        loaderDialog.setCancelable(false);
-        loaderDialog.setCanceledOnTouchOutside(false);
-        loaderDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        loaderDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        loaderDialog.show();
-    }
+    var mList: MutableList<SaveEntity> = ArrayList()
+    var isFullScreen: Boolean = false
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityPlayerBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-        if (getIntent() != null && getIntent().hasExtra(Constant.POSITION)) {
-            position = getIntent().getIntExtra(Constant.POSITION, 0);
+    var vPlayer: YouTubePlayer? = null
+    private var isPause: Boolean = false
+
+    var position: Int = 0
+
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(binding.root)
+        if (intent != null && intent.hasExtra(Constant.POSITION)) {
+            position = intent.getIntExtra(Constant.POSITION, 0)
         }
 
         try {
-            Type type = new TypeToken<List<SaveEntity>>() {
-            }.getType();
+            val type = object : TypeToken<List<SaveEntity?>?>() {
+            }.type
 
-            mList = new Gson().fromJson(PowerPreference.getDefaultFile().getString(Constant.mList, new Gson().toJson(new ArrayList<SaveEntity>())), type);
-            if (mList.get(mList.size() - 1).videoId.equalsIgnoreCase("99999"))
-                mList.remove(mList.size() - 1);
-
-        } catch (Exception e) {
-            mList = new ArrayList<>();
+            mList = Gson().fromJson(
+                PowerPreference.getDefaultFile().getString(
+                    Constant.mList, Gson().toJson(
+                        ArrayList<SaveEntity>()
+                    )
+                ), type
+            )
+            if (mList[mList.size - 1].videoId.equals("99999", ignoreCase = true)) mList.removeAt(
+                mList.size - 1
+            )
+        } catch (e: Exception) {
+            mList = ArrayList()
         }
 
-        checkLike();
-        setSize();
-        setAdapter();
-        setPlayer();
+        checkLike()
+        setSize()
+        setAdapter()
+        setPlayer()
     }
 
-    public void setSize() {
-
-        binding.ivShare.setOnClickListener(v -> shareVideo());
-
-        binding.ivLike.setOnClickListener(v -> {
-
+    private fun setSize() {
+        binding.ivShare.setOnClickListener { v: View? -> shareVideo() }
+        binding.ivLike.setOnClickListener { v: View? ->
             try {
-                SaveEntity entity = mList.get(position);
-                SaveEntity entity2 = null;
-                if (!viewModel.getSaveByVideoId(entity.videoId).isEmpty())
-                    entity2 = viewModel.getSaveByVideoId(entity.videoId).get(0);
+                val entity = mList[position]
+                var entity2: SaveEntity? = null
+                if (viewModel.getSaveByVideoId(entity.videoId).isNotEmpty()) entity2 =
+                    viewModel.getSaveByVideoId(entity.videoId)[0]
 
                 if (entity2 != null) {
-                    viewModel.deleteSaves(entity2);
-                    checkLike();
-                    if (SaveActivity.saveActivity != null)
-                        SaveActivity.saveActivity.refreshData();
+                    viewModel.deleteSaves(entity2)
+                    checkLike()
+                    EventBus.getDefault().post(RefreshSavedEvent())
                 } else {
-                    SaveEntity entity1 = new SaveEntity(entity.videoId, entity.title, entity.des, entity.imgUrl);
-                    viewModel.insertSaves(entity1);
-                    binding.ivLike.setSpeed(100f);
-                    binding.ivLike.playAnimation();
+                    val entity1 =
+                        SaveEntity(entity.videoId, entity.title, entity.des, entity.imgUrl)
+                    viewModel.insertSaves(entity1)
+                    binding.ivLike.speed = 100f
+                    binding.ivLike.playAnimation()
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
+        }
 
-
-        });
-
-        binding.ivBack.setOnClickListener(v -> onBackPressed());
+        binding.ivBack.setOnClickListener { v: View? -> onBackPressed() }
     }
 
-    public void checkLike() {
-
+    private fun checkLike() {
         try {
-            SaveEntity entity = mList.get(position);
-            SaveEntity entity2 = null;
-            if (!viewModel.getSaveByVideoId(entity.videoId).isEmpty())
-                entity2 = viewModel.getSaveByVideoId(entity.videoId).get(0);
+            val entity = mList[position]
+            var entity2: SaveEntity? = null
+            if (viewModel.getSaveByVideoId(entity.videoId).isNotEmpty()) entity2 =
+                viewModel.getSaveByVideoId(entity.videoId)[0]
 
             if (entity2 != null) {
-                binding.ivLike.setProgress(1);
+                binding.ivLike.progress = 1f
             } else {
-                binding.ivLike.setProgress(0);
+                binding.ivLike.progress = 0f
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-
-
     }
 
-    public void setAdapter() {
-        videosAdapter = new VideosAdapter(this, mList, null, new OnVideoListener() {
-            @Override
-            public void onItemClick(int pos, SaveEntity item) {
-                position = pos;
-                loadVideo(item.videoId);
-            }
-        });
-        GridLayoutManager manager = new GridLayoutManager(this, 2);
-        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int i) {
-                switch (videosAdapter.getItemViewType(i)) {
-                    case Constant.STORE_TYPE:
-                        return 1;
-                    case Constant.AD_TYPE:
-                        return 2;
-                    case Constant.LOADING:
-                        return 1;
-                    default:
-                        return 1;
+    private fun setAdapter() {
+        val videosAdapter = VideosAdapter(this, mList, null) { pos, item ->
+            position = pos
+            loadVideo(item.videoId)
+        }
+        val manager = GridLayoutManager(this, 2)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(i: Int): Int {
+                return when (videosAdapter.getItemViewType(i)) {
+                    Constant.STORE_TYPE -> 1
+                    Constant.AD_TYPE -> 2
+                    Constant.LOADING -> 1
+                    else -> 1
 
                 }
             }
-        });
-        binding.rvVideos.setLayoutManager(manager);
-        binding.rvVideos.setAdapter(videosAdapter);
-        binding.rvVideos.setItemViewCacheSize(100);
-        binding.rvVideos.scrollToPosition(position);
+        }
+        binding.rvVideos.layoutManager = manager
+        binding.rvVideos.adapter = videosAdapter
+        binding.rvVideos.setItemViewCacheSize(100)
+        binding.rvVideos.scrollToPosition(position)
 
-        videosAdapter.refreshAdapter(mList);
-        binding.includedProgress.progress.setVisibility(View.GONE);
+        videosAdapter.refreshAdapter(mList)
+        binding.includedProgress.progress.visibility = View.GONE
 
-        if (videosAdapter.getItemCount() > 0) {
-            binding.includedProgress.llError.setVisibility(View.GONE);
+        if (videosAdapter.itemCount > 0) {
+            binding.includedProgress.llError.visibility = View.GONE
         } else {
-            binding.includedProgress.llError.setVisibility(View.VISIBLE);
+            binding.includedProgress.llError.visibility = View.VISIBLE
         }
     }
 
-    public void setPlayer() {
+    private fun setPlayer() {
+        lifecycle.addObserver(binding.playerView)
+        binding.playerView.enableAutomaticInitialization = false
+        val options: IFramePlayerOptions = IFramePlayerOptions.Builder().controls(0).rel(0).build()
+        binding.playerView.initialize(object : AbstractYouTubePlayerListener() {
+            override fun onReady(youTubePlayer: YouTubePlayer) {
+                super.onReady(youTubePlayer)
+                val defaultPlayerUiController = DefaultPlayerUiController(
+                    binding.playerView, youTubePlayer
+                )
+                defaultPlayerUiController.showYouTubeButton(false)
+                defaultPlayerUiController.setFullscreenButtonClickListener {
+                    if (isFullScreen) {
+                        isFullScreen = false
+                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                        binding.cvToolbar.visibility = View.VISIBLE
+                        binding.playerView.layoutParams = FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                        )
+                    } else {
+                        isFullScreen = true
+                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                        binding.cvToolbar.visibility = View.GONE
+                        binding.playerView.layoutParams = FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                        )
+                    }
+                }
+                binding.playerView.setCustomPlayerUi(defaultPlayerUiController.rootView)
+                vPlayer = youTubePlayer
+                vPlayer!!.addListener(object : AbstractYouTubePlayerListener() {
+                    override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
+                        super.onError(youTubePlayer, error)
+                        Log.e("TAG", error.toString())
+                        Constant.showToast(this@PlayerActivity, "Something went wrong")
+                        nextVideo()
+                    }
 
-        getLifecycle().addObserver(binding.playerView);
-        binding.playerView.setEnableAutomaticInitialization(false);
-        IFramePlayerOptions options = new IFramePlayerOptions.Builder().controls(0).rel(0).build();
-        binding.playerView.initialize(new AbstractYouTubePlayerListener() {
-            @Override
-            public void onReady(@NonNull YouTubePlayer youTubePlayer) {
-                super.onReady(youTubePlayer);
-                DefaultPlayerUiController defaultPlayerUiController = new DefaultPlayerUiController(binding.playerView, youTubePlayer);
-                defaultPlayerUiController.showYouTubeButton(false);
-                defaultPlayerUiController.setFullscreenButtonClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (isFullScreen) {
-                            isFullScreen = false;
-                            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                            binding.cvToolbar.setVisibility(View.VISIBLE);
-                            binding.playerView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                        } else {
-                            isFullScreen = true;
-                            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                            binding.cvToolbar.setVisibility(View.GONE);
-                            binding.playerView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+                    override fun onStateChange(youTubePlayer: YouTubePlayer, state: PlayerState) {
+                        super.onStateChange(youTubePlayer, state)
+                        if (state == PlayerState.ENDED) {
+                            nextVideo()
                         }
                     }
-                });
-                binding.playerView.setCustomPlayerUi(defaultPlayerUiController.getRootView());
-                vPlayer = youTubePlayer;
-                vPlayer.addListener(new AbstractYouTubePlayerListener() {
-                    @Override
-                    public void onError(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerError error) {
-                        super.onError(youTubePlayer, error);
-                        Log.e("TAG", error.toString());
-                        Constant.showToast(PlayerActivity.this, "Something went wrong");
-                        nextVideo();
-                    }
-
-
-                    @Override
-                    public void onStateChange(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerState state) {
-                        super.onStateChange(youTubePlayer, state);
-                        if (state == PlayerConstants.PlayerState.ENDED) {
-                            nextVideo();
-                        }
-                    }
-                });
-                loadVideo(mList.get(position).videoId);
+                })
+                loadVideo(mList[position].videoId)
             }
-        }, options);
+        }, options)
     }
 
 
-    public void nextVideo() {
-        int mPos = position;
-        if (mPos + 1 < mList.size()) {
-            position = position + 1;
-            loadVideo(mList.get(position).videoId);
+    fun nextVideo() {
+        val mPos = position
+        if (mPos + 1 < mList.size) {
+            position = position + 1
+            loadVideo(mList[position].videoId)
         } else {
-            Constant.showToast(PlayerActivity.this, "Completed All Videos");
-            vPlayer.seekTo(0);
-            vPlayer.pause();
+            Constant.showToast(this@PlayerActivity, "Completed All Videos")
+            vPlayer!!.seekTo(0f)
+            vPlayer!!.pause()
         }
     }
 
-    public void loadVideo(String id) {
+    fun loadVideo(id: String?) {
         if (vPlayer != null) {
-            checkLike();
+            checkLike()
             try {
-                vPlayer.loadVideo(id, 0);
-            } catch (IllegalStateException e) {
-                setPlayer();
+                vPlayer!!.loadVideo(id!!, 0f)
+            } catch (e: IllegalStateException) {
+                setPlayer()
             }
         } else {
-            Constant.showToast(PlayerActivity.this, "VideoPlayer not loaded");
+            Constant.showToast(this@PlayerActivity, "VideoPlayer not loaded")
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+    override fun onPause() {
+        super.onPause()
         if (vPlayer != null) {
             try {
-                vPlayer.pause();
-                isPause = true;
-            } catch (Exception e) {
-                e.printStackTrace();
+                vPlayer!!.pause()
+                isPause = true
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    override fun onResume() {
+        super.onResume()
         if (isPause) {
-            isPause = false;
+            isPause = false
             if (vPlayer != null) {
                 try {
-                    vPlayer.play();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    setPlayer();
+                    vPlayer!!.play()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    setPlayer()
                 }
             } else {
-                setPlayer();
+                setPlayer()
             }
         }
     }
 
-    @Override
-    public void onBackPressed() {
+    override fun onBackPressed() {
         if (isFullScreen) {
-            isFullScreen = false;
-            binding.cvToolbar.setVisibility(View.VISIBLE);
-            binding.playerView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            isFullScreen = false
+            binding.cvToolbar.visibility = View.VISIBLE
+            binding.playerView.layoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         } else {
-            uiController.onBackPressed(this);
+            uiController.onBackPressed(this)
         }
     }
 
 
-    public void shareVideo() {
-        loader_dialog();
-        String path = "";
+    private fun shareVideo() {
+       showLoadingDialog()
+        var path: String? = ""
 
-        path = mList.get(position).imgUrl;
+        path = mList[position].imgUrl
 
         Glide.with(this).asBitmap().load(path)
-                .into(new CustomTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        saveBitmap(resource);
-                    }
+            .into(object : CustomTarget<Bitmap?>() {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap?>?
+                ) {
+                    saveBitmap(resource)
+                }
 
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-                        Toast.makeText(PlayerActivity.this, "Something went Wrong", Toast.LENGTH_SHORT).show();
-                        dismiss_loader_dialog();
-                    }
-                });
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    Toast.makeText(this@PlayerActivity, "Something went Wrong", Toast.LENGTH_SHORT)
+                        .show()
+                   hideLoadingDialog()
+                }
+            })
     }
 
-    public void saveBitmap(Bitmap bitmap) {
-        new ViewToImage(PlayerActivity.this, bitmap, new ActionListeners() {
-            @Override
-            public void convertedWithSuccess(Bitmap var1, String var2) {
-                shareIImage(var2);
+    fun saveBitmap(bitmap: Bitmap?) {
+        ViewToImage(this@PlayerActivity, bitmap, object : ActionListeners {
+            override fun convertedWithSuccess(var1: Bitmap, var2: String) {
+                hideLoadingDialog()
+                shareIImage(var2)
             }
 
-            @Override
-            public void convertedWithError(String var1) {
-                Toast.makeText(PlayerActivity.this, "Something went Wrong", Toast.LENGTH_SHORT).show();
-                dismiss_loader_dialog();
+            override fun convertedWithError(var1: String) {
+                Toast.makeText(this@PlayerActivity, "Something went Wrong", Toast.LENGTH_SHORT)
+                    .show()
+                hideLoadingDialog()
             }
-        });
+        })
     }
 
-    public void shareIImage(String mPath) {
+    fun shareIImage(mPath: String?) {
         try {
-            Intent i = new Intent(Intent.ACTION_SEND);
-            i.setType("image/*");
-            i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name));
+            val i = Intent(Intent.ACTION_SEND)
+            i.setType("image/*")
+            i.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.app_name))
 
-            String title = mList.get(position).title;
-            String sAux = PowerPreference.getDefaultFile().getString(Constant.vidShareMsg, "");
+            val title = mList[position].title
+            var sAux = PowerPreference.getDefaultFile().getString(Constant.vidShareMsg, "")
 
-            String sAux2 = "https://play.google.com/store/apps/details?id=" + getPackageName();
-            sAux = title + "\n\n" + sAux + "\n\n" + sAux2;
+            val sAux2 = "https://play.google.com/store/apps/details?id=$packageName"
+            sAux = """
+                $title
+                
+                $sAux
+                
+                $sAux2
+                """.trimIndent()
 
-            Uri fileUri = FileProvider.getUriForFile(getApplicationContext(),
-                    getPackageName() + ".fileprovider", new File(mPath));
-            i.putExtra(Intent.EXTRA_TEXT, sAux);
-            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            i.putExtra(Intent.EXTRA_STREAM, fileUri);
-            startActivity(Intent.createChooser(i, "Choose One"));
-            dismiss_loader_dialog();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(PlayerActivity.this, "Something went Wrong", Toast.LENGTH_SHORT).show();
-            dismiss_loader_dialog();
-        }
+            val fileUri = FileProvider.getUriForFile(
+                applicationContext,
+                "$packageName.fileprovider", File(mPath)
+            )
+            i.putExtra(Intent.EXTRA_TEXT, sAux)
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            i.putExtra(Intent.EXTRA_STREAM, fileUri)
+            startActivity(Intent.createChooser(i, "Choose One"))
+         } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this@PlayerActivity, "Something went Wrong", Toast.LENGTH_SHORT).show()
+          }
     }
 }

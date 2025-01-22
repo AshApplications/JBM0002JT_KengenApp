@@ -17,6 +17,7 @@ import com.water.alkaline.kengen.ui.activity.BannerActivity
 import com.water.alkaline.kengen.ui.home.HomeActivity
 import com.water.alkaline.kengen.ui.adapter.BannerAdapter
 import com.water.alkaline.kengen.ui.base.BaseFragment
+import com.water.alkaline.kengen.ui.feedback.FeedbackViewModel
 import com.water.alkaline.kengen.utils.Constant
 import com.water.alkaline.kengen.utils.delayTask
 import com.water.alkaline.kengen.utils.uiController
@@ -33,8 +34,10 @@ class BannerFragment : BaseFragment() {
     var list: MutableList<Banner> = mutableListOf()
 
     private lateinit var adapter: BannerAdapter
-    private lateinit var appViewModel: AppViewModel
 
+    private val appViewModel by lazy {
+        ViewModelProvider(this)[AppViewModel::class.java]
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -58,12 +61,11 @@ class BannerFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        appViewModel = ViewModelProvider(this)[AppViewModel::class.java]
-        setAdapter()
+       setAdapter()
         refreshFragment()
     }
 
-    fun setAdapter() {
+    private fun setAdapter() {
         adapter = BannerAdapter(appContext, list) { position: Int, item: Banner ->
             list.removeAll(setOf<Any?>(null))
             var pos = position

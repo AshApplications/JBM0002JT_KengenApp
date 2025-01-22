@@ -21,6 +21,7 @@ import com.preference.PowerPreference
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt
 import com.water.alkaline.kengen.MyApplication
 import com.water.alkaline.kengen.R
+import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel
 import com.water.alkaline.kengen.data.network.RetroClient
 import com.water.alkaline.kengen.databinding.FragmentFeedbackBinding
 import com.water.alkaline.kengen.library.ViewAnimator.ViewAnimator
@@ -47,7 +48,10 @@ class FeedbackFragment : BaseFragment(), OnRatingBarChangeListener {
         FragmentFeedbackBinding.inflate(layoutInflater)
     }
     private var isAnimated: Boolean = false
-    private lateinit var feedbackViewModel: FeedbackViewModel
+
+    private val feedbackViewModel by lazy {
+        ViewModelProvider(this)[FeedbackViewModel::class.java]
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -68,7 +72,6 @@ class FeedbackFragment : BaseFragment(), OnRatingBarChangeListener {
     }
 
     private fun bindObservers() {
-        feedbackViewModel = ViewModelProvider(this)[FeedbackViewModel::class.java]
         feedbackViewModel.sendFeedData.observe(viewLifecycleOwner) {
             when (it) {
                 is NetworkResult.Success -> {

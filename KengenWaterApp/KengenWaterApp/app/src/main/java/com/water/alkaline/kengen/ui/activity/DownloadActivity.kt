@@ -1,120 +1,112 @@
-package com.water.alkaline.kengen.ui.activity;
+package com.water.alkaline.kengen.ui.activity
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-
-import com.google.gms.ads.AdLoader;
-import com.google.gms.ads.MyApp;
-import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
-import com.water.alkaline.kengen.databinding.ActivityDownloadBinding;
-import com.water.alkaline.kengen.model.DownloadEntity;
-import com.water.alkaline.kengen.ui.adapter.DownloadAdapter;
-import com.water.alkaline.kengen.ui.listener.OnDownloadListener;
-import com.water.alkaline.kengen.utils.Constant;
-import com.water.alkaline.kengen.utils.uiController;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import dagger.hilt.android.AndroidEntryPoint;
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import com.google.gms.ads.AdLoader
+import com.google.gms.ads.MyApp
+import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel
+import com.water.alkaline.kengen.databinding.ActivityDownloadBinding
+import com.water.alkaline.kengen.model.DownloadEntity
+import com.water.alkaline.kengen.ui.adapter.DownloadAdapter
+import com.water.alkaline.kengen.ui.base.BaseActivity
+import com.water.alkaline.kengen.utils.Constant
+import com.water.alkaline.kengen.utils.delayTask
+import com.water.alkaline.kengen.utils.uiController
+import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-public class DownloadActivity extends AppCompatActivity {
+class DownloadActivity : BaseActivity() {
 
-    ActivityDownloadBinding binding;
+    private val binding by lazy {
+        ActivityDownloadBinding.inflate(layoutInflater)
+    }
+    private val viewModel by lazy {
+        ViewModelProvider(this)[AppViewModel::class.java]
+    }
+    var list: List<DownloadEntity> = ArrayList()
+    private lateinit var adapter: DownloadAdapter
 
-    List<DownloadEntity> list = new ArrayList<>();
-    DownloadAdapter adapter;
-    public AppViewModel viewModel;
-
-    @Override
-    public void onBackPressed() {
-        uiController.onBackPressed(this);
+    override fun onBackPressed() {
+        uiController.onBackPressed(this)
     }
 
-    public void setBG() {
-        viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-        binding.includedToolbar.ivBack.setOnClickListener(v -> onBackPressed());
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
-            if (binding.includedAd.flAd.getChildCount() <= 0) {
-                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, false);
+    override fun onResume() {
+        super.onResume()
+        if (MyApp.getAdModel().adsOnOff.equals("Yes", ignoreCase = true)) {
+            if (binding.includedAd.flAd.childCount <= 0) {
+                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, false)
             }
         } else {
-            binding.includedAd.cvAdMain.setVisibility(View.GONE);
-            binding.includedAd.flAd.setVisibility(View.GONE);
-            refreshFragment();
+            binding.includedAd.cvAdMain.visibility = View.GONE
+            binding.includedAd.flAd.visibility = View.GONE
+            refreshFragment()
         }
     }
 
-    public void refreshFragment() {
+    fun refreshFragment() {
         if (!list.isEmpty() && adapter != null) {
-            adapter.refreshAdapter(list);
+            adapter!!.refreshAdapter(list)
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityDownloadBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        setBG();
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(binding.root)
+        binding.includedToolbar.ivBack.setOnClickListener { onBackPressed() }
+        setAdapter()
+        refreshActivity()
+    }
 
-        adapter = new DownloadAdapter(this, list, (position, item) -> {
-            uiController.gotoIntent(this, new Intent(DownloadActivity.this, item.type == Constant.TYPE_PDF ? PdfActivity.class : ImageActivity.class).putExtra("mpath", item.type == Constant.TYPE_PDF ? item.filePath : item.url), true, false);
-        });
-        GridLayoutManager manager = new GridLayoutManager(this, 2);
-        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int i) {
-                switch (adapter.getItemViewType(i)) {
-                    case Constant.STORE_TYPE:
-                        return 1;
-                    case Constant.AD_TYPE:
-                        return 2;
-                    case Constant.LOADING:
-                        return 1;
-                    default:
-                        return 1;
+    fun setAdapter() {
+        adapter = DownloadAdapter(this, list) { _: Int, item: DownloadEntity ->
+            uiController.gotoIntent(
+                this,
+                Intent(
+                    this@DownloadActivity,
+                    if (item.type == Constant.TYPE_PDF) PdfActivity::class.java else ImageActivity::class.java
+                ).putExtra(
+                    "mpath",
+                    if (item.type == Constant.TYPE_PDF) item.filePath else item.url
+                ),
+                true,
+                false
+            )
+        }
+        val manager = GridLayoutManager(this, 2)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(i: Int): Int {
+                return when (adapter!!.getItemViewType(i)) {
+                    Constant.STORE_TYPE -> 1
+                    Constant.AD_TYPE -> 2
+                    Constant.LOADING -> 1
+                    else -> 1
 
                 }
             }
-        });
-        binding.rvDownloads.setLayoutManager(manager);
-        binding.rvDownloads.setAdapter(adapter);
-        binding.rvDownloads.setItemViewCacheSize(100);
-        refreshActivity();
+        }
+        binding.rvDownloads.layoutManager = manager
+        binding.rvDownloads.adapter = adapter
+        binding.rvDownloads.setItemViewCacheSize(100)
     }
 
-    public void refreshActivity() {
-        if (binding.rvDownloads.getAdapter().getItemCount() <= 0) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.refreshAdapter(viewModel.getAllDownloads());
-                    binding.includedProgress.progress.setVisibility(View.GONE);
-                    checkData();
-                }
-            }, 500);
+    private fun refreshActivity() {
+        if (binding.rvDownloads.adapter!!.itemCount <= 0) {
+            delayTask(500) {
+                adapter!!.refreshAdapter(viewModel.allDownloads)
+                binding.includedProgress.progress.visibility = View.GONE
+                checkData()
+            }
         }
     }
 
-    public void checkData() {
-        if (binding.rvDownloads.getAdapter() != null && binding.rvDownloads.getAdapter().getItemCount() > 0) {
-            binding.includedProgress.llError.setVisibility(View.GONE);
+    private fun checkData() {
+        if (binding.rvDownloads.adapter != null && binding.rvDownloads.adapter!!.itemCount > 0) {
+            binding.includedProgress.llError.visibility = View.GONE
         } else {
-            binding.includedProgress.llError.setVisibility(View.VISIBLE);
+            binding.includedProgress.llError.visibility = View.VISIBLE
         }
     }
-
 }

@@ -31,6 +31,7 @@ import com.water.alkaline.kengen.ui.activity.DownloadActivity
 import com.water.alkaline.kengen.ui.activity.SaveActivity
 import com.water.alkaline.kengen.ui.adapter.ViewPagerFragmentAdapter
 import com.water.alkaline.kengen.ui.feedback.FeedbackActivity
+import com.water.alkaline.kengen.ui.feedback.FeedbackViewModel
 import com.water.alkaline.kengen.ui.home.fragment.BannerFragment
 import com.water.alkaline.kengen.ui.home.fragment.ChannelFragment
 import com.water.alkaline.kengen.ui.home.fragment.ChannelFragment.Companion.newInstance
@@ -45,8 +46,9 @@ class HomeActivity : AppCompatActivity() {
     private val binding by lazy {
         ActivityHomeBinding.inflate(layoutInflater)
     }
-
-    private lateinit var viewModel: AppViewModel
+    private val viewModel by lazy {
+        ViewModelProvider(this)[AppViewModel::class.java]
+    }
     private var strings: MutableList<String> = arrayListOf()
     private var pagerFragmentAdapter: ViewPagerFragmentAdapter? = null
     private var savedState: Bundle? = null
@@ -104,7 +106,6 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         savedState = savedInstanceState
-        viewModel = ViewModelProvider(this)[AppViewModel::class.java]
         if (PowerPreference.getDefaultFile().getBoolean("mCheckFirst", true)) {
             PowerPreference.getDefaultFile().putBoolean("mCheckFirst", false)
             showInfoDialog()
@@ -247,7 +248,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun setTabs() {
-        val categories: List<Category> = viewModel!!.allCategory
+        val categories: List<Category> = viewModel.allCategory
         val menu = binding.navView.menu
         var position = 0
 

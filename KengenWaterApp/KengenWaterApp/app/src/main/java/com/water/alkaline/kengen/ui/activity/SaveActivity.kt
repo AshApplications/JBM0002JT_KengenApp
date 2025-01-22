@@ -1,160 +1,134 @@
-package com.water.alkaline.kengen.ui.activity;
+package com.water.alkaline.kengen.ui.activity
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-
-import com.google.gms.ads.AdLoader;
-import com.google.gms.ads.MyApp;
-import com.google.gson.Gson;
-import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
-import com.water.alkaline.kengen.databinding.ActivitySaveBinding;
-import com.water.alkaline.kengen.model.SaveEntity;
-import com.water.alkaline.kengen.ui.adapter.VideosAdapter;
-import com.water.alkaline.kengen.ui.listener.OnVideoListener;
-import com.water.alkaline.kengen.utils.Constant;
-import com.preference.PowerPreference;
-import com.water.alkaline.kengen.utils.uiController;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import dagger.hilt.android.AndroidEntryPoint;
+import android.content.Intent
+import android.os.Bundle
+import android.os.Handler
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import com.google.gms.ads.AdLoader
+import com.google.gms.ads.MyApp
+import com.google.gson.Gson
+import com.preference.PowerPreference
+import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel
+import com.water.alkaline.kengen.databinding.ActivityPreviewBinding
+import com.water.alkaline.kengen.databinding.ActivitySaveBinding
+import com.water.alkaline.kengen.model.SaveEntity
+import com.water.alkaline.kengen.ui.adapter.VideosAdapter
+import com.water.alkaline.kengen.ui.base.BaseActivity
+import com.water.alkaline.kengen.utils.Constant
+import com.water.alkaline.kengen.utils.FeedBacksEvent
+import com.water.alkaline.kengen.utils.RefreshSavedEvent
+import com.water.alkaline.kengen.utils.delayTask
+import com.water.alkaline.kengen.utils.uiController
+import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 @AndroidEntryPoint
-public class SaveActivity extends AppCompatActivity {
+class SaveActivity : BaseActivity() {
+    private val binding by lazy {
+        ActivitySaveBinding.inflate(layoutInflater)
+    }
+    private val viewModel by lazy {
+        ViewModelProvider(this)[AppViewModel::class.java]
+    }
+    var list: MutableList<SaveEntity> = ArrayList()
+    var adapter: VideosAdapter? = null
 
-    public static SaveActivity saveActivity;
-    ActivitySaveBinding binding;
 
-    List<SaveEntity> list = new ArrayList<>();
-    VideosAdapter adapter;
-    public AppViewModel viewModel;
-
-    @Override
-    public void onBackPressed() {
-        uiController.onBackPressed(this);
+    override fun onBackPressed() {
+        uiController.onBackPressed(this)
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
-            if (binding.includedAd.flAd.getChildCount() <= 0) {
-                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, false);
+    override fun onResume() {
+        super.onResume()
+        if (MyApp.getAdModel().adsOnOff.equals("Yes", ignoreCase = true)) {
+            if (binding.includedAd.flAd.childCount <= 0) {
+                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, false)
             }
         } else {
-            binding.includedAd.cvAdMain.setVisibility(View.GONE);
-            binding.includedAd.flAd.setVisibility(View.GONE);
-            refreshFragment();
-        }
-
-    }
-
-    public void setBG() {
-        viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-        binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-    }
-
-    public void refreshFragment() {
-        if (!list.isEmpty() && adapter != null) {
-            adapter.refreshAdapter(list);
+            binding.includedAd.cvAdMain.visibility = View.GONE
+            binding.includedAd.flAd.visibility = View.GONE
+            refreshFragment()
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivitySaveBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        setBG();
-        saveActivity = this;
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
+    }
 
-        GridLayoutManager manager = new GridLayoutManager(this, 2);
-        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int i) {
-                switch (adapter.getItemViewType(i)) {
-                    case Constant.STORE_TYPE:
-                        return 1;
-                    case Constant.AD_TYPE:
-                        return 2;
-                    case Constant.LOADING:
-                        return 1;
-                    default:
-                        return 1;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(binding.root)
+        EventBus.getDefault().register(this)
+        binding.includedToolbar.ivBack.setOnClickListener { onBackPressed() }
+        setAdapter()
+        delayTask(500) {
+            refreshData()
+        }
+    }
+
+    private fun setAdapter() {
+        val manager = GridLayoutManager(this, 2)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(i: Int): Int {
+                return when (adapter!!.getItemViewType(i)) {
+                    Constant.STORE_TYPE -> 1
+                    Constant.AD_TYPE -> 2
+                    Constant.LOADING -> 1
+                    else -> 1
 
                 }
             }
-        });
-
-        binding.rvSaves.setLayoutManager(manager);
-
-        adapter = new VideosAdapter(this, list, null, new OnVideoListener() {
-            @Override
-            public void onItemClick(int position, SaveEntity item) {
-                int pos = position;
-                for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i).videoId.equalsIgnoreCase(item.videoId)) {
-                        pos = i;
-                        break;
-                    }
+        }
+        binding.rvSaves.layoutManager = manager
+        adapter = VideosAdapter(this, list, null) { position, item ->
+            var pos = position
+            for (i in list.indices) {
+                if (list[i].videoId.equals(item.videoId, ignoreCase = true)) {
+                    pos = i
+                    break
                 }
-                PowerPreference.getDefaultFile().putString(Constant.mList, new Gson().toJson(list));
-                uiController.gotoIntent(SaveActivity.this, new Intent(SaveActivity.this, PreviewActivity.class).putExtra(Constant.POSITION, pos), true, false);
             }
-        });
-        binding.rvSaves.setAdapter(adapter);
-        binding.rvSaves.setItemViewCacheSize(100);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                refreshActivity();
-            }
-        }, 500);
-
+            PowerPreference.getDefaultFile().putString(Constant.mList, Gson().toJson(list))
+            uiController.gotoIntent(
+                this@SaveActivity, Intent(this@SaveActivity, PreviewActivity::class.java).putExtra(
+                    Constant.POSITION, pos
+                ), true, false
+            )
+        }
+        binding.rvSaves.adapter = adapter
+        binding.rvSaves.setItemViewCacheSize(100)
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        saveActivity = null;
-    }
-
-    public void refreshActivity() {
-
-        list.clear();
-        list.addAll(viewModel.getAllSaves());
-        adapter.refreshAdapter(list);
-        binding.includedProgress.progress.setVisibility(View.GONE);
-        checkData();
-    }
-
-    public void refreshData() {
-        list.clear();
-        list.addAll(viewModel.getAllSaves());
-        adapter.refreshAdapter(list);
-        binding.includedProgress.progress.setVisibility(View.GONE);
-        checkData();
-    }
-
-    public void checkData() {
-        if (binding.rvSaves.getAdapter() != null && binding.rvSaves.getAdapter().getItemCount() > 0) {
-            binding.includedProgress.llError.setVisibility(View.GONE);
-        } else {
-            binding.includedProgress.llError.setVisibility(View.VISIBLE);
+    private fun refreshFragment() {
+        if (list.isNotEmpty() && adapter != null) {
+            adapter!!.refreshAdapter(list)
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onRefreshEvent(event: RefreshSavedEvent) {
+        refreshData()
+    }
+
+    private fun refreshData() {
+        list.clear()
+        list.addAll(viewModel.allSaves)
+        adapter!!.refreshAdapter(list)
+        binding.includedProgress.progress.visibility = View.GONE
+        checkData()
+    }
+
+    private fun checkData() {
+        if (binding.rvSaves.adapter != null && binding.rvSaves.adapter!!.itemCount > 0) {
+            binding.includedProgress.llError.visibility = View.GONE
+        } else {
+            binding.includedProgress.llError.visibility = View.VISIBLE
+        }
+    }
 }

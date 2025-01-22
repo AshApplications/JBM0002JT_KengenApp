@@ -48,6 +48,7 @@ public class Constant {
     public static final String notifyKey = "notifyKey";
     public static final String apiKey = "apiKey";
 
+    public static String defaultId = "111-111";
     public static final String isRunning = "isRunning";
 
     public static final String appShareMsg = "appShareMsg";

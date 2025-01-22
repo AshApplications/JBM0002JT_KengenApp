@@ -2,45 +2,32 @@ package com.water.alkaline.kengen.ui.feedback
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Message
 import android.provider.Settings
-import android.util.Log
 import android.view.View
-import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gms.ads.AdLoader
 import com.google.gms.ads.MyApp
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.preference.PowerPreference
 import com.water.alkaline.kengen.Encrypt.DecryptEncrypt
 import com.water.alkaline.kengen.MyApplication
 import com.water.alkaline.kengen.R
-import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel
-import com.water.alkaline.kengen.data.network.RetroClient
 import com.water.alkaline.kengen.databinding.ActivityFeedbackBinding
 import com.water.alkaline.kengen.model.NetworkResult
 import com.water.alkaline.kengen.model.feedback.FeedbackResponse
-import com.water.alkaline.kengen.model.main.MainResponse
-import com.water.alkaline.kengen.model.update.UpdateResponse
 import com.water.alkaline.kengen.ui.adapter.ViewPagerFragmentAdapter
 import com.water.alkaline.kengen.ui.base.BaseActivity
 import com.water.alkaline.kengen.ui.feedback.fragment.FeedbackFragment
 import com.water.alkaline.kengen.ui.feedback.fragment.HistoryFragment
-import com.water.alkaline.kengen.ui.splash.StartViewModel
 import com.water.alkaline.kengen.utils.Constant
 import com.water.alkaline.kengen.utils.FeedBacksEvent
 import com.water.alkaline.kengen.utils.showNetworkDialog
 import com.water.alkaline.kengen.utils.uiController
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.ResponseBody
 import org.greenrobot.eventbus.EventBus
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 @AndroidEntryPoint
 class FeedbackActivity : BaseActivity() {
@@ -48,9 +35,11 @@ class FeedbackActivity : BaseActivity() {
         ActivityFeedbackBinding.inflate(layoutInflater)
     }
     private lateinit var adapter: ViewPagerFragmentAdapter
-    private lateinit var feedbackViewModel: FeedbackViewModel
 
-    @SuppressLint("MissingSuperCall")
+    private val feedbackViewModel by lazy {
+        ViewModelProvider(this)[FeedbackViewModel::class.java]
+    }
+
     override fun onBackPressed() {
         uiController.onBackPressed(this)
     }
@@ -109,11 +98,10 @@ class FeedbackActivity : BaseActivity() {
     }
 
     private fun bindObservers() {
-        feedbackViewModel = ViewModelProvider(this)[FeedbackViewModel::class.java]
         feedbackViewModel.getFeedData.observe(this) {
             when (it) {
                 is NetworkResult.Success -> {
-                    hideDialog()
+                    hideLoadingDialog()
                     try {
                         val response = GsonBuilder().create().fromJson(
                             (DecryptEncrypt.DecryptStr(
@@ -134,7 +122,7 @@ class FeedbackActivity : BaseActivity() {
                 }
 
                 is NetworkResult.Error -> {
-                    hideDialog()
+                    hideLoadingDialog()
                     Constant.showLog(it.message)
                     showNetworkDialog(it.message) {
 
@@ -142,7 +130,7 @@ class FeedbackActivity : BaseActivity() {
                 }
 
                 is NetworkResult.Loading -> {
-                    showDialog()
+                    showLoadingDialog()
                 }
             }
         }

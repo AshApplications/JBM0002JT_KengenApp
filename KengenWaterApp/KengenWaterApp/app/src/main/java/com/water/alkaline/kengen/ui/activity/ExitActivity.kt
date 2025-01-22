@@ -1,29 +1,28 @@
-package com.water.alkaline.kengen.ui.activity;
+package com.water.alkaline.kengen.ui.activity
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.os.Handler;
+import android.app.Activity
+import android.os.Bundle
+import android.os.Handler
+import androidx.appcompat.app.AppCompatActivity
+import com.preference.PowerPreference
+import com.water.alkaline.kengen.R
+import com.water.alkaline.kengen.utils.Constant
+import com.water.alkaline.kengen.utils.delayTask
 
-import androidx.appcompat.app.AppCompatActivity;
-import com.preference.PowerPreference;
-import com.water.alkaline.kengen.R;
-import com.water.alkaline.kengen.utils.Constant;
+class ExitActivity : AppCompatActivity() {
 
-public class ExitActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exit);
-
-        getWindow().setLayout(-1, -1);
-        getWindow().setBackgroundDrawable(null);
-        setFinishOnTouchOutside(false);
-        new Handler().postDelayed(() -> checkAds(ExitActivity.this), 2000);
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_exit)
+        window.setLayout(-1, -1)
+        window.setBackgroundDrawable(null)
+        setFinishOnTouchOutside(false)
+        delayTask {
+            checkAds(this@ExitActivity)
+        }
     }
 
-    public void checkAds(Activity activity) {
+    private fun checkAds(activity: Activity?) {
         /*if (PowerPreference.getDefaultFile().getInt(AdUtils.WhichOneSplashAppOpen, 0) == 1) {
             new MainAds().showSplashInterAds(ExitActivity.this, new InterAds.OnAdClosedListener() {
                 @Override
@@ -43,18 +42,15 @@ public class ExitActivity extends AppCompatActivity {
         }*/
     }
 
-    public void exit() {
-        PowerPreference.getDefaultFile().putBoolean(Constant.isRunning, false);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    System.exit(0);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    finishAffinity();
-                }
+    fun exit() {
+        PowerPreference.getDefaultFile().putBoolean(Constant.isRunning, false)
+        delayTask {
+            try {
+                System.exit(0)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                finishAffinity()
             }
-        },2000);
+        }
     }
 }

@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,9 +47,13 @@ import okhttp3.ResponseBody
 @AndroidEntryPoint
 class ChannelFragment : BaseFragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
-    private lateinit var viewModel: AppViewModel
+    private val homeViewModel by lazy {
+        ViewModelProvider(this)[HomeViewModel::class.java]
+    }
 
+    private val viewModel by lazy {
+        ViewModelProvider(this)[AppViewModel::class.java]
+    }
     private var isChannel: Boolean = true
     private var pageToken = ""
     private var channelId = ""
@@ -105,8 +110,6 @@ class ChannelFragment : BaseFragment() {
     }
 
     private fun bindObservers() {
-        viewModel = ViewModelProvider(this)[AppViewModel::class.java]
-        homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
         homeViewModel.updateData.observe(viewLifecycleOwner) {
             if (it is NetworkResult.Success) {
                 try {
@@ -140,7 +143,7 @@ class ChannelFragment : BaseFragment() {
                     parseData(it.data!!)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    showError("Something went Wrong")
+                    Constant.showToast(appContext, "Something went Wrong")
                 }
             } else {
                 if (it.message.equals(
@@ -259,11 +262,11 @@ class ChannelFragment : BaseFragment() {
     private val fromSubCategory: Unit
         get() {
             if (appContext != null) {
-                subList = viewModel!!.getAllSubByCategory(mParam1!!)
+                subList = viewModel.getAllSubByCategory(mParam1!!)
                 if (subList.size > 1) {
                     showSubCategory()
                 } else if (subList.size == 1) {
-                    chanList = viewModel!!.getAllChannelByCategory(subList[0].id)
+                    chanList = viewModel.getAllChannelByCategory(subList[0].id)
                     if (chanList.size > 1) {
                         showChannels()
                     } else if (chanList.size == 1) {
@@ -278,7 +281,7 @@ class ChannelFragment : BaseFragment() {
     private val fromChannel: Unit
         get() {
             if (appContext != null) {
-                chanList = viewModel!!.getAllChannelByCategory(mParam1!!)
+                chanList = viewModel.getAllChannelByCategory(mParam1!!)
                 if (chanList.size > 1) {
                     showChannels()
                 } else if (chanList.size == 1) {
@@ -298,11 +301,11 @@ class ChannelFragment : BaseFragment() {
         }
 
     fun refreshFragment() {
-        if (!subList.isEmpty() && subcatAdapter != null) {
+        if (subList.isNotEmpty() && subcatAdapter != null) {
             subcatAdapter!!.refreshAdapter(subList)
-        } else if (!chanList.isEmpty() && channelAdapter != null) {
+        } else if (chanList.isNotEmpty() && channelAdapter != null) {
             channelAdapter!!.refreshAdapter(chanList)
-        } else if (!videoList.isEmpty() && videosAdapter != null) {
+        } else if (videoList.isNotEmpty() && videosAdapter != null) {
             videosAdapter!!.refreshAdapter(videoList)
         }
     }

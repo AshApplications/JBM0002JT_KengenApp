@@ -31,7 +31,9 @@ class PdfFragment : BaseFragment() {
     var list: MutableList<Pdf> = mutableListOf()
   
     private lateinit var adapter: PdfAdapter
-    private lateinit var appViewModel: AppViewModel
+    private val viewModel by lazy {
+        ViewModelProvider(this)[AppViewModel::class.java]
+    }
 
 
 
@@ -57,7 +59,6 @@ class PdfFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        appViewModel = ViewModelProvider(this)[AppViewModel::class.java]
         setAdapter()
         refreshFragment()
     }
@@ -91,7 +92,7 @@ class PdfFragment : BaseFragment() {
 
     fun refreshFragment() {
         delayTask(500) {
-            adapter.refreshAdapter(appViewModel.getAllPdfByCategory(mParam1))
+            adapter.refreshAdapter(viewModel.getAllPdfByCategory(mParam1))
             binding.includedProgress.progress.visibility = View.GONE
             checkData()
         }

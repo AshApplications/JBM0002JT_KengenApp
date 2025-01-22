@@ -1,503 +1,408 @@
-package com.water.alkaline.kengen.ui.activity;
+package com.water.alkaline.kengen.ui.activity
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-import androidx.lifecycle.ViewModelProvider;
+import android.annotation.SuppressLint
+import android.app.Dialog
+import android.content.DialogInterface
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.net.Uri
+import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.RelativeLayout
+import androidx.core.content.FileProvider
+import androidx.lifecycle.ViewModelProvider
+import com.google.gms.ads.AdLoader
+import com.google.gms.ads.MyApp
+import com.preference.PowerPreference
+import com.water.alkaline.kengen.R
+import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel
+import com.water.alkaline.kengen.databinding.ActivityPdfBinding
+import com.water.alkaline.kengen.databinding.DialogJumpBinding
+import com.water.alkaline.kengen.library.downloader.Error
+import com.water.alkaline.kengen.library.downloader.OnDownloadListener
+import com.water.alkaline.kengen.library.downloader.PRDownloader
+import com.water.alkaline.kengen.library.pdfviewer.scroll.DefaultScrollHandle
+import com.water.alkaline.kengen.library.pdfviewer.util.FitPolicy
+import com.water.alkaline.kengen.model.DownloadEntity
+import com.water.alkaline.kengen.model.main.Pdf
+import com.water.alkaline.kengen.ui.base.BaseActivity
+import com.water.alkaline.kengen.utils.Constant
+import com.water.alkaline.kengen.utils.showNetworkDialog
+import com.water.alkaline.kengen.utils.uiController
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.BufferedInputStream
+import java.io.File
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import javax.net.ssl.HttpsURLConnection
 
-import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-
-import com.google.gms.ads.AdLoader;
-import com.google.gms.ads.MyApp;
-import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
-import com.water.alkaline.kengen.databinding.DialogDownloadBinding;
-import com.water.alkaline.kengen.databinding.DialogInternetBinding;
-import com.water.alkaline.kengen.databinding.DialogJumpBinding;
-import com.water.alkaline.kengen.library.downloader.Error;
-import com.water.alkaline.kengen.library.downloader.OnDownloadListener;
-import com.water.alkaline.kengen.library.downloader.OnProgressListener;
-import com.water.alkaline.kengen.library.downloader.PRDownloader;
-import com.water.alkaline.kengen.library.downloader.Progress;
-import com.water.alkaline.kengen.library.pdfviewer.listener.OnErrorListener;
-import com.water.alkaline.kengen.library.pdfviewer.listener.OnLoadCompleteListener;
-import com.water.alkaline.kengen.library.pdfviewer.listener.OnPageChangeListener;
-import com.water.alkaline.kengen.library.pdfviewer.scroll.DefaultScrollHandle;
-import com.water.alkaline.kengen.library.pdfviewer.util.FitPolicy;
-import com.water.alkaline.kengen.R;
-import com.water.alkaline.kengen.databinding.ActivityPdfBinding;
-import com.water.alkaline.kengen.model.DownloadEntity;
-import com.water.alkaline.kengen.model.main.Pdf;
-import com.water.alkaline.kengen.utils.Constant;
-import com.preference.PowerPreference;
-import com.water.alkaline.kengen.utils.uiController;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import javax.net.ssl.HttpsURLConnection;
-
-public class PdfActivity extends AppCompatActivity {
-
-    ActivityPdfBinding binding;
-    String mPath = "";
-
-    int page = 0, totPages = 0;
-    FitPolicy fitPolicy;
-    boolean isLoaded = false;
-
-    boolean nightMode = false;
-
-    InputStream stream;
-    Pdf pdf;
-    DownloadEntity entity;
-    public AppViewModel viewModel;
-
-    public Dialog dialog;
-
-    public Dialog downloadDialog;
-    public DialogDownloadBinding downloadBinding;
-
-    public void dismiss_dialog() {
-        if (dialog != null && dialog.isShowing())
-            dialog.dismiss();
+@AndroidEntryPoint
+class PdfActivity() : BaseActivity() {
+    private val binding by lazy {
+        ActivityPdfBinding.inflate(layoutInflater)
     }
+    private val viewModel by lazy {
+        ViewModelProvider(this)[AppViewModel::class.java]
+    }
+    private var mPath: String = ""
+    var page: Int = 0
+    private var totPages: Int = 0
+    private var fitPolicy: FitPolicy? = null
+    private var isLoaded: Boolean = false
+    private var nightMode: Boolean = false
+    private var stream: InputStream? = null
+    var pdf: Pdf? = null
+    var entity: DownloadEntity? = null
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
-            if (binding.includedAd.flAd.getChildCount() <= 0) {
-                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, true);
+    override fun onResume() {
+        super.onResume()
+        if (MyApp.getAdModel().adsOnOff.equals("Yes", ignoreCase = true)) {
+            if (binding.includedAd.flAd.childCount <= 0) {
+                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, true)
             }
         } else {
-            binding.includedAd.cvAdMain.setVisibility(View.GONE);
-            binding.includedAd.flAd.setVisibility(View.GONE);
+            binding.includedAd.cvAdMain.visibility = View.GONE
+            binding.includedAd.flAd.visibility = View.GONE
         }
-
     }
 
-    @Override
-    public void onBackPressed() {
-        uiController.onBackPressed(this);
-    }
-
-    public DialogInternetBinding network_dialog(String text) {
-        dialog = new Dialog(this, R.style.NormalDialog);
-        DialogInternetBinding binding = DialogInternetBinding.inflate(getLayoutInflater());
-        dialog.setContentView(binding.getRoot());
-        dialog.setCancelable(false);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        dialog.show();
-        binding.txtError.setText(text);
-        return binding;
-    }
-
-    public void dismiss_download_dialog() {
-        if (downloadDialog != null && downloadDialog.isShowing())
-            downloadDialog.dismiss();
-    }
-
-    public void download_dialog() {
-        dismiss_download_dialog();
-        downloadDialog = new Dialog(this, R.style.NormalDialog);
-        downloadBinding = DialogDownloadBinding.inflate(getLayoutInflater());
-        downloadDialog.setContentView(downloadBinding.getRoot());
-        downloadDialog.setCancelable(false);
-        downloadDialog.setCanceledOnTouchOutside(false);
-        downloadDialog.setOnShowListener(dialogInterface -> AdLoader.getInstance().showNativeDialog(this, downloadBinding.includedAd));
-        downloadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        downloadDialog.show();
-    }
-
-    public void setBG() {
-        viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-        binding.includedToolbar.ivBack.setOnClickListener(v -> onBackPressed());
+    override fun onBackPressed() {
+        uiController.onBackPressed(this)
     }
 
 
-    public void listener() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(binding.root)
+        initDownloadDialog()
+        mPath = intent.extras!!.getString("mpath", "")
+        if (mPath.startsWith("http")) {
+            pdf = null
+            if (viewModel.getByUrl(mPath).isNotEmpty()) pdf = viewModel.getByUrl(mPath)[0]
+        } else {
+            entity = null
+            if (viewModel.getByPath(mPath).isNotEmpty()) entity = viewModel.getByPath(mPath)[0]
+        }
+        this.fitPolicy = FitPolicy.BOTH
+        listener()
+        checkDownload()
+        if (mPath.startsWith("http")) {
+            loadFromUrl()
+        } else {
+            setPdfFile(nightMode, FitPolicy.BOTH, mPath)
+        }
+    }
 
 
-        binding.llmenuJump.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showJumpDialog();
-            }
-        });
+    fun listener() {
+        binding.includedToolbar.ivBack.setOnClickListener { onBackPressed() }
+        binding.llmenuJump.setOnClickListener { showJumpDialog() }
+        binding.llmenuShare.setOnClickListener {
+            if (pdf != null) {
+                var entity: DownloadEntity? = null
+                if (viewModel.getDownloadByUrl(pdf!!.url).size > 0) entity =
+                    viewModel.getDownloadByUrl(
+                        pdf!!.url
+                    )[0]
 
-        binding.llmenuShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (pdf != null) {
-                    DownloadEntity entity = null;
-                    if (viewModel.getDownloadByUrl(pdf.getUrl()).size() > 0)
-                        entity = viewModel.getDownloadByUrl(pdf.getUrl()).get(0);
-
-                    if (entity != null) {
-                        if (new File(entity.filePath).exists()) {
-                            sharePDF(entity.filePath);
-                        } else {
-                            downloadPDF(true);
-                        }
+                if (entity != null) {
+                    if (File(entity.filePath).exists()) {
+                        sharePDF(entity.filePath)
                     } else {
-                        downloadPDF(true);
+                        downloadPDF()
                     }
                 } else {
-
-                    if (entity != null) {
-                        if (new File(entity.filePath).exists()) {
-                            sharePDF(entity.filePath);
-                        } else {
-                            downloadPDF(true);
-                        }
+                    downloadPDF()
+                }
+            } else {
+                if (entity != null) {
+                    if (File(entity!!.filePath).exists()) {
+                        sharePDF(entity!!.filePath)
                     } else {
-                        downloadPDF(true);
+                        downloadPDF()
                     }
+                } else {
+                    downloadPDF()
                 }
             }
-        });
-        binding.ivMenuLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        }
+        binding.ivMenuLeft.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View) {
                 if (page > 0) {
-                    binding.pdfview.jumpTo(binding.pdfview.getCurrentPage() - 1, true);
+                    binding.pdfview.jumpTo(binding.pdfview.currentPage - 1, true)
                 }
             }
-        });
+        })
 
-        binding.ivMenuRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (page < binding.pdfview.getPageCount() - 1) {
-                    binding.pdfview.jumpTo(binding.pdfview.getCurrentPage() + 1, true);
+        binding.ivMenuRight.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View) {
+                if (page < binding.pdfview.pageCount - 1) {
+                    binding.pdfview.jumpTo(binding.pdfview.currentPage + 1, true)
                 }
             }
-        });
-
+        })
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityPdfBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        setBG();
-        mPath = getIntent().getExtras().getString("mpath", "");
+    fun checkDownload() {
         if (mPath.startsWith("http")) {
-            pdf = null;
-            if (!viewModel.getByUrl(mPath).isEmpty())
-                pdf = viewModel.getByUrl(mPath).get(0);
-        } else {
-            entity = null;
-            if (!viewModel.getByPath(mPath).isEmpty())
-                entity = viewModel.getByPath(mPath).get(0);
-        }
-
-        this.fitPolicy = FitPolicy.BOTH;
-        listener();
-        checkDownload();
-        if (mPath.startsWith("http")) {
-            loadFromUrl();
-        } else {
-            setPdfFile(nightMode, FitPolicy.BOTH, mPath);
-        }
-    }
-
-    public void checkDownload() {
-        if (mPath.startsWith("http")) {
-            DownloadEntity entity = null;
-            if (!viewModel.getDownloadByUrl(pdf.getUrl()).isEmpty())
-                entity = viewModel.getDownloadByUrl(pdf.getUrl()).get(0);
+            var entity: DownloadEntity? = null
+            if (!viewModel.getDownloadByUrl(pdf!!.url).isEmpty()) entity =
+                viewModel.getDownloadByUrl(
+                    pdf!!.url
+                )[0]
 
             if (entity != null) {
-                binding.ivDownload.setVisibility(View.GONE);
-                binding.ivShare.setVisibility(View.VISIBLE);
+                binding.ivDownload.visibility = View.GONE
+                binding.ivShare.visibility = View.VISIBLE
             } else {
-                binding.ivDownload.setVisibility(View.VISIBLE);
-                binding.ivShare.setVisibility(View.GONE);
+                binding.ivDownload.visibility = View.VISIBLE
+                binding.ivShare.visibility = View.GONE
             }
         } else {
-            binding.ivDownload.setVisibility(View.GONE);
-            binding.ivShare.setVisibility(View.VISIBLE);
+            binding.ivDownload.visibility = View.GONE
+            binding.ivShare.visibility = View.VISIBLE
         }
     }
 
-    public void loadFromUrl() {
+    private fun loadFromUrl() {
         if (Constant.checkInternet(this)) {
-            new RetrivePDFfromUrl().execute(mPath);
+            CoroutineScope(Dispatchers.IO).launch {
+                val url = URL(mPath)
+                val urlConnection: HttpURLConnection = url.openConnection() as HttpsURLConnection
+                if (urlConnection.responseCode == 200) {
+                    stream = BufferedInputStream(urlConnection.inputStream)
+                }
+                CoroutineScope(Dispatchers.Main).launch {
+                    setPdfUrl(nightMode, FitPolicy.BOTH, stream)
+                }
+            }
         } else {
-            network_dialog(getResources().getString(R.string.kk_error_no_internet)).txtRetry.setOnClickListener(v -> {
-                dismiss_dialog();
-                if (Constant.checkInternet(PdfActivity.this)) {
-                    loadFromUrl();
-                } else dialog.show();
-            });
+            showNetworkDialog {
+                loadFromUrl()
+            }
         }
     }
 
-    public void checkArrow() {
-        if (binding.pdfview.getCurrentPage() == 0) {
-            binding.ivMenuLeft.setVisibility(View.GONE);
+    fun checkArrow() {
+        if (binding.pdfview.currentPage == 0) {
+            binding.ivMenuLeft.visibility = View.GONE
         } else {
-            binding.ivMenuLeft.setVisibility(View.VISIBLE);
+            binding.ivMenuLeft.visibility = View.VISIBLE
         }
 
-        if (binding.pdfview.getCurrentPage() == binding.pdfview.getPageCount() - 1) {
-            binding.ivMenuRight.setVisibility(View.GONE);
+        if (binding.pdfview.currentPage == binding.pdfview.pageCount - 1) {
+            binding.ivMenuRight.visibility = View.GONE
         } else {
-            binding.ivMenuRight.setVisibility(View.VISIBLE);
+            binding.ivMenuRight.visibility = View.VISIBLE
         }
-
     }
 
 
-    public void showJumpDialog() {
-        DialogJumpBinding jumpBinding = DialogJumpBinding.inflate(getLayoutInflater());
-        Dialog dialogJump = new Dialog(PdfActivity.this, R.style.NormalDialog);
-        dialogJump.setContentView(jumpBinding.getRoot());
-        dialogJump.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialogJump.getWindow().setLayout(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        dialogJump.setCancelable(true);
-        dialogJump.setOnShowListener(dialogInterface -> AdLoader.getInstance().showNativeDialog(PdfActivity.this, jumpBinding.includedAd));
-        dialogJump.show();
-        jumpBinding.editJump.setText(PdfActivity.this.binding.pdfview.getCurrentPage() + 1 + "");
-        jumpBinding.txtJump.setOnClickListener(v -> {
+    @SuppressLint("SetTextI18n")
+    fun showJumpDialog() {
+        val jumpBinding = DialogJumpBinding.inflate(
+            layoutInflater
+        )
+        val dialogJump = Dialog(this@PdfActivity, R.style.NormalDialog)
+        dialogJump.setContentView(jumpBinding.root)
+        dialogJump.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialogJump.window!!.setLayout(
+            RelativeLayout.LayoutParams.MATCH_PARENT,
+            RelativeLayout.LayoutParams.MATCH_PARENT
+        )
+        dialogJump.setCancelable(true)
+        dialogJump.setOnShowListener {
+            AdLoader.getInstance().showNativeDialog(
+                this@PdfActivity, jumpBinding.includedAd
+            )
+        }
+        dialogJump.show()
+        jumpBinding.editJump.setText((binding.pdfview.currentPage + 1).toString() + "")
+        jumpBinding.txtJump.setOnClickListener {
             try {
-                if (jumpBinding.editJump.getText().toString().equalsIgnoreCase(""))
-                    jumpBinding.editJump.setError("Enter Page Number");
-                else if (Integer.parseInt(jumpBinding.editJump.getText().toString()) > totPages || Integer.parseInt(jumpBinding.editJump.getText().toString()) == 0)
-                    jumpBinding.editJump.setError("Page Not Available");
+                if (jumpBinding.editJump.getText().toString()
+                        .equals("", ignoreCase = true)
+                ) jumpBinding.editJump.error = "Enter Page Number"
+                else if (jumpBinding.editJump.getText().toString()
+                        .toInt() > totPages || jumpBinding.editJump.getText().toString()
+                        .toInt() == 0
+                ) jumpBinding.editJump.error = "Page Not Available"
                 else {
-                    dialogJump.dismiss();
-                    PdfActivity.this.binding.pdfview.jumpTo(Integer.parseInt(jumpBinding.editJump.getText().toString()) - 1);
+                    dialogJump.dismiss()
+                    binding.pdfview.jumpTo(jumpBinding.editJump.getText().toString().toInt() - 1)
                 }
-            } catch (Exception e) {
-                Log.e("TAG", e.toString());
-                Constant.showToast(PdfActivity.this, "Something went wrong");
+            } catch (e: Exception) {
+                Log.e("TAG", e.toString())
+                Constant.showToast(this@PdfActivity, "Something went wrong")
             }
+        }
 
-        });
 
-
-        jumpBinding.txtCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialogJump.dismiss();
+        jumpBinding.txtCancel.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View) {
+                dialogJump.dismiss()
             }
-        });
+        })
     }
 
 
-    @SuppressLint("StaticFieldLeak")
-    class RetrivePDFfromUrl extends AsyncTask<String, Void, InputStream> {
-        @Override
-        protected InputStream doInBackground(String... strings) {
-            InputStream inputStream = null;
-            try {
-                URL url = new URL(strings[0]);
-                HttpURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-                if (urlConnection.getResponseCode() == 200) {
-                    inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-            return inputStream;
-        }
-
-        @Override
-        protected void onPostExecute(InputStream inputStream) {
-            stream = inputStream;
-            setPdfUrl(nightMode, FitPolicy.BOTH, stream);
-        }
-    }
-
-    public void setPdfUrl(boolean nightMode, FitPolicy fitPolicy, InputStream stream) {
-        isLoaded = false;
+    @SuppressLint("SetTextI18n")
+    fun setPdfUrl(nightMode: Boolean, fitPolicy: FitPolicy?, stream: InputStream?) {
+        isLoaded = false
         binding.pdfview.fromStream(stream)
-                .password(null)
-                .enableAnnotationRendering(true)
-                .pageFitPolicy(fitPolicy)
-                .defaultPage(page)
-                .swipeHorizontal(true)
-                .autoSpacing(true)
-                .scrollHandle(new DefaultScrollHandle(PdfActivity.this))
-                .pageFling(true)
-                .pageSnap(false)
-                .nightMode(nightMode)
-                .onPageChange(new OnPageChangeListener() {
-                    @Override
-                    public void onPageChanged(int page, int pageCount) {
-                        PdfActivity.this.page = page;
-                        binding.txtPageNumbers.setText((page + 1) + " / " + pageCount);
-                        checkArrow();
-                    }
-                }).onLoad(new OnLoadCompleteListener() {
-                    @Override
-                    public void loadComplete(int nbPages) {
-                        isLoaded = true;
-                        totPages = nbPages;
-                        binding.pdfview.setVisibility(View.VISIBLE);
-                        binding.includedProgress.progress.setVisibility(View.GONE);
-                        binding.txtPageNumbers.setVisibility(View.VISIBLE);
-                        binding.includedProgress.llError.setVisibility(View.GONE);
-                        binding.llPdfMenu.setVisibility(View.VISIBLE);
-                        checkArrow();
-                    }
-                }).onError(new OnErrorListener() {
-                    @Override
-                    public void onError(Throwable t) {
-                        Constant.showLog(t.getMessage());
-                        isLoaded = false;
-                        totPages = 0;
-                        binding.pdfview.setVisibility(View.GONE);
-                        binding.includedProgress.progress.setVisibility(View.GONE);
-                        binding.txtPageNumbers.setVisibility(View.GONE);
-                        binding.includedProgress.llError.setVisibility(View.VISIBLE);
-                        binding.llPdfMenu.setVisibility(View.GONE);
-                        Constant.showToast(PdfActivity.this, "Something went wrong");
-                    }
-                }).load();
+            .password(null)
+            .enableAnnotationRendering(true)
+            .pageFitPolicy(fitPolicy)
+            .defaultPage(page)
+            .swipeHorizontal(true)
+            .autoSpacing(true)
+            .scrollHandle(DefaultScrollHandle(this@PdfActivity))
+            .pageFling(true)
+            .pageSnap(false)
+            .nightMode(nightMode)
+            .onPageChange { page, pageCount ->
+                this@PdfActivity.page = page
+                binding.txtPageNumbers.text = (page + 1).toString() + " / " + pageCount
+                checkArrow()
+            }.onLoad { nbPages ->
+                isLoaded = true
+                totPages = nbPages
+                binding.pdfview.visibility = View.VISIBLE
+                binding.includedProgress.progress.visibility = View.GONE
+                binding.txtPageNumbers.visibility = View.VISIBLE
+                binding.includedProgress.llError.visibility = View.GONE
+                binding.llPdfMenu.visibility = View.VISIBLE
+                checkArrow()
+            }.onError { t ->
+                Constant.showLog(t.message)
+                isLoaded = false
+                totPages = 0
+                binding.pdfview.visibility = View.GONE
+                binding.includedProgress.progress.visibility = View.GONE
+                binding.txtPageNumbers.visibility = View.GONE
+                binding.includedProgress.llError.visibility = View.VISIBLE
+                binding.llPdfMenu.visibility = View.GONE
+                Constant.showToast(this@PdfActivity, "Something went wrong")
+            }.load()
     }
 
 
-    public void setPdfFile(boolean nightMode, FitPolicy fitPolicy, String stream) {
-        isLoaded = false;
-        binding.pdfview.fromUri(Uri.parse("file://" + stream))
-                .password(null)
-                .enableAnnotationRendering(true)
-                .pageFitPolicy(fitPolicy)
-                .defaultPage(page)
-                .autoSpacing(true)
-                .swipeHorizontal(true)
-                .scrollHandle(new DefaultScrollHandle(PdfActivity.this))
-                .pageFling(true)
-                .pageSnap(false)
-                .nightMode(nightMode)
-                .onPageChange(new OnPageChangeListener() {
-                    @Override
-                    public void onPageChanged(int page, int pageCount) {
-                        PdfActivity.this.page = page;
-                        binding.txtPageNumbers.setText((page + 1) + " / " + pageCount);
-                        checkArrow();
-                    }
-                }).onLoad(new OnLoadCompleteListener() {
-                    @Override
-                    public void loadComplete(int nbPages) {
-                        isLoaded = true;
-                        totPages = nbPages;
-                        binding.pdfview.setVisibility(View.VISIBLE);
-                        binding.includedProgress.progress.setVisibility(View.GONE);
-                        binding.txtPageNumbers.setVisibility(View.VISIBLE);
-                        binding.includedProgress.llError.setVisibility(View.GONE);
-                        binding.llPdfMenu.setVisibility(View.VISIBLE);
-                        checkArrow();
-                    }
-                }).onError(new OnErrorListener() {
-                    @Override
-                    public void onError(Throwable t) {
-                        Constant.showLog(t.getMessage());
-                        isLoaded = false;
-                        totPages = 0;
-                        binding.pdfview.setVisibility(View.GONE);
-                        binding.includedProgress.progress.setVisibility(View.GONE);
-                        binding.txtPageNumbers.setVisibility(View.GONE);
-                        binding.includedProgress.llError.setVisibility(View.VISIBLE);
-                        binding.llPdfMenu.setVisibility(View.GONE);
-                        Constant.showToast(PdfActivity.this, "Something went wrong");
-                    }
-                }).load();
+    @SuppressLint("SetTextI18n")
+    private fun setPdfFile(nightMode: Boolean, fitPolicy: FitPolicy?, stream: String) {
+        isLoaded = false
+        binding.pdfview.fromUri(Uri.parse("file://$stream"))
+            .password(null)
+            .enableAnnotationRendering(true)
+            .pageFitPolicy(fitPolicy)
+            .defaultPage(page)
+            .autoSpacing(true)
+            .swipeHorizontal(true)
+            .scrollHandle(DefaultScrollHandle(this@PdfActivity))
+            .pageFling(true)
+            .pageSnap(false)
+            .nightMode(nightMode)
+            .onPageChange { page, pageCount ->
+                this@PdfActivity.page = page
+                binding.txtPageNumbers.text = (page + 1).toString() + " / " + pageCount
+                checkArrow()
+            }.onLoad { nbPages ->
+                isLoaded = true
+                totPages = nbPages
+                binding.pdfview.visibility = View.VISIBLE
+                binding.includedProgress.progress.visibility = View.GONE
+                binding.txtPageNumbers.visibility = View.VISIBLE
+                binding.includedProgress.llError.visibility = View.GONE
+                binding.llPdfMenu.visibility = View.VISIBLE
+                checkArrow()
+            }.onError { t ->
+                Constant.showLog(t.message)
+                isLoaded = false
+                totPages = 0
+                binding.pdfview.visibility = View.GONE
+                binding.includedProgress.progress.visibility = View.GONE
+                binding.txtPageNumbers.visibility = View.GONE
+                binding.includedProgress.llError.visibility = View.VISIBLE
+                binding.llPdfMenu.visibility = View.GONE
+                Constant.showToast(this@PdfActivity, "Something went wrong")
+            }.load()
     }
 
-    public void downloadPDF(boolean isShare) {
-
+    @SuppressLint("SetTextI18n")
+    private fun downloadPDF() {
         if (!Constant.checkPermissions()) {
-            Constant.getPermissions(this);
-            return;
+            Constant.getPermissions(this)
+            return
         }
-
-        download_dialog();
-        String filename = "file" + System.currentTimeMillis() + ".pdf";
-        String url = "";
+        showDownloadDialog()
+        val filename = "file" + System.currentTimeMillis() + ".pdf"
+        val url: String?
         if (pdf != null) {
-            url = pdf.getUrl();
+            url = pdf!!.url
         } else {
-            url = entity.url;
+            url = entity!!.url
         }
         PRDownloader.download(url, Constant.getPDFdisc(), filename)
-                .setTag(Integer.parseInt(pdf.getId()))
-                .build()
-                .setOnProgressListener(new OnProgressListener() {
-                    @Override
-                    public void onProgress(Progress progress) {
-                        downloadBinding.txtvlu.setText("Downloading " + (int) (((double) progress.currentBytes / progress.totalBytes) * 100.0) + " %");
-                    }
-                }).start(new OnDownloadListener() {
-                    @Override
-                    public void onDownloadComplete() {
-                        dismiss_download_dialog();
-                        Constant.showToast(PdfActivity.this, "Download Completed");
-                        DownloadEntity entity = new DownloadEntity(pdf.getName(), Constant.getPDFdisc() + "/" + filename, pdf.getImage(), pdf.getUrl(), Constant.TYPE_PDF);
-                        viewModel.insertDownloads(entity);
-                        Constant.scanPdf(PdfActivity.this, entity.filePath);
-                        checkDownload();
-                    }
+            .setTag(pdf!!.id.toInt())
+            .build()
+            .setOnProgressListener { progress ->
+                downloadBinding.txtvlu.text =
+                    "Downloading " + (((progress.currentBytes.toDouble() / progress.totalBytes) * 100.0).toInt()) + " %"
+            }.start(object : OnDownloadListener {
+                override fun onDownloadComplete() {
+                    hideDownloadDialog()
+                    Constant.showToast(this@PdfActivity, "Download Completed")
+                    val entity = DownloadEntity(
+                        pdf!!.name,
+                        Constant.getPDFdisc() + "/" + filename,
+                        pdf!!.image,
+                        pdf!!.url,
+                        Constant.TYPE_PDF
+                    )
+                    viewModel.insertDownloads(entity)
+                    Constant.scanPdf(this@PdfActivity, entity.filePath)
+                    checkDownload()
+                }
 
-                    @Override
-                    public void onError(Error error) {
-                        Constant.showToast(PdfActivity.this, "Something went wrong");
-                        dismiss_download_dialog();
-                    }
-                });
+                override fun onError(error: Error) {
+                    Constant.showToast(this@PdfActivity, "Something went wrong")
+                    hideDownloadDialog()
 
-        downloadBinding.txtCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PRDownloader.cancel(Integer.parseInt(pdf.getId()));
-                dismiss_download_dialog();
-            }
-        });
+                }
+            })
+
+        downloadBinding.txtCancel.setOnClickListener {
+            PRDownloader.cancel(pdf!!.id.toInt())
+            hideDownloadDialog()
+        }
     }
 
-    public void sharePDF(String mPath) {
+    private fun sharePDF(mPath: String) {
         try {
-            Intent i = new Intent(Intent.ACTION_SEND);
-            i.setType("application/pdf");
-            i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name));
+            val i = Intent(Intent.ACTION_SEND)
+            i.setType("application/pdf")
+            i.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.app_name))
 
-            String sAux = PowerPreference.getDefaultFile().getString(Constant.vidShareMsg, "");
+            var sAux = PowerPreference.getDefaultFile().getString(Constant.vidShareMsg, "")
 
-            String sAux2 = "https://play.google.com/store/apps/details?id=" + getPackageName();
-            sAux = sAux + "\n\n" + sAux2;
-            Uri fileUri = FileProvider.getUriForFile(getApplicationContext(),
-                    getPackageName() + ".fileprovider", new File(mPath));
-            i.putExtra(Intent.EXTRA_TEXT, sAux);
-            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            i.putExtra(Intent.EXTRA_STREAM, fileUri);
-            startActivity(Intent.createChooser(i, "Choose One"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            Constant.showToast(PdfActivity.this, "Something went wrong");
+            val sAux2 = "https://play.google.com/store/apps/details?id=" + packageName
+            sAux = sAux + "\n\n" + sAux2
+            val fileUri = FileProvider.getUriForFile(
+                applicationContext,
+                "$packageName.fileprovider", File(mPath)
+            )
+            i.putExtra(Intent.EXTRA_TEXT, sAux)
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            i.putExtra(Intent.EXTRA_STREAM, fileUri)
+            startActivity(Intent.createChooser(i, "Choose One"))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Constant.showToast(this@PdfActivity, "Something went wrong")
         }
-
     }
 }

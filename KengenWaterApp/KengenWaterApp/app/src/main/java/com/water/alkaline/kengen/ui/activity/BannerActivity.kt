@@ -1,269 +1,253 @@
-package com.water.alkaline.kengen.ui.activity;
+package com.water.alkaline.kengen.ui.activity
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.viewpager2.widget.ViewPager2;
-
-import android.app.Dialog;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.google.gms.ads.AdLoader;
-import com.google.gms.ads.MyApp;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.preference.PowerPreference;
-import com.water.alkaline.kengen.R;
-import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel;
-import com.water.alkaline.kengen.databinding.ActivityBannerBinding;
-import com.water.alkaline.kengen.databinding.DialogDownloadBinding;
-import com.water.alkaline.kengen.library.downloader.Error;
-import com.water.alkaline.kengen.library.downloader.OnDownloadListener;
-import com.water.alkaline.kengen.library.downloader.OnProgressListener;
-import com.water.alkaline.kengen.library.downloader.PRDownloader;
-import com.water.alkaline.kengen.library.downloader.Progress;
-import com.water.alkaline.kengen.model.DownloadEntity;
-import com.water.alkaline.kengen.model.main.Banner;
-import com.water.alkaline.kengen.ui.adapter.VpImageAdapter;
-import com.water.alkaline.kengen.utils.Constant;
-import com.water.alkaline.kengen.utils.uiController;
-
-import java.io.File;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
-import dagger.hilt.android.AndroidEntryPoint;
+import android.annotation.SuppressLint
+import android.app.Dialog
+import android.content.DialogInterface
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
+import android.os.Handler
+import android.util.Log
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
+import androidx.lifecycle.ViewModelProvider
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.google.gms.ads.AdLoader
+import com.google.gms.ads.MyApp
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.preference.PowerPreference
+import com.water.alkaline.kengen.R
+import com.water.alkaline.kengen.data.db.viewmodel.AppViewModel
+import com.water.alkaline.kengen.databinding.ActivityBannerBinding
+import com.water.alkaline.kengen.databinding.ActivityFeedbackBinding
+import com.water.alkaline.kengen.databinding.DialogDownloadBinding
+import com.water.alkaline.kengen.library.downloader.Error
+import com.water.alkaline.kengen.library.downloader.OnDownloadListener
+import com.water.alkaline.kengen.library.downloader.OnProgressListener
+import com.water.alkaline.kengen.library.downloader.PRDownloader
+import com.water.alkaline.kengen.library.downloader.Progress
+import com.water.alkaline.kengen.model.DownloadEntity
+import com.water.alkaline.kengen.model.main.Banner
+import com.water.alkaline.kengen.ui.adapter.VpImageAdapter
+import com.water.alkaline.kengen.ui.base.BaseActivity
+import com.water.alkaline.kengen.utils.Constant
+import com.water.alkaline.kengen.utils.delayTask
+import com.water.alkaline.kengen.utils.uiController
+import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 
 @AndroidEntryPoint
-public class BannerActivity extends AppCompatActivity {
+class BannerActivity : BaseActivity() {
 
-    ActivityBannerBinding binding;
-    ArrayList<Banner> banners = new ArrayList<>();
-
-    int POS = 0;
-    String PAGE = Constant.LIVE;
-
-    VpImageAdapter adapter;
-
-    public AppViewModel viewModel;
-
-    public Dialog downloadDialog;
-    public DialogDownloadBinding downloadBinding;
-
-    public void dismiss_download_dialog() {
-        if (downloadDialog != null && downloadDialog.isShowing())
-            downloadDialog.dismiss();
+    private val binding by lazy {
+        ActivityBannerBinding.inflate(layoutInflater)
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
-            if (binding.includedAd.flAd.getChildCount() <= 0) {
-                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, true);
+    private var banners: ArrayList<Banner> = ArrayList()
+
+    private var POS: Int = 0
+    private var PAGE: String = Constant.LIVE
+
+    private val viewModel by lazy {
+        ViewModelProvider(this)[AppViewModel::class.java]
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (MyApp.getAdModel().adsOnOff.equals("Yes", ignoreCase = true)) {
+            if (binding.includedAd.flAd.childCount <= 0) {
+                AdLoader.getInstance().showUniversalAd(this, binding.includedAd, true)
             }
         } else {
-            binding.includedAd.cvAdMain.setVisibility(View.GONE);
-            binding.includedAd.flAd.setVisibility(View.GONE);
+            binding.includedAd.cvAdMain.visibility = View.GONE
+            binding.includedAd.flAd.visibility = View.GONE
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        uiController.onBackPressed(this);
+    override fun onBackPressed() {
+        uiController.onBackPressed(this)
     }
 
-    public void download_dialog() {
-        dismiss_download_dialog();
-        downloadDialog = new Dialog(this, R.style.NormalDialog);
-        downloadBinding = DialogDownloadBinding.inflate(getLayoutInflater());
-        downloadDialog.setContentView(downloadBinding.getRoot());
-        downloadDialog.setCancelable(false);
-        downloadDialog.setCanceledOnTouchOutside(false);
-        downloadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        downloadDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        downloadDialog.setOnShowListener(dialogInterface -> AdLoader.getInstance().showNativeDialog(this, downloadBinding.includedAd));
-        downloadDialog.show();
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(binding.root)
+        initDownloadDialog()
+        getIntentData()
+        startPager()
     }
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityBannerBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        viewModel = new ViewModelProvider(this).get(AppViewModel.class);
-        startPager();
-    }
-
-    public void startPager() {
-        if (getIntent() != null && getIntent().hasExtra("PAGE")) {
-            POS = getIntent().getIntExtra("POS", 0);
-            PAGE = getIntent().getStringExtra("PAGE");
+    private fun getIntentData() {
+        if (intent != null && intent.hasExtra("PAGE")) {
+            POS = intent.getIntExtra("POS", 0)
+            PAGE = intent.getStringExtra("PAGE").toString()
         }
-
-        binding.includedToolbar.ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-
-        binding.llmenuDownload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DownloadEntity entity = null;
-                if (!viewModel.getDownloadByUrl(banners.get(binding.viewpager.getCurrentItem()).getUrl()).isEmpty())
-                    entity = viewModel.getDownloadByUrl(banners.get(binding.viewpager.getCurrentItem()).getUrl()).get(0);
-
-                if (entity != null) {
-                    if (new File(entity.filePath).exists()) {
-                        shareImage(entity.filePath);
-                    } else {
-                        downloadBanner(banners.get(binding.viewpager.getCurrentItem()), false);
-                    }
-                } else
-                    downloadBanner(banners.get(binding.viewpager.getCurrentItem()), false);
-
-            }
-        });
-
-        new Handler().postDelayed(this::refresh, 500);
     }
 
-    public void refresh() {
-
-        try {
-            Type type = new TypeToken<List<Banner>>() {
-            }.getType();
-
-            banners = new Gson().fromJson(PowerPreference.getDefaultFile().getString(Constant.mList, new Gson().toJson(new ArrayList<Banner>())), type);
-        } catch (Exception e) {
-            banners = new ArrayList<>();
-        }
-
-        if (!banners.isEmpty()) {
-            adapter = new VpImageAdapter(this, banners, (position, item) -> {
-            });
-            binding.viewpager.setAdapter(adapter);
-            binding.viewpager.setCurrentItem(POS, false);
-            checkDownloadIcon(binding.viewpager.getCurrentItem());
-            checkArrow();
-            checkData();
-            binding.ivMenuLeft.setOnClickListener(v -> binding.viewpager.setCurrentItem(binding.viewpager.getCurrentItem() - 1, true));
-            binding.ivMenuRight.setOnClickListener(v -> binding.viewpager.setCurrentItem(binding.viewpager.getCurrentItem() + 1, true));
-            binding.viewpager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-                @Override
-                public void onPageSelected(int position) {
-                    super.onPageSelected(position);
-                    checkDownloadIcon(position);
-                    checkArrow();
+    private fun startPager() {
+        binding.includedToolbar.ivBack.setOnClickListener { onBackPressed() }
+        binding.llmenuDownload.setOnClickListener {
+            var entity: DownloadEntity? = null
+            if (viewModel.getDownloadByUrl(banners[binding.viewpager.currentItem].url).isNotEmpty()
+            ) entity = viewModel.getDownloadByUrl(
+                banners[binding.viewpager.currentItem].url
+            )[0]
+            if (entity != null) {
+                if (File(entity.filePath).exists()) {
+                    shareImage(entity.filePath)
+                } else {
+                    downloadBanner(banners[binding.viewpager.currentItem], false)
                 }
-            });
-        } else {
-            Constant.showToast(this, "Unknown Error Occurred");
-            finish();
+            } else downloadBanner(banners[binding.viewpager.currentItem], false)
+        }
+
+        delayTask(500) {
+            refresh()
         }
     }
 
-    public void checkArrow() {
-        binding.ivMenuLeft.setVisibility(binding.viewpager.getCurrentItem() == 0 ? View.GONE : View.VISIBLE);
-        binding.ivMenuRight.setVisibility(binding.viewpager.getCurrentItem() == adapter.getItemCount() - 1 ? View.GONE : View.VISIBLE);
-    }
-
-    public void checkData() {
-        binding.includedProgress.progress.setVisibility(View.GONE);
-        if (binding.viewpager.getAdapter() != null && binding.viewpager.getAdapter().getItemCount() > 0) {
-            binding.llPdfMenu.setVisibility(View.VISIBLE);
-            binding.includedProgress.llError.setVisibility(View.GONE);
-        } else {
-            binding.llPdfMenu.setVisibility(View.GONE);
-        }
-    }
-
-    public void checkDownloadIcon(int pos) {
-        DownloadEntity entity = null;
-        if (!viewModel.getDownloadByUrl(banners.get(pos).getUrl()).isEmpty())
-            entity = viewModel.getDownloadByUrl(banners.get(pos).getUrl()).get(0);
-
-        binding.ivDownload.setVisibility(entity != null ? View.GONE : View.VISIBLE);
-        binding.ivShare.setVisibility(entity != null ? View.VISIBLE : View.GONE);
-    }
-
-    public void shareImage(String mPath) {
+    private fun refresh() {
         try {
-            Intent i = new Intent(Intent.ACTION_SEND);
-            i.setType("image/*");
-            i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name));
+            val type = object : TypeToken<List<Banner?>?>() {
+            }.type
 
-            String sAux = PowerPreference.getDefaultFile().getString(Constant.vidShareMsg, "");
-            String sAux2 = "https://play.google.com/store/apps/details?id=" + getPackageName();
-            sAux = sAux + "\n\n" + sAux2;
-            Uri fileUri = FileProvider.getUriForFile(getApplicationContext(),
-                    getPackageName() + ".fileprovider", new File(mPath));
-            i.putExtra(Intent.EXTRA_TEXT, sAux);
-            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            i.putExtra(Intent.EXTRA_STREAM, fileUri);
-
-            startActivity(Intent.createChooser(i, "Choose One"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            Constant.showToast(BannerActivity.this, "Something went wrong");
+            banners = Gson().fromJson(
+                PowerPreference.getDefaultFile().getString(
+                    Constant.mList, Gson().toJson(
+                        ArrayList<Banner>()
+                    )
+                ), type
+            )
+        } catch (e: Exception) {
+            banners = ArrayList()
         }
 
+        if (banners.isNotEmpty()) {
+            val adapter = VpImageAdapter(this, banners, { position: Int, item: Banner? -> })
+            binding.viewpager.adapter = adapter
+            binding.viewpager.setCurrentItem(POS, false)
+            checkDownloadIcon(binding.viewpager.currentItem)
+            binding.ivMenuLeft.visibility =
+                if (binding.viewpager.currentItem == 0) View.GONE else View.VISIBLE
+            binding.ivMenuRight.visibility =
+                if (binding.viewpager.currentItem == adapter.itemCount - 1) View.GONE else View.VISIBLE
+            checkData()
+            binding.ivMenuLeft.setOnClickListener {
+                binding.viewpager.setCurrentItem(
+                    binding.viewpager.currentItem - 1, true
+                )
+            }
+            binding.ivMenuRight.setOnClickListener {
+                binding.viewpager.setCurrentItem(
+                    binding.viewpager.currentItem + 1, true
+                )
+            }
+            binding.viewpager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+                    checkDownloadIcon(position)
+                    binding.ivMenuLeft.visibility =
+                        if (binding.viewpager.currentItem == 0) View.GONE else View.VISIBLE
+                    binding.ivMenuRight.visibility =
+                        if (binding.viewpager.currentItem == adapter.itemCount - 1) View.GONE else View.VISIBLE
+                }
+            })
+        } else {
+            Constant.showToast(this, "Unknown Error Occurred")
+            finish()
+        }
     }
 
-    public void downloadBanner(Banner banner, boolean isShare) {
-
-        if (!Constant.checkPermissions()) {
-            Constant.getPermissions(this);
-            return;
+    private fun checkData() {
+        binding.includedProgress.progress.visibility = View.GONE
+        if (binding.viewpager.adapter != null && binding.viewpager.adapter!!.itemCount > 0) {
+            binding.llPdfMenu.visibility = View.VISIBLE
+            binding.includedProgress.llError.visibility = View.GONE
+        } else {
+            binding.llPdfMenu.visibility = View.GONE
         }
+    }
 
-        download_dialog();
-        String filename = "file" + System.currentTimeMillis() + ".jpg";
-        PRDownloader.download(banner.getUrl(), Constant.getImagedisc(), filename)
-                .setTag(Integer.parseInt(banner.getId()))
-                .build()
-                .setOnProgressListener(new OnProgressListener() {
-                    @Override
-                    public void onProgress(Progress progress) {
-                        downloadBinding.txtvlu.setText("Downloading " + (int) (((double) progress.currentBytes / progress.totalBytes) * 100.0) + " %");
-                    }
-                }).start(new OnDownloadListener() {
-                    @Override
-                    public void onDownloadComplete() {
-                        dismiss_download_dialog();
-                        Constant.showToast(BannerActivity.this, "Download Completed");
-                        DownloadEntity entity = new DownloadEntity(banner.getName(), Constant.getImagedisc() + "/" + filename, Constant.getImagedisc() + "/" + filename, banner.getUrl(), Constant.TYPE_IMAGE);
-                        viewModel.insertDownloads(entity);
-                        Constant.scanMedia(BannerActivity.this, entity.filePath);
-                        checkDownloadIcon(binding.viewpager.getCurrentItem());
-                        if (isShare) {
-                            shareImage(Constant.getImagedisc() + "/" + filename);
-                        }
-                    }
+    fun checkDownloadIcon(pos: Int) {
+        var entity: DownloadEntity? = null
+        if (viewModel.getDownloadByUrl(banners[pos].url).isNotEmpty()) entity =
+            viewModel.getDownloadByUrl(
+                banners[pos].url
+            )[0]
+        binding.ivDownload.visibility = if (entity != null) View.GONE else View.VISIBLE
+        binding.ivShare.visibility = if (entity != null) View.VISIBLE else View.GONE
+    }
 
-                    @Override
-                    public void onError(Error error) {
-                        Log.e("TAG", error.toString());
-                        Constant.showToast(BannerActivity.this, "Something went wrong");
-                        dismiss_download_dialog();
-                    }
-                });
+    fun shareImage(mPath: String?) {
+        try {
+            val i = Intent(Intent.ACTION_SEND)
+            i.setType("image/*")
+            i.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.app_name))
 
-        downloadBinding.txtCancel.setOnClickListener(v -> {
-            PRDownloader.cancel(Integer.parseInt(banner.getId()));
-            dismiss_download_dialog();
-        });
+            var sAux = PowerPreference.getDefaultFile().getString(Constant.vidShareMsg, "")
+            val sAux2 = "https://play.google.com/store/apps/details?id=" + packageName
+            sAux = sAux + "\n\n" + sAux2
+            val fileUri = FileProvider.getUriForFile(
+                applicationContext,
+                packageName + ".fileprovider", File(mPath)
+            )
+            i.putExtra(Intent.EXTRA_TEXT, sAux)
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            i.putExtra(Intent.EXTRA_STREAM, fileUri)
+
+            startActivity(Intent.createChooser(i, "Choose One"))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Constant.showToast(this@BannerActivity, "Something went wrong")
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun downloadBanner(banner: Banner, isShare: Boolean) {
+        if (!Constant.checkPermissions()) {
+            Constant.getPermissions(this)
+            return
+        }
+        showDownloadDialog()
+        val filename = "file" + System.currentTimeMillis() + ".jpg"
+        PRDownloader.download(banner.url, Constant.getImagedisc(), filename)
+            .setTag(banner.id.toInt())
+            .build()
+            .setOnProgressListener { progress ->
+                downloadBinding.txtvlu.text =
+                    "Downloading " + (((progress.currentBytes.toDouble() / progress.totalBytes) * 100.0).toInt()) + " %"
+            }.start(object : OnDownloadListener {
+                override fun onDownloadComplete() {
+                    hideDownloadDialog()
+                    Constant.showToast(this@BannerActivity, "Download Completed")
+                    val entity = DownloadEntity(
+                        banner.name,
+                        Constant.getImagedisc() + "/" + filename,
+                        Constant.getImagedisc() + "/" + filename,
+                        banner.url,
+                        Constant.TYPE_IMAGE
+                    )
+                    viewModel.insertDownloads(entity)
+                    Constant.scanMedia(this@BannerActivity, entity.filePath)
+                    checkDownloadIcon(binding.viewpager.currentItem)
+                    if (isShare) {
+                        shareImage(Constant.getImagedisc() + "/" + filename)
+                    }
+                }
+
+                override fun onError(error: Error) {
+                    Log.e("TAG", error.toString())
+                    Constant.showToast(this@BannerActivity, "Something went wrong")
+                    hideDownloadDialog()
+                }
+            })
+
+        downloadBinding.txtCancel.setOnClickListener {
+            PRDownloader.cancel(banner.id.toInt())
+            hideDownloadDialog()
+        }
     }
 }

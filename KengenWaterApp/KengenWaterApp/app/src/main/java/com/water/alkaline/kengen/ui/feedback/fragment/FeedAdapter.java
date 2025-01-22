@@ -106,8 +106,8 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof AdHolder) {
             AdHolder adHolder = (AdHolder) holder;
-            if (adHolder.binding.flAd.getChildCount() <= 0) {
-                AdLoader.getInstance().showNativeList(activity, adHolder.binding);
+            if (adHolder.getBinding().flAd.getChildCount() <= 0) {
+                AdLoader.getInstance().showNativeList(activity, adHolder.getBinding());
             }
         } else {
             FeedHolder holder1 = (FeedHolder) holder;

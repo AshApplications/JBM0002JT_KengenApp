@@ -59,9 +59,9 @@ class ChannelFragment : BaseFragment() {
     private var channelId = ""
 
 
-    private var subList: List<Subcategory> = ArrayList()
-    private var chanList: List<Channel> = ArrayList()
-    private var videoList: MutableList<SaveEntity> = ArrayList()
+    private var subList: MutableList<Subcategory> = mutableListOf()
+    private var chanList: MutableList<Channel> = mutableListOf()
+    private var videoList: MutableList<SaveEntity> = mutableListOf()
 
     private lateinit var channelAdapter: ChannelAdapter
     private lateinit var subcatAdapter: SubcatAdapter
@@ -374,14 +374,10 @@ class ChannelFragment : BaseFragment() {
     private fun showVideos() {
         videosAdapter =
             VideosAdapter(appContext, videoList, binding.rvCats) { position, item ->
-                videoList.removeAll(setOf<Any?>(null))
-                var pos = position
-                for (i in videoList.indices) {
-                    if (videoList[i].videoId.equals(item.videoId, ignoreCase = true)) {
-                        pos = i
-                        break
-                    }
+                videoList.removeAll {
+                    it.videoId.equals(Constant.defaultId)
                 }
+                val pos = videoList.indexOfFirst { it.videoId.equals(item.videoId) }
                 PowerPreference.getDefaultFile().putString(Constant.mList, Gson().toJson(videoList))
                 uiController.gotoIntent(
                     if (appContext is HomeActivity)

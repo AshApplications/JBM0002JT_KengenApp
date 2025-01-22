@@ -1,132 +1,127 @@
-package com.water.alkaline.kengen.ui.adapter;
+package com.water.alkaline.kengen.ui.adapter
+
+import android.app.Activity
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.gms.ads.AdLoader
+import com.google.gms.ads.MyApp
+import com.google.gms.ads.databinding.LayoutAdUniversalBinding
+import com.water.alkaline.kengen.MyApplication
+import com.water.alkaline.kengen.databinding.ItemImageBinding
+import com.water.alkaline.kengen.model.DownloadEntity
+import com.water.alkaline.kengen.model.main.Channel
+import com.water.alkaline.kengen.ui.listener.OnDownloadListener
+import com.water.alkaline.kengen.utils.Constant
 
 
-import android.app.Activity;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+class DownloadAdapter(
+    var activity: Activity,
+    var arrayList: MutableList<DownloadEntity>,
+    var listener: OnDownloadListener
+) : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.gms.ads.AdLoader;
-import com.google.gms.ads.AdUtils;
-import com.google.gms.ads.MyApp;
-import com.google.gms.ads.databinding.LayoutAdUniversalBinding;
-import com.water.alkaline.kengen.databinding.ItemImageBinding;
-import com.preference.PowerPreference;
-import com.water.alkaline.kengen.MyApplication;
-import com.water.alkaline.kengen.model.DownloadEntity;
-import com.water.alkaline.kengen.model.main.Banner;
-import com.water.alkaline.kengen.model.main.Channel;
-import com.water.alkaline.kengen.ui.listener.OnDownloadListener;
-import com.water.alkaline.kengen.utils.Constant;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-
-public class DownloadAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    Activity activity;
-    List<DownloadEntity> arrayList = new ArrayList<>();
-    OnDownloadListener listener;
-
-    public DownloadAdapter(Activity activity, List<DownloadEntity> arrayList, OnDownloadListener listener) {
-        this.activity = activity;
-        this.arrayList = arrayList;
-        this.listener = listener;
-        setAds(false);
+    init {
+        setAds(false)
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        ItemImageBinding binding;
+    inner class ViewHolder(var binding: ItemImageBinding) : RecyclerView.ViewHolder(
+        binding.root
+    )
 
-        public ViewHolder(ItemImageBinding itemView) {
-            super(itemView.getRoot());
-            binding = itemView;
-        }
-    }
+    fun setAds(isAds: Boolean) {
+        val PARTICLE_AD_DISPLAY_COUNT = MyApp.getAdModel().adsListViewCount
 
-    public void setAds(boolean isAds) {
-        int PARTICLE_AD_DISPLAY_COUNT = MyApp.getAdModel().getAdsListViewCount();
+        if (PARTICLE_AD_DISPLAY_COUNT > 0 && MyApp.getAdModel().adsOnOff.equals(
+                "Yes",
+                ignoreCase = true
+            )
+        ) {
+            arrayList.removeAll {
+                it.id.toString() == Constant.defaultId
+            }
+            val tempArr = mutableListOf<DownloadEntity>()
 
-        if (PARTICLE_AD_DISPLAY_COUNT > 0 && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
-
-            arrayList.removeAll(Collections.singleton(null));
-            ArrayList<DownloadEntity> tempArr = new ArrayList<>();
-
-            if (!arrayList.isEmpty()) {
-                tempArr.add(null);
+            if (arrayList.isNotEmpty()) {
+                tempArr.add(DownloadEntity().apply {
+                    id = Constant.defaultId.toInt()
+                })
             }
 
-            for (int i = 0; i < arrayList.size(); i++) {
-                if (arrayList.size() > PARTICLE_AD_DISPLAY_COUNT) {
+            for (i in arrayList.indices) {
+                if (arrayList.size > PARTICLE_AD_DISPLAY_COUNT) {
                     if (i != 0 && i % PARTICLE_AD_DISPLAY_COUNT == 0) {
-                        tempArr.add(null);
+                        tempArr.add(DownloadEntity().apply {
+                            id = Constant.defaultId.toInt()
+                        })
                     }
-                    tempArr.add(arrayList.get(i));
+                    tempArr.add(arrayList[i])
                 } else {
-                    tempArr.add(arrayList.get(i));
+                    tempArr.add(arrayList[i])
                 }
             }
 
-            this.arrayList = tempArr;
+            this.arrayList = tempArr
         }
 
-        if (isAds)
-            notifyDataSetChanged();
+        if (isAds) notifyDataSetChanged()
     }
 
 
-    @Override
-    public int getItemViewType(int position) {
-        return arrayList.get(position) == null ? Constant.AD_TYPE : Constant.STORE_TYPE;
+    override fun getItemViewType(position: Int): Int {
+        return if (arrayList[position].id.toString() == Constant.defaultId) Constant.AD_TYPE
+        else Constant.STORE_TYPE
     }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == Constant.AD_TYPE)
-            return new AdHolder(LayoutAdUniversalBinding.inflate(LayoutInflater.from(activity), parent, false));
-        else
-            return new ViewHolder(ItemImageBinding.inflate(LayoutInflater.from(activity), parent, false));
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return if (viewType == Constant.AD_TYPE) AdHolder(
+            LayoutAdUniversalBinding.inflate(
+                LayoutInflater.from(
+                    activity
+                ), parent, false
+            )
+        )
+        else ViewHolder(
+            ItemImageBinding.inflate(
+                LayoutInflater.from(
+                    activity
+                ), parent, false
+            )
+        )
     }
 
-    public void refreshAdapter(List<DownloadEntity> arrayList) {
-        this.arrayList = arrayList;
-        setAds(true);
+    fun refreshAdapter(arrayList: MutableList<DownloadEntity>) {
+        this.arrayList = arrayList
+        setAds(true)
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof AdHolder) {
-            AdHolder adHolder = (AdHolder) holder;
-            if (adHolder.binding.flAd.getChildCount() <= 0) {
-                AdLoader.getInstance().showNativeList(activity, adHolder.binding);
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is AdHolder) {
+            val adHolder = holder
+            if (adHolder.binding.flAd.childCount <= 0) {
+                AdLoader.getInstance().showNativeList(activity, adHolder.binding)
             }
         } else {
-            ViewHolder viewHolder = (ViewHolder) holder;
-            Glide.with(activity).load(arrayList.get(position).imgUrl)
-                    .placeholder(MyApplication.getPlaceHolder())
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(viewHolder.binding.imgVideo);
-            viewHolder.binding.txtVideoTitle.setText(arrayList.get(position).name);
-            viewHolder.binding.txtVideoTitle.setSelected(true);
-            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onItemClick(holder.getAdapterPosition(), arrayList.get(holder.getAdapterPosition()));
-                }
-            });
+            val viewHolder = holder as ViewHolder
+            Glide.with(activity).load(arrayList[position]!!.imgUrl)
+                .placeholder(MyApplication.getPlaceHolder())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(viewHolder.binding.imgVideo)
+            viewHolder.binding.txtVideoTitle.text = arrayList[position]!!.name
+            viewHolder.binding.txtVideoTitle.isSelected = true
+            viewHolder.itemView.setOnClickListener {
+                listener.onItemClick(
+                    holder.bindingAdapterPosition,
+                    arrayList[holder.bindingAdapterPosition]
+                )
+            }
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return arrayList.size();
+    override fun getItemCount(): Int {
+        return arrayList.size
     }
 }
 

@@ -26,7 +26,7 @@ class DownloadActivity : BaseActivity() {
     private val viewModel by lazy {
         ViewModelProvider(this)[AppViewModel::class.java]
     }
-    var list: List<DownloadEntity> = ArrayList()
+    var list: MutableList<DownloadEntity> = mutableListOf()
     private lateinit var adapter: DownloadAdapter
 
     override fun onBackPressed() {
@@ -46,7 +46,7 @@ class DownloadActivity : BaseActivity() {
         }
     }
 
-    fun refreshFragment() {
+    private fun refreshFragment() {
         if (!list.isEmpty() && adapter != null) {
             adapter!!.refreshAdapter(list)
         }

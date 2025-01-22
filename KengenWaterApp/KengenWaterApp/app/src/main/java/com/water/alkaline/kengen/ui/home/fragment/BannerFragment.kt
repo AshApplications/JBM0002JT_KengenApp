@@ -61,20 +61,16 @@ class BannerFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       setAdapter()
+        setAdapter()
         refreshFragment()
     }
 
     private fun setAdapter() {
         adapter = BannerAdapter(appContext, list) { position: Int, item: Banner ->
-            list.removeAll(setOf<Any?>(null))
-            var pos = position
-            for (i in list.indices) {
-                if (list[i].id.equals(item.id, ignoreCase = true)) {
-                    pos = i
-                    break
-                }
+            list.removeAll {
+                it.id.equals(Constant.defaultId)
             }
+            val pos = list.indexOfFirst { it.id.equals(item.id) }
             PowerPreference.getDefaultFile().putString(Constant.mBanners, Gson().toJson(list))
             val intent = Intent(appContext, BannerActivity::class.java)
             intent.putExtra("POS", pos)

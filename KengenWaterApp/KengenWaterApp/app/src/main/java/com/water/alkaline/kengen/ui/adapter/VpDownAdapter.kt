@@ -1,66 +1,53 @@
-package com.water.alkaline.kengen.ui.adapter;
+package com.water.alkaline.kengen.ui.adapter
+
+import android.app.Activity
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.water.alkaline.kengen.MyApplication
+import com.water.alkaline.kengen.databinding.ItemVpBinding
+import com.water.alkaline.kengen.model.SaveEntity
+import com.water.alkaline.kengen.ui.listener.OnBannerListerner
 
 
-import android.app.Activity;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
+class VpDownAdapter(
+    var activity: Activity,
+    var   arrayList: List<SaveEntity>,
+    var  listener: OnBannerListerner
+) : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+    inner class ViewHolder(var binding: ItemVpBinding) : RecyclerView.ViewHolder(
+        binding.root
+    )
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.water.alkaline.kengen.MyApplication;
-import com.water.alkaline.kengen.databinding.ItemVpBinding;
-import com.water.alkaline.kengen.model.SaveEntity;
-import com.water.alkaline.kengen.ui.listener.OnBannerListerner;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class VpDownAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    Activity activity;
-    List<SaveEntity> arrayList = new ArrayList<>();
-    OnBannerListerner listener;
-
-    public VpDownAdapter(Activity activity, List<SaveEntity> arrayList, OnBannerListerner listener) {
-        this.activity = activity;
-        this.arrayList = arrayList;
-        this.listener = listener;
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return ViewHolder(
+            ItemVpBinding.inflate(
+                LayoutInflater.from(
+                    activity
+                ), parent, false
+            )
+        )
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        ItemVpBinding binding;
-
-        public ViewHolder(ItemVpBinding itemView) {
-            super(itemView.getRoot());
-            binding = itemView;
-        }
+    fun refreshAdapter(arrayList: List<SaveEntity>) {
+        this.arrayList = arrayList
+        notifyDataSetChanged()
     }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(ItemVpBinding.inflate(LayoutInflater.from(activity), parent, false));
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val viewHolder = holder as ViewHolder
+
+        Glide.with(activity).load(arrayList[position].imgUrl)
+            .placeholder(MyApplication.getPlaceHolder())
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .into(viewHolder.binding.ivImage)
     }
 
-    public void refreshAdapter(List<SaveEntity> arrayList) {
-        this.arrayList = arrayList;
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ViewHolder viewHolder = (ViewHolder) holder;
-
-        Glide.with(activity).load(arrayList.get(position).imgUrl)
-                .placeholder(MyApplication.getPlaceHolder())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(viewHolder.binding.ivImage);
-    }
-
-    @Override
-    public int getItemCount() {
-        return arrayList.size();
+    override fun getItemCount(): Int {
+        return arrayList.size
     }
 }
 

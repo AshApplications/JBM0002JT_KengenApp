@@ -1,52 +1,39 @@
-package com.water.alkaline.kengen.ui.adapter;
+package com.water.alkaline.kengen.ui.adapter
 
-import android.app.Activity;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
+import android.app.Activity
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.water.alkaline.kengen.databinding.ItemDrawerCategoryBinding
+import com.water.alkaline.kengen.model.main.Category
+import com.water.alkaline.kengen.ui.listener.OnDrawerCatListener
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+class DrawerCatAdapter(
+    var activity: Activity,
+    var arrayList: List<Category>,
+    var listener: OnDrawerCatListener
+) : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
 
-import com.water.alkaline.kengen.databinding.ItemDrawerCategoryBinding;
-import com.water.alkaline.kengen.model.main.Category;
-import com.water.alkaline.kengen.ui.listener.OnDrawerCatListener;
+    inner class ViewHolder(var binding: ItemDrawerCategoryBinding) : RecyclerView.ViewHolder(
+        binding.root
+    )
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class DrawerCatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    Activity activity;
-    List<Category> arrayList = new ArrayList<>();
-    OnDrawerCatListener listener;
-
-    public DrawerCatAdapter(Activity activity, List<Category> arrayList, OnDrawerCatListener listener) {
-        this.activity = activity;
-        this.arrayList = arrayList;
-        this.listener = listener;
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return ViewHolder(
+            ItemDrawerCategoryBinding.inflate(
+                LayoutInflater.from(
+                    activity
+                ), parent, false
+            )
+        )
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        ItemDrawerCategoryBinding binding;
-
-        public ViewHolder(ItemDrawerCategoryBinding itemView) {
-            super(itemView.getRoot());
-            binding = itemView;
-        }
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val viewHolder = holder as ViewHolder
+        viewHolder.binding.txtCategory.text = arrayList[position].name
     }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(ItemDrawerCategoryBinding.inflate(LayoutInflater.from(activity), parent, false));
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ViewHolder viewHolder = (ViewHolder) holder;
-        viewHolder.binding.txtCategory.setText(arrayList.get(position).getName());
-    }
-
-    @Override
-    public int getItemCount() {
-        return arrayList.size();
+    override fun getItemCount(): Int {
+        return arrayList.size
     }
 }

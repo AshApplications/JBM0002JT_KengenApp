@@ -1,35 +1,25 @@
-package com.water.alkaline.kengen.ui.adapter;
+package com.water.alkaline.kengen.ui.adapter
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Lifecycle;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
+import androidx.viewpager2.adapter.FragmentStateAdapter
 
-import java.util.ArrayList;
+class ViewPagerFragmentAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
+    FragmentStateAdapter(fragmentManager, lifecycle) {
+    var arrayList: ArrayList<Fragment> = ArrayList()
+    var mFragmentTitleList: ArrayList<String> = ArrayList()
 
-public class ViewPagerFragmentAdapter extends FragmentStateAdapter {
-
-    public ArrayList<Fragment> arrayList = new ArrayList<>();
-    public ArrayList<String> mFragmentTitleList = new ArrayList<>();
-
-    public ViewPagerFragmentAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
-        super(fragmentManager, lifecycle);
+    fun addFragment(fragment: Fragment, title: String) {
+        arrayList.add(fragment)
+        mFragmentTitleList.add(title)
     }
 
-    public void addFragment(Fragment fragment, String title) {
-        arrayList.add(fragment);
-        mFragmentTitleList.add(title);
+    override fun getItemCount(): Int {
+        return arrayList.size
     }
 
-    @Override
-    public int getItemCount() {
-        return arrayList.size();
-    }
-
-    @NonNull
-    @Override
-    public Fragment createFragment(int position) {
-        return arrayList.get(position);
+    override fun createFragment(position: Int): Fragment {
+        return arrayList[position]
     }
 }

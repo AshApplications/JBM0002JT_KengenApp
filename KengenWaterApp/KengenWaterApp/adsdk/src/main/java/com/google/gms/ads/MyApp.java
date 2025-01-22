@@ -7,11 +7,10 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.google.gms.ads.model.AdModel;
+import com.google.gson.Gson;
+import com.preference.PowerPreference;
 
 public class MyApp extends Application {
-
-
-    private static AdModel adModel = new AdModel();
 
     public static MyApp application;
     public static Context mActivity;
@@ -48,14 +47,11 @@ public class MyApp extends Application {
     }
 
     public static AdModel getAdModel() {
-        if (adModel == null) {
-            adModel = new AdModel();
-        }
-        return adModel;
+        return new Gson().fromJson(PowerPreference.getDefaultFile().getString("data", new Gson().toJson(new AdModel())), AdModel.class);
     }
 
     public static void setAdModel(AdModel adModel) {
-        MyApp.adModel = adModel;
+        PowerPreference.getDefaultFile().putString("data",new Gson().toJson(adModel));
     }
 
     public void showAdIfAvailable(@NonNull Activity activity, @NonNull OnShowAdCompleteListener onShowAdCompleteListener) {

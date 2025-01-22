@@ -340,5 +340,10 @@
       @com.google.gson.annotations.SerializedName <fields>;
     }
 
+    # Please add these rules to your existing keep rules in order to suppress warnings.
+    # This is generated automatically by the Android Gradle plugin.
+    -dontwarn com.thoughtbot.expandablerecyclerview.MultiTypeExpandableRecyclerViewAdapter
+    -dontwarn com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
+
 
 

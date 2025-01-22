@@ -16,4 +16,5 @@
     <string name="kk_error_no_internet">Please Check Your Internet …</string>
     <string name="kk_error_vpn"><![CDATA[VPN is Connected Please Turn it Off & Try Again !]]></string>
 
+    <string name="facebook_app_id">880473615967542</string>
 </resources>

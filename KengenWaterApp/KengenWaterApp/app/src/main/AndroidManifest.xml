@@ -45,6 +45,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="880473615967542"/>
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="d9d2ccfc229e07c56f566f98ef5f21cb" />
+
         <activity
             android:name=".ui.activity.PreviewActivity"
             android:exported="false"

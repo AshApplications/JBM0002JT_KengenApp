@@ -14,6 +14,9 @@ import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
+import com.appodeal.ads.Appodeal
+import com.facebook.ads.AdSettings
+import com.facebook.ads.AudienceNetworkAds
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
@@ -52,7 +55,7 @@ class StartActivity : BaseActivity() {
     private lateinit var startViewModel: StartViewModel
     private lateinit var appViewModel: AppViewModel
     private lateinit var deviceId: String
-    
+
     @SuppressLint("HardwareIds")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -164,7 +167,10 @@ class StartActivity : BaseActivity() {
             mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings)
             mFirebaseRemoteConfig.fetchAndActivate().addOnCompleteListener {
                 PowerPreference.getDefaultFile()
-                    .putString(Constant.apiKey, mFirebaseRemoteConfig.getValue("main_url").asString())
+                    .putString(
+                        Constant.apiKey,
+                        mFirebaseRemoteConfig.getValue("main_url").asString()
+                    )
                 fetchUpdateData()
             }
         } else {
@@ -196,7 +202,7 @@ class StartActivity : BaseActivity() {
             )
         )
     }
-    
+
     private fun parseUpdateData(updateResponse: UpdateResponse) {
 
         MyApp.setAdModel(updateResponse.data.adsInfo[0])
@@ -323,8 +329,7 @@ class StartActivity : BaseActivity() {
 
     }
 
-    private fun fetchMainData()
-    {
+    private fun fetchMainData() {
         startViewModel.fetchMainData(
             DecryptEncrypt.EncryptStr(
                 this@StartActivity, MyApplication.updateApi(
@@ -357,16 +362,35 @@ class StartActivity : BaseActivity() {
     }
 
     private fun loadAds() {
-        try {
-            val ai = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-            ai.metaData.putString(
-                "com.google.android.gms.ads.APPLICATION_ID",
-                MyApplication.getAdModel().adsAppId
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
+        if (MyApp.getAdModel().adsBanner.equals("Google", true)) {
+            try {
+                val ai =
+                    packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+                ai.metaData.putString(
+                    "com.google.android.gms.ads.APPLICATION_ID",
+                    MyApplication.getAdModel().adsAppId
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            MobileAds.initialize(this) { }
+        } else if (MyApp.getAdModel().adsBanner.equals("Facebook", true)) {
+            AdSettings.turnOnSDKDebugger(this);
+            AdSettings.addTestDevice("855bd1b3-d059-40e1-b699-a409cadaae7c");
+            AudienceNetworkAds.initialize(this)
+        }else if (MyApp.getAdModel().adsBanner.equals("Appodeal",true))
+        {
+            Appodeal.setTesting(false)
+
+            Appodeal.setAutoCache(Appodeal.INTERSTITIAL, false);
+            Appodeal.setAutoCache(Appodeal.BANNER, false);
+            Appodeal.setAutoCache(Appodeal.NATIVE, false);
+
+            Appodeal.initialize(this, MyApp.getAdModel().adsAppId, Appodeal.BANNER);
+            Appodeal.initialize(this, MyApp.getAdModel().adsAppId, Appodeal.INTERSTITIAL);
+            Appodeal.initialize(this, MyApp.getAdModel().adsAppId, Appodeal.NATIVE);
+
         }
-        MobileAds.initialize(this) { }
         AdLoader.getInstance().loadNativeAdPreload(this)
         AdLoader.getInstance().loadNativeListAds(this)
         AdLoader.getInstance().loadInterstitialAds(this)

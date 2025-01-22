@@ -29,6 +29,9 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
+import com.appodeal.ads.Appodeal;
+import com.appodeal.ads.BannerCallbacks;
+import com.facebook.ads.Ad;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -486,6 +489,108 @@ public class AdLoader {
                     super.onAdFailedToLoad(loadAdError);
                     log("BANNER -> AD FAILED");
                     ltUniversal.flAd.setVisibility(View.GONE);
+                }
+            });
+        } else if (getFailedCountBanner() < MyApp.getAdModel().getAdsBannerFailedCount() && MyApp.getAdModel().getAdsBanner().equalsIgnoreCase("Facebook")) {
+            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltUniversal.cvAdMain.getLayoutParams();
+            layoutParams.setMargins(0, 0, 0, 0);
+            ltUniversal.cvAdMain.requestLayout();
+            ltUniversal.cvAdMain.setRadius(0f);
+            ltUniversal.cvAdMain.setStrokeWidth(0);
+            try {
+                ltUniversal.cvAdMain.setCardBackgroundColor(ContextCompat.getColor(activity, R.color.native_background));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            //Set flAd View Height to Same As Place Holder
+            ltUniversal.flAd.getLayoutParams().height = ltUniversal.tvAdSpaceBanner.getLayoutParams().height;
+            com.facebook.ads.AdView adView = new com.facebook.ads.AdView(activity, MyApp.getAdModel().getAdsBannerId(), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+            ltUniversal.tvAdSpaceBanner.setVisibility(View.VISIBLE);
+            ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
+            ltUniversal.tvAdSpaceSmall.setVisibility(View.GONE);
+            ltUniversal.flAd.setVisibility(View.GONE);
+            adView.loadAd(adView.buildLoadAdConfig().withAdListener(new com.facebook.ads.AdListener() {
+                @Override
+                public void onError(Ad ad, com.facebook.ads.AdError adError) {
+                    log("BANNER -> AD FAILED " + adError.getErrorMessage());
+                    ltUniversal.flAd.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAdLoaded(Ad ad) {
+                    log("BANNER -> AD LOADED");
+                    log("BANNER -> AD SHOW");
+                    ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
+                    ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
+                    ltUniversal.tvAdSpaceSmall.setVisibility(View.GONE);
+                    ltUniversal.flAd.setVisibility(View.VISIBLE);
+                    ltUniversal.flAd.removeAllViews();
+                    ltUniversal.flAd.addView(adView);
+                }
+
+                @Override
+                public void onAdClicked(Ad ad) {
+                    AdLoader.getInstance().closeAds();
+                }
+
+                @Override
+                public void onLoggingImpression(Ad ad) {
+
+                }
+            }).build());
+        } else if (getFailedCountBanner() < MyApp.getAdModel().getAdsBannerFailedCount() && MyApp.getAdModel().getAdsBanner().equalsIgnoreCase("Appodeal")) {
+            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltUniversal.cvAdMain.getLayoutParams();
+            layoutParams.setMargins(0, 0, 0, 0);
+            ltUniversal.cvAdMain.requestLayout();
+            ltUniversal.cvAdMain.setRadius(0f);
+            ltUniversal.cvAdMain.setStrokeWidth(0);
+            try {
+                ltUniversal.cvAdMain.setCardBackgroundColor(ContextCompat.getColor(activity, R.color.native_background));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            //Set flAd View Height to Same As Place Holder
+            ltUniversal.flAd.getLayoutParams().height = ltUniversal.tvAdSpaceBanner.getLayoutParams().height;
+            Appodeal.setSmartBanners(true);
+            Appodeal.cache(activity, Appodeal.BANNER);
+            Appodeal.setBannerCallbacks(new BannerCallbacks() {
+                @Override
+                public void onBannerLoaded(int i, boolean b) {
+                    log("BANNER -> AD LOADED");
+                    log("BANNER -> AD SHOW");
+                    ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
+                    ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
+                    ltUniversal.tvAdSpaceSmall.setVisibility(View.GONE);
+                    ltUniversal.flAd.setVisibility(View.VISIBLE);
+                    ltUniversal.flAd.removeAllViews();
+                    ltUniversal.flAd.addView( Appodeal.getBannerView(activity));
+                    Appodeal.show(activity, Appodeal.BANNER);
+                }
+
+                @Override
+                public void onBannerFailedToLoad() {
+                    log("BANNER -> AD FAILED ");
+                    ltUniversal.flAd.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onBannerShown() {
+
+                }
+
+                @Override
+                public void onBannerShowFailed() {
+
+                }
+
+                @Override
+                public void onBannerClicked() {
+                    AdLoader.getInstance().closeAds();
+                }
+
+                @Override
+                public void onBannerExpired() {
+
                 }
             });
         } else {

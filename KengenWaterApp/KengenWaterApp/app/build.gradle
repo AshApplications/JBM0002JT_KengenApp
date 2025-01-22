@@ -27,10 +27,10 @@ android {
 
     signingConfigs {
         release {
-            keyAlias 'jbmapps'
-            keyPassword 'jbmapps'
-            storeFile file('G:/aDocs/jbmapps.jks')
-            storePassword 'jbmapps'
+            keyAlias 'jbmapps1'
+            keyPassword 'jbmapps1'
+            storeFile file('F:/aDocs/jbmapps1.jks')
+            storePassword 'jbmapps1'
         }
     }
 
@@ -136,4 +136,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
 
+    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'com.facebook.android:audience-network-sdk:6.+'
 }

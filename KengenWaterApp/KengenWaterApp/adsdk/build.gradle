@@ -54,4 +54,44 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    api("com.appodeal.ads:sdk:3.4.1.0") {
+        exclude group: "com.appodeal.ads.sdk.networks", module: "admob"
+        exclude group: "com.appodeal.ads.sdk.networks", module: "amazon"
+        exclude group: "com.appodeal.ads.sdk.networks", module: "bigo_ads"
+        exclude group: "com.appodeal.ads.sdk.networks", module: "dt_exchange"
+        exclude group: "com.appodeal.ads.sdk.networks", module: "inmobi"
+        exclude group: "com.appodeal.ads.sdk.networks", module: "ironsource"
+        exclude group: "com.appodeal.ads.sdk.networks", module: "mintegral"
+        exclude group: "com.appodeal.ads.sdk.networks", module: "mobilefuse"
+        exclude group: "com.appodeal.ads.sdk.networks", module: "my_target"
+        exclude group: "com.appodeal.ads.sdk.networks", module: "pangle"
+        exclude group: "com.appodeal.ads.sdk.networks", module: "yandex"
+        exclude group: "com.applovin.mediation", module: "google-adapter"
+        exclude group: "com.applovin.mediation", module: "amazon-tam-adapter"
+        exclude group: "com.applovin.mediation", module: "google-ad-manager-adapter"
+        exclude group: "com.applovin.mediation", module: "fyber-adapter"
+        exclude group: "com.applovin.mediation", module: "inmobi-adapter"
+        exclude group: "com.applovin.mediation", module: "ironsource-adapter"
+        exclude group: "com.applovin.mediation", module: "mintegral-adapter"
+        exclude group: "com.applovin.mediation", module: "mytarget-adapter"
+        exclude group: "com.applovin.mediation", module: "yandex-adapter"
+        exclude group: "io.bidmachine", module: "ads.networks.amazon"
+        exclude group: "io.bidmachine", module: "ads.networks.mintegral"
+        exclude group: "io.bidmachine", module: "ads.networks.my_target"
+        exclude group: "io.bidmachine", module: "ads.networks.pangle"
+        exclude group: "org.bidon", module: "amazon-adapter"
+        exclude group: "org.bidon", module: "bigoads-adapter"
+        exclude group: "org.bidon", module: "dtexchange-adapter"
+        exclude group: "org.bidon", module: "chartboost-adapter"
+        exclude group: "org.bidon", module: "inmobi-adapter"
+        exclude group: "org.bidon", module: "ironsource-adapter"
+        exclude group: "org.bidon", module: "mintegral-adapter"
+        exclude group: "org.bidon", module: "mobilefuse-adapter"
+        exclude group: "org.bidon", module: "vkads-adapter"
+        exclude group: "org.bidon", module: "yandex-adapter"
+    }
+
+    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'com.facebook.android:audience-network-sdk:6.+'
+
 }

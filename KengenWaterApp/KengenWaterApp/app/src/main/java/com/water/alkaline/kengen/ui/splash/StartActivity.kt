@@ -15,6 +15,7 @@ import android.view.View
 import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import com.appodeal.ads.Appodeal
+import com.appodeal.ads.BannerCallbacks
 import com.facebook.ads.AdSettings
 import com.facebook.ads.AudienceNetworkAds
 import com.google.android.gms.ads.MobileAds
@@ -375,21 +376,21 @@ class StartActivity : BaseActivity() {
             }
             MobileAds.initialize(this) { }
         } else if (MyApp.getAdModel().adsBanner.equals("Facebook", true)) {
-            AdSettings.turnOnSDKDebugger(this);
-            AdSettings.addTestDevice("855bd1b3-d059-40e1-b699-a409cadaae7c");
-            AudienceNetworkAds.initialize(this)
-        }else if (MyApp.getAdModel().adsBanner.equals("Appodeal",true))
-        {
-            Appodeal.setTesting(false)
-
-            Appodeal.setAutoCache(Appodeal.INTERSTITIAL, false);
-            Appodeal.setAutoCache(Appodeal.BANNER, false);
-            Appodeal.setAutoCache(Appodeal.NATIVE, false);
-
+            AudienceNetworkAds.buildInitSettings(this).withInitListener {
+                if (it.isSuccess) {
+                    AdSettings.turnOnSDKDebugger(this);
+                    AdSettings.addTestDevice("855bd1b3-d059-40e1-b699-a409cadaae7c")
+                    AdSettings.setTestMode(true)
+                }
+            }.initialize()
+        } else if (MyApp.getAdModel().adsBanner.equals("Appodeal", true)) {
+            Appodeal.setAutoCache(Appodeal.BANNER, true);
             Appodeal.initialize(this, MyApp.getAdModel().adsAppId, Appodeal.BANNER);
-            Appodeal.initialize(this, MyApp.getAdModel().adsAppId, Appodeal.INTERSTITIAL);
-            Appodeal.initialize(this, MyApp.getAdModel().adsAppId, Appodeal.NATIVE);
+            //   Appodeal.setAutoCache(Appodeal.INTERSTITIAL, true);
+            //  Appodeal.setAutoCache(Appodeal.NATIVE, true);
 
+            // Appodeal.initialize(this, MyApp.getAdModel().adsAppId, Appodeal.INTERSTITIAL);
+            //  Appodeal.initialize(this, MyApp.getAdModel().adsAppId, Appodeal.NATIVE);
         }
         AdLoader.getInstance().loadNativeAdPreload(this)
         AdLoader.getInstance().loadNativeListAds(this)

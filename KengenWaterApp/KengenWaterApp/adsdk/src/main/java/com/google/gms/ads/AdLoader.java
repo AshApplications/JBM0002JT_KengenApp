@@ -64,6 +64,12 @@ public class AdLoader {
     private static final String KEY_FAILED_COUNT_APP_OPEN = "KeyFailedCountAppOpen";
     private static final String KEY_FAILED_COUNT_BANNER = "KeyFailedCountBanner";
     private static AdLoader instance;
+
+
+    public static ViewGroup parentview;
+    private static boolean isApbannerloaded;
+    private static com.appodeal.ads.BannerView apBannerAd;
+
     public boolean isInterstitialLoading = false;
     public boolean isInterstitialShowing = false;
     private InterstitialAd interstitialAd = null;
@@ -551,54 +557,73 @@ public class AdLoader {
             }
             //Set flAd View Height to Same As Place Holder
             ltUniversal.flAd.getLayoutParams().height = ltUniversal.tvAdSpaceBanner.getLayoutParams().height;
-            Appodeal.setSmartBanners(true);
-            Appodeal.cache(activity, Appodeal.BANNER);
-            Appodeal.setBannerCallbacks(new BannerCallbacks() {
-                @Override
-                public void onBannerLoaded(int i, boolean b) {
-                    log("BANNER -> AD LOADED");
-                    log("BANNER -> AD SHOW");
-                    ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
-                    ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
-                    ltUniversal.tvAdSpaceSmall.setVisibility(View.GONE);
-                    ltUniversal.flAd.setVisibility(View.VISIBLE);
-                    ltUniversal.flAd.removeAllViews();
-                    ltUniversal.flAd.addView( Appodeal.getBannerView(activity));
-                    Appodeal.show(activity, Appodeal.BANNER);
-                }
 
-                @Override
-                public void onBannerFailedToLoad() {
-                    log("BANNER -> AD FAILED ");
-                    ltUniversal.flAd.setVisibility(View.GONE);
-                }
+            if (isApbannerloaded) {
 
-                @Override
-                public void onBannerShown() {
+                if (parentview != null)
+                    parentview.removeAllViews();
 
-                }
+                ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
+                ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
+                ltUniversal.tvAdSpaceSmall.setVisibility(View.GONE);
+                ltUniversal.flAd.setVisibility(View.VISIBLE);
+                ltUniversal.flAd.removeAllViews();
+                ltUniversal.flAd.addView(Appodeal.getBannerView(activity));
+                parentview = ltUniversal.flAd;
 
-                @Override
-                public void onBannerShowFailed() {
+                Appodeal.show(activity, Appodeal.BANNER);
 
-                }
+            } else {
+                ltUniversal.flAd.setVisibility(View.GONE);
+                loadBannerAd(activity,ltUniversal);
+            }
 
-                @Override
-                public void onBannerClicked() {
-                    AdLoader.getInstance().closeAds();
-                }
-
-                @Override
-                public void onBannerExpired() {
-
-                }
-            });
         } else {
             ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
             ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
             ltUniversal.tvAdSpaceSmall.setVisibility(View.GONE);
             ltUniversal.flAd.setVisibility(View.GONE);
         }
+    }
+
+    public void loadBannerAd(final Activity activity, final LayoutAdUniversalBinding ltUniversal) {
+        Appodeal.setSmartBanners(true);
+        Appodeal.cache(activity, Appodeal.BANNER);
+        Appodeal.setBannerCallbacks(new BannerCallbacks() {
+            @Override
+            public void onBannerLoaded(int i, boolean b) {
+                log("BANNER -> AD LOADED");
+                log("BANNER -> AD SHOW");
+                isApbannerloaded = true;
+                apBannerAd = Appodeal.getBannerView(activity);
+            }
+
+            @Override
+            public void onBannerFailedToLoad() {
+                log("BANNER -> AD FAILED ");
+                isApbannerloaded = false;
+            }
+
+            @Override
+            public void onBannerShown() {
+
+            }
+
+            @Override
+            public void onBannerShowFailed() {
+
+            }
+
+            @Override
+            public void onBannerClicked() {
+                AdLoader.getInstance().closeAds();
+            }
+
+            @Override
+            public void onBannerExpired() {
+
+            }
+        });
     }
 
     private void loadInterstitialAd(final Activity activity) {

@@ -48,10 +48,10 @@
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="880473615967542"/>
+            android:value="@string/facebook_app_id"/>
         <meta-data
             android:name="com.facebook.sdk.ClientToken"
-            android:value="d9d2ccfc229e07c56f566f98ef5f21cb" />
+            android:value="@string/facebook_client_token" />
 
         <activity
             android:name=".ui.activity.PreviewActivity"

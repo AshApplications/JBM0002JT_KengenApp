@@ -14,8 +14,7 @@
     <string name="kk_error_try_later">"Something went wrong! Try Again Later."</string>
     <string name="kk_error_no_data">No Data Available …</string>
     <string name="kk_error_no_internet">Please Check Your Internet …</string>
-    <string name="kk_error_vpn"><![CDATA[VPN is Connected Please Turn it Off & Try Again !]]></string>
-
+    <string name="kk_error_vpn">VPN is Connected Please Turn it Off &amp; Try Again !</string>
     <string name="facebook_app_id">1030652665745698</string>
     <string name="facebook_client_token">012be60a041b467d427f6fb480d6ae55</string>
 </resources>

@@ -14,9 +14,9 @@ import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
-import com.appodeal.ads.Appodeal
-import com.appodeal.ads.BannerCallbacks
-import com.facebook.ads.AdSettings
+import com.applovin.sdk.AppLovinMediationProvider
+import com.applovin.sdk.AppLovinSdk
+import com.applovin.sdk.AppLovinSdkInitializationConfiguration
 import com.facebook.ads.AudienceNetworkAds
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -363,7 +363,7 @@ class StartActivity : BaseActivity() {
     }
 
     private fun loadAds() {
-        if (MyApp.getAdModel().adsBanner.equals("Google", true)) {
+        if (MyApp.getAdModel().adsBanner.equals(AdLoader.AD_GOOGLE, true)) {
             try {
                 val ai =
                     packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
@@ -374,27 +374,21 @@ class StartActivity : BaseActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            MobileAds.initialize(this) { }
-        } else if (MyApp.getAdModel().adsBanner.equals("Facebook", true)) {
-            AudienceNetworkAds.buildInitSettings(this).withInitListener {
-                if (it.isSuccess) {
-                    AdSettings.turnOnSDKDebugger(this);
-                    AdSettings.addTestDevice("855bd1b3-d059-40e1-b699-a409cadaae7c")
-                    AdSettings.setTestMode(true)
-                }
-            }.initialize()
-        } else if (MyApp.getAdModel().adsBanner.equals("Appodeal", true)) {
-            Appodeal.setAutoCache(Appodeal.BANNER, true);
-            Appodeal.initialize(this, MyApp.getAdModel().adsAppId, Appodeal.BANNER);
-            //   Appodeal.setAutoCache(Appodeal.INTERSTITIAL, true);
-            //  Appodeal.setAutoCache(Appodeal.NATIVE, true);
-
-            // Appodeal.initialize(this, MyApp.getAdModel().adsAppId, Appodeal.INTERSTITIAL);
-            //  Appodeal.initialize(this, MyApp.getAdModel().adsAppId, Appodeal.NATIVE);
+            MobileAds.initialize(this) {
+            }
+            AdLoader.getInstance().loadNativeAdPreload(this)
+            AdLoader.getInstance().loadNativeListAds(this)
+            AdLoader.getInstance().loadInterstitialAds(this)
+        } else if (MyApp.getAdModel().adsBanner.equals(AdLoader.AD_APPLOVIN, true)) {
+            AudienceNetworkAds.initialize(this)
+            val initConfigBuilder =
+                AppLovinSdkInitializationConfiguration.builder(MyApp.getAdModel().adsAppId, this)
+            initConfigBuilder.mediationProvider = AppLovinMediationProvider.MAX
+            val sdk = AppLovinSdk.getInstance(this)
+            sdk.initialize(initConfigBuilder.build()) {
+                Log.e("TAGRR", "success")
+            }
         }
-        AdLoader.getInstance().loadNativeAdPreload(this)
-        AdLoader.getInstance().loadNativeListAds(this)
-        AdLoader.getInstance().loadInterstitialAds(this)
     }
 
     private fun nextActivity() {

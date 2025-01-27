@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.applovin.sdk.AppLovinSdk
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gms.ads.AdLoader
 import com.google.gms.ads.MyApp
@@ -110,6 +111,7 @@ class HomeActivity : AppCompatActivity() {
             PowerPreference.getDefaultFile().putBoolean("mCheckFirst", false)
             showInfoDialog()
         }
+        AppLovinSdk.getInstance( this ).showMediationDebugger()
         listener()
         setTabs()
     }

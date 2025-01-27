@@ -11,6 +11,7 @@ import com.google.gms.ads.AdLoader
 import com.google.gms.ads.MyApp
 import com.google.gms.ads.databinding.LayoutAdUniversalBinding
 import com.water.alkaline.kengen.MyApplication
+import com.water.alkaline.kengen.R
 import com.water.alkaline.kengen.databinding.ItemVideoBinding
 import com.water.alkaline.kengen.databinding.LayoutProgressBinding
 import com.water.alkaline.kengen.model.SaveEntity
@@ -156,6 +157,7 @@ class VideosAdapter(
         } else if (holder is ViewHolder) {
             Glide.with(activity).load(arrayList[position].imgUrl)
                 .placeholder(MyApplication.getPlaceHolder())
+                .error(R.drawable.ic_logo)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.binding.imgVideo)
             holder.binding.txtVideoTitle.text = Html.fromHtml(arrayList[position].title)

@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -29,9 +30,12 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
-import com.appodeal.ads.Appodeal;
-import com.appodeal.ads.BannerCallbacks;
-import com.facebook.ads.Ad;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdFormat;
+import com.applovin.mediation.MaxAdViewAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.ads.MaxAdView;
+import com.applovin.sdk.AppLovinSdkUtils;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -65,10 +69,8 @@ public class AdLoader {
     private static final String KEY_FAILED_COUNT_BANNER = "KeyFailedCountBanner";
     private static AdLoader instance;
 
-
-    public static ViewGroup parentview;
-    private static boolean isApbannerloaded;
-    private static com.appodeal.ads.BannerView apBannerAd;
+    public static final String AD_GOOGLE = "Google";
+    public static final String AD_APPLOVIN = "AppLovin";
 
     public boolean isInterstitialLoading = false;
     public boolean isInterstitialShowing = false;
@@ -315,7 +317,7 @@ public class AdLoader {
 
 
     public static void showExit(Activity activity) {
-        if (MyApp.getAdModel().getAdsNative().equalsIgnoreCase("Google") && MyApp.getAdModel().getAdsExit().equalsIgnoreCase("Yes") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+        if (MyApp.getAdModel().getAdsNative().equalsIgnoreCase(AD_GOOGLE) && MyApp.getAdModel().getAdsExit().equalsIgnoreCase("Yes") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
             showExitBottomDialog(activity);
         } else {
             showExitDialog(activity);
@@ -435,15 +437,15 @@ public class AdLoader {
     }
 
     public void loadInterstitialAds(final Activity activity) {
-        if (MyApp.getAdModel().getAdsInterstitial().equalsIgnoreCase("Google")) {
+        if (MyApp.getAdModel().getAdsInterstitial().equalsIgnoreCase(AD_GOOGLE)) {
             loadInterstitialAd(activity);
-        } else if (MyApp.getAdModel().getAdsInterstitialBack().equalsIgnoreCase("Google")) {
+        } else if (MyApp.getAdModel().getAdsInterstitialBack().equalsIgnoreCase(AD_GOOGLE)) {
             loadInterstitialAd(activity);
         }
     }
 
     private void showBanner(final Activity activity, final LayoutAdUniversalBinding ltUniversal) {
-        if (getFailedCountBanner() < MyApp.getAdModel().getAdsBannerFailedCount() && MyApp.getAdModel().getAdsBanner().equalsIgnoreCase("Google")) {
+        if (getFailedCountBanner() < MyApp.getAdModel().getAdsBannerFailedCount() && MyApp.getAdModel().getAdsBanner().equalsIgnoreCase(AD_GOOGLE)) {
             //remove any margin if exist
 
             ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltUniversal.cvAdMain.getLayoutParams();
@@ -497,7 +499,7 @@ public class AdLoader {
                     ltUniversal.flAd.setVisibility(View.GONE);
                 }
             });
-        } else if (getFailedCountBanner() < MyApp.getAdModel().getAdsBannerFailedCount() && MyApp.getAdModel().getAdsBanner().equalsIgnoreCase("Facebook")) {
+        } else if (getFailedCountBanner() < MyApp.getAdModel().getAdsBannerFailedCount() && MyApp.getAdModel().getAdsBanner().equalsIgnoreCase(AD_APPLOVIN)) {
             ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltUniversal.cvAdMain.getLayoutParams();
             layoutParams.setMargins(0, 0, 0, 0);
             ltUniversal.cvAdMain.requestLayout();
@@ -510,20 +512,27 @@ public class AdLoader {
             }
             //Set flAd View Height to Same As Place Holder
             ltUniversal.flAd.getLayoutParams().height = ltUniversal.tvAdSpaceBanner.getLayoutParams().height;
-            com.facebook.ads.AdView adView = new com.facebook.ads.AdView(activity, MyApp.getAdModel().getAdsBannerId(), com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+            MaxAdView adView = new MaxAdView(MyApp.getAdModel().getAdsBannerId(), MaxAdFormat.BANNER, activity);
+            adView.setBackgroundColor(Color.TRANSPARENT);
+            adView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, AppLovinSdkUtils.dpToPx(activity, MaxAdFormat.BANNER.getAdaptiveSize(activity).getHeight())));
+            adView.setExtraParameter("adaptive_banner", "true");
             ltUniversal.tvAdSpaceBanner.setVisibility(View.VISIBLE);
             ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
             ltUniversal.tvAdSpaceSmall.setVisibility(View.GONE);
             ltUniversal.flAd.setVisibility(View.GONE);
-            adView.loadAd(adView.buildLoadAdConfig().withAdListener(new com.facebook.ads.AdListener() {
+            adView.setListener(new MaxAdViewAdListener() {
                 @Override
-                public void onError(Ad ad, com.facebook.ads.AdError adError) {
-                    log("BANNER -> AD FAILED " + adError.getErrorMessage());
-                    ltUniversal.flAd.setVisibility(View.GONE);
+                public void onAdExpanded(@NonNull MaxAd maxAd) {
+
                 }
 
                 @Override
-                public void onAdLoaded(Ad ad) {
+                public void onAdCollapsed(@NonNull MaxAd maxAd) {
+
+                }
+
+                @Override
+                public void onAdLoaded(@NonNull MaxAd maxAd) {
                     log("BANNER -> AD LOADED");
                     log("BANNER -> AD SHOW");
                     ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
@@ -535,95 +544,39 @@ public class AdLoader {
                 }
 
                 @Override
-                public void onAdClicked(Ad ad) {
-                    AdLoader.getInstance().closeAds();
+                public void onAdDisplayed(@NonNull MaxAd maxAd) {
+
                 }
 
                 @Override
-                public void onLoggingImpression(Ad ad) {
+                public void onAdHidden(@NonNull MaxAd maxAd) {
+                    log("BANNER -> AD onAdHidden ");
 
                 }
-            }).build());
-        } else if (getFailedCountBanner() < MyApp.getAdModel().getAdsBannerFailedCount() && MyApp.getAdModel().getAdsBanner().equalsIgnoreCase("Appodeal")) {
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltUniversal.cvAdMain.getLayoutParams();
-            layoutParams.setMargins(0, 0, 0, 0);
-            ltUniversal.cvAdMain.requestLayout();
-            ltUniversal.cvAdMain.setRadius(0f);
-            ltUniversal.cvAdMain.setStrokeWidth(0);
-            try {
-                ltUniversal.cvAdMain.setCardBackgroundColor(ContextCompat.getColor(activity, R.color.native_background));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            //Set flAd View Height to Same As Place Holder
-            ltUniversal.flAd.getLayoutParams().height = ltUniversal.tvAdSpaceBanner.getLayoutParams().height;
 
-            if (isApbannerloaded) {
+                @Override
+                public void onAdClicked(@NonNull MaxAd maxAd) {
 
-                if (parentview != null)
-                    parentview.removeAllViews();
+                }
 
-                ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
-                ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
-                ltUniversal.tvAdSpaceSmall.setVisibility(View.GONE);
-                ltUniversal.flAd.setVisibility(View.VISIBLE);
-                ltUniversal.flAd.removeAllViews();
-                ltUniversal.flAd.addView(Appodeal.getBannerView(activity));
-                parentview = ltUniversal.flAd;
+                @Override
+                public void onAdLoadFailed(@NonNull String s, @NonNull MaxError maxError) {
+                    log("BANNER -> AD FAILED " + maxError.getMessage());
+                    ltUniversal.flAd.setVisibility(View.GONE);
+                }
 
-                Appodeal.show(activity, Appodeal.BANNER);
-
-            } else {
-                ltUniversal.flAd.setVisibility(View.GONE);
-                loadBannerAd(activity,ltUniversal);
-            }
-
+                @Override
+                public void onAdDisplayFailed(@NonNull MaxAd maxAd, @NonNull MaxError maxError) {
+                    log("BANNER -> AD onAdDisplayFailed ");
+                }
+            });
+            adView.loadAd();
         } else {
             ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
             ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
             ltUniversal.tvAdSpaceSmall.setVisibility(View.GONE);
             ltUniversal.flAd.setVisibility(View.GONE);
         }
-    }
-
-    public void loadBannerAd(final Activity activity, final LayoutAdUniversalBinding ltUniversal) {
-        Appodeal.setSmartBanners(true);
-        Appodeal.cache(activity, Appodeal.BANNER);
-        Appodeal.setBannerCallbacks(new BannerCallbacks() {
-            @Override
-            public void onBannerLoaded(int i, boolean b) {
-                log("BANNER -> AD LOADED");
-                log("BANNER -> AD SHOW");
-                isApbannerloaded = true;
-                apBannerAd = Appodeal.getBannerView(activity);
-            }
-
-            @Override
-            public void onBannerFailedToLoad() {
-                log("BANNER -> AD FAILED ");
-                isApbannerloaded = false;
-            }
-
-            @Override
-            public void onBannerShown() {
-
-            }
-
-            @Override
-            public void onBannerShowFailed() {
-
-            }
-
-            @Override
-            public void onBannerClicked() {
-                AdLoader.getInstance().closeAds();
-            }
-
-            @Override
-            public void onBannerExpired() {
-
-            }
-        });
     }
 
     private void loadInterstitialAd(final Activity activity) {
@@ -655,7 +608,7 @@ public class AdLoader {
     }
 
     public void showInterstitialAd(Activity activity, boolean isBack, FullScreenDismissListener listener) {
-        if (isBack ? MyApp.getAdModel().getAdsInterstitialBack().equalsIgnoreCase("Google") : MyApp.getAdModel().getAdsInterstitial().equalsIgnoreCase("Google") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+        if (isBack ? MyApp.getAdModel().getAdsInterstitialBack().equalsIgnoreCase(AD_GOOGLE) : MyApp.getAdModel().getAdsInterstitial().equalsIgnoreCase(AD_GOOGLE) && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
             int currentInterval = getInterstitialInterval(isBack);
             int regularInterval = isBack ? MyApp.getAdModel().getAdsInterstitialBackCount() : MyApp.getAdModel().getAdsInterstitialCount();
             if (currentInterval == regularInterval) {
@@ -745,7 +698,7 @@ public class AdLoader {
     }
 
     private void showNativeExit(Activity activity, LayoutAdUniversalBinding ltUniversal, String adType) {
-        if (MyApp.getAdModel().getAdsNative().equalsIgnoreCase("Google") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+        if (MyApp.getAdModel().getAdsNative().equalsIgnoreCase(AD_GOOGLE) && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
             if (nativeAdPreload != null) {
                 showNativeAd(activity, ltUniversal, adType);
             } else {
@@ -800,7 +753,7 @@ public class AdLoader {
 
 
     private void showNative(Activity activity, LayoutAdUniversalBinding ltUniversal, String adType) {
-        if (MyApp.getAdModel().getAdsNative().equalsIgnoreCase("Google") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+        if (MyApp.getAdModel().getAdsNative().equalsIgnoreCase(AD_GOOGLE) && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
             ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltUniversal.cvAdMain.getLayoutParams();
             int margin = (int) activity.getResources().getDimension(com.intuit.sdp.R.dimen._4sdp);
             layoutParams.setMargins(margin, margin, margin, margin);
@@ -842,7 +795,7 @@ public class AdLoader {
 
     public void loadNativeAdPreload(Activity activity) {
         if (getFailedCountNative() < MyApp.getAdModel().getAdsNativeFailedCount() && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
-            if (MyApp.getAdModel().getAdsNativePreload().equalsIgnoreCase("Yes") && MyApp.getAdModel().getAdsNative().equalsIgnoreCase("Google")) {
+            if (MyApp.getAdModel().getAdsNativePreload().equalsIgnoreCase("Yes") && MyApp.getAdModel().getAdsNative().equalsIgnoreCase(AD_GOOGLE)) {
                 nativeAdPreload = null;
                 VideoOptions videoOptions = new VideoOptions.Builder().setStartMuted(true).build();
                 NativeAdOptions adOptions = new NativeAdOptions.Builder().setVideoOptions(videoOptions).build();
@@ -877,7 +830,7 @@ public class AdLoader {
 
     public void loadNativeListAds(Activity activity) {
         if (getFailedCountNative() < MyApp.getAdModel().getAdsNativeFailedCount() && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
-            if (MyApp.getAdModel().getAdsNativePreload().equalsIgnoreCase("Yes") && MyApp.getAdModel().getAdsNative().equalsIgnoreCase("Google")) {
+            if (MyApp.getAdModel().getAdsNativePreload().equalsIgnoreCase("Yes") && MyApp.getAdModel().getAdsNative().equalsIgnoreCase(AD_GOOGLE)) {
                 VideoOptions videoOptions = new VideoOptions.Builder().setStartMuted(true).build();
                 NativeAdOptions adOptions = new NativeAdOptions.Builder().setVideoOptions(videoOptions).build();
                 com.google.android.gms.ads.AdLoader appLoaderNativeOne = new com.google.android.gms.ads.AdLoader.Builder(activity, MyApp.getAdModel().getAdsNativeId()).forNativeAd(nativeAd -> {

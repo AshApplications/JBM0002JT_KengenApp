@@ -37,7 +37,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
         if (isAdAvailable()) {
             return;
         }
-        if (AdLoader.getFailedCountAppOpen() < MyApp.getAdModel().getAdsAppOpenFailedCount() && MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase("Google") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+        if (AdLoader.getFailedCountAppOpen() < MyApp.getAdModel().getAdsAppOpenFailedCount() && MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase(AdLoader.AD_GOOGLE) && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
             appCallback = new AppOpenAd.AppOpenAdLoadCallback() {
                 @Override
                 public void onAdLoaded(@NonNull AppOpenAd ad) {
@@ -140,7 +140,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
             AdLoader.log("APPOPEN -> AD SHOW");
             appOpenAd.show(activity);
         } else {
-            if (AdLoader.getFailedCountAppOpen() < MyApp.getAdModel().getAdsAppOpenFailedCount() && MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase("Google") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            if (AdLoader.getFailedCountAppOpen() < MyApp.getAdModel().getAdsAppOpenFailedCount() && MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase(AdLoader.AD_GOOGLE) && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
                 appCallback = new AppOpenAd.AppOpenAdLoadCallback() {
                     @Override
                     public void onAdLoaded(@NonNull AppOpenAd ad) {

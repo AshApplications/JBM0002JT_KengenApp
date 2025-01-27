@@ -10,6 +10,7 @@ import com.google.gms.ads.AdLoader
 import com.google.gms.ads.MyApp
 import com.google.gms.ads.databinding.LayoutAdUniversalBinding
 import com.water.alkaline.kengen.MyApplication
+import com.water.alkaline.kengen.R
 import com.water.alkaline.kengen.databinding.ItemImageBinding
 import com.water.alkaline.kengen.model.DownloadEntity
 import com.water.alkaline.kengen.model.main.Channel
@@ -107,6 +108,7 @@ class DownloadAdapter(
             val viewHolder = holder as ViewHolder
             Glide.with(activity).load(arrayList[position]!!.imgUrl)
                 .placeholder(MyApplication.getPlaceHolder())
+                .error(R.drawable.ic_logo)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(viewHolder.binding.imgVideo)
             viewHolder.binding.txtVideoTitle.text = arrayList[position]!!.name

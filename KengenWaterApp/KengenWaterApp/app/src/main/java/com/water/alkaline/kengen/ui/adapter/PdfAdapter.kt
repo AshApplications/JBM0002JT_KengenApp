@@ -10,6 +10,7 @@ import com.google.gms.ads.AdLoader
 import com.google.gms.ads.MyApp
 import com.google.gms.ads.databinding.LayoutAdUniversalBinding
 import com.water.alkaline.kengen.MyApplication
+import com.water.alkaline.kengen.R
 import com.water.alkaline.kengen.databinding.ItemImageBinding
 import com.water.alkaline.kengen.model.main.Banner
 import com.water.alkaline.kengen.model.main.Pdf
@@ -105,6 +106,7 @@ class PdfAdapter(var activity: Context, var  arrayList: MutableList<Pdf>, var li
             val viewHolder = holder as ViewHolder
             Glide.with(activity).load(arrayList[position]!!.image)
                 .placeholder(MyApplication.getPlaceHolder())
+                .error(R.drawable.ic_logo)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(viewHolder.binding.imgVideo)
             viewHolder.binding.txtVideoTitle.text = arrayList[position]!!.name

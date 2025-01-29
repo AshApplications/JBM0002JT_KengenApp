@@ -217,11 +217,6 @@ class PdfActivity() : BaseActivity() {
             RelativeLayout.LayoutParams.MATCH_PARENT
         )
         dialogJump.setCancelable(true)
-        dialogJump.setOnShowListener {
-            AdLoader.getInstance().showNativeDialog(
-                this@PdfActivity, jumpBinding.includedAd
-            )
-        }
         dialogJump.show()
         jumpBinding.editJump.setText((binding.pdfview.currentPage + 1).toString() + "")
         jumpBinding.txtJump.setOnClickListener {

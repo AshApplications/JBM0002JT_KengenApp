@@ -48,7 +48,7 @@ class PreviewActivity : BaseActivity() {
         super.onResume()
         if (MyApp.getAdModel().adsOnOff.equals("Yes", ignoreCase = true)) {
             if (binding.includedAd.flAd.childCount <= 0) {
-                AdLoader.getInstance().showNativeLarge(this, binding.includedAd)
+                AdLoader.getInstance().showNativeSmall(this, binding.includedAd)
             }
         } else {
             binding.includedAd.cvAdMain.visibility = View.GONE

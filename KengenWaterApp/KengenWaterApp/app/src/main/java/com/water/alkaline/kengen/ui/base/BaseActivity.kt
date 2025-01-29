@@ -61,11 +61,6 @@ abstract class BaseActivity : AppCompatActivity() {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
         )
-        downloadDialog.setOnShowListener {
-            AdLoader.getInstance().showNativeDialog(
-                this, downloadBinding.includedAd
-            )
-        }
     }
 
     fun showDownloadDialog() {

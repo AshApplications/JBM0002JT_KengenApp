@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.applovin.sdk.AppLovinMediationProvider
 import com.applovin.sdk.AppLovinSdk
 import com.applovin.sdk.AppLovinSdkInitializationConfiguration
+import com.facebook.ads.Ad
 import com.facebook.ads.AudienceNetworkAds
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -63,6 +64,7 @@ class StartActivity : BaseActivity() {
         setContentView(binding.root)
         activity = this
 
+        PowerPreference.getDefaultFile().putBoolean(AdUtils.isAppLovinLoaded, false)
         MyApplication.className = StartActivity::class.java.name
         bindObservers()
 
@@ -386,7 +388,9 @@ class StartActivity : BaseActivity() {
             initConfigBuilder.mediationProvider = AppLovinMediationProvider.MAX
             val sdk = AppLovinSdk.getInstance(this)
             sdk.initialize(initConfigBuilder.build()) {
-                Log.e("TAGRR", "success")
+                PowerPreference.getDefaultFile().putBoolean(AdUtils.isAppLovinLoaded, true)
+                AdLoader.getInstance().loadNativeAdPreload(this)
+                AdLoader.getInstance().loadNativeListAds(this)
             }
         }
     }

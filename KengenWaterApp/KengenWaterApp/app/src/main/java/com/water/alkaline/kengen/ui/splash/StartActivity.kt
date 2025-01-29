@@ -366,6 +366,7 @@ class StartActivity : BaseActivity() {
 
     private fun loadAds() {
         if (MyApp.getAdModel().adsBanner.equals(AdLoader.AD_GOOGLE, true)) {
+            AdLoader.resetCounter()
             try {
                 val ai =
                     packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
@@ -382,6 +383,7 @@ class StartActivity : BaseActivity() {
             AdLoader.getInstance().loadNativeListAds(this)
             AdLoader.getInstance().loadInterstitialAds(this)
         } else if (MyApp.getAdModel().adsBanner.equals(AdLoader.AD_APPLOVIN, true)) {
+            AdLoader.resetCounter()
             AudienceNetworkAds.initialize(this)
             val initConfigBuilder =
                 AppLovinSdkInitializationConfiguration.builder(MyApp.getAdModel().adsAppId, this)

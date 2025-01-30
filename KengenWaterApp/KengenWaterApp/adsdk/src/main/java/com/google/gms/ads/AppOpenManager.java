@@ -5,6 +5,7 @@ import static androidx.lifecycle.Lifecycle.Event.ON_START;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleObserver;
@@ -28,10 +29,10 @@ import java.util.Date;
 public class AppOpenManager implements LifecycleObserver, Application.ActivityLifecycleCallbacks {
 
     public static boolean appIsShowingAd = false;
+    public boolean isAdLoading = false;
     public AppOpenAd appOpenAd = null;
     public MaxAppOpenAd maxAppOpenAd = null;
     public Activity appCurrentActivity;
-    public long appLoadTime = 0;
 
     public AppOpenManager() {
         MyApp.getInstance().registerActivityLifecycleCallbacks(this);
@@ -40,10 +41,11 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
 
     public void fetchAd() {
 
-        if (isAdAvailable()) {
+        if (isAdAvailable() || isAdLoading) {
             return;
         }
         if (AdLoader.getFailedCountAppOpen() < MyApp.getAdModel().getAdsAppOpenFailedCount() && MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase(AdLoader.AD_GOOGLE) && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            isAdLoading = true;
             AdRequest request = getAdRequest();
             AdLoader.log("APPOPEN -> AD REQUEST");
             AppOpenAd.load(MyApp.getInstance(), MyApp.getAdModel().getAdsAppOpenId(), request, AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, new AppOpenAd.AppOpenAdLoadCallback() {
@@ -52,25 +54,26 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
                     super.onAdLoaded(appOpenAd);
                     AdLoader.log("APPOPEN -> AD LOADED");
                     AppOpenManager.this.appOpenAd = appOpenAd;
-                    AppOpenManager.this.appLoadTime = (new Date()).getTime();
                     AdLoader.resetFailedCountAppOpen();
                 }
 
                 @Override
                 public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                     super.onAdFailedToLoad(loadAdError);
+                    isAdLoading = false;
+                    AppOpenManager.this.appOpenAd = null;
                     AdLoader.increaseFailedCountAppOpen();
                     AdLoader.log("APPOPEN -> AD FAILED (" + AdLoader.getFailedCountAppOpen() + " of " + MyApp.getAdModel().getAdsAppOpenFailedCount() + ")\nKEY: " + MyApp.getAdModel().getAdsAppOpenId() + "ERROR: " + loadAdError.getMessage());
                 }
             });
         } else if (PowerPreference.getDefaultFile().getBoolean(AdUtils.isAppLovinLoaded, false) && AdLoader.getFailedCountAppOpen() < MyApp.getAdModel().getAdsAppOpenFailedCount() && MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase(AdLoader.AD_APPLOVIN) && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            isAdLoading = true;
             MaxAppOpenAd maxAppOpenAd = new MaxAppOpenAd(MyApp.getAdModel().getAdsAppOpenId(), appCurrentActivity);
             maxAppOpenAd.setListener(new MaxAdListener() {
                 @Override
                 public void onAdLoaded(@NonNull MaxAd maxAd) {
                     AdLoader.log("APPOPEN -> AD LOADED");
                     AppOpenManager.this.maxAppOpenAd = maxAppOpenAd;
-                    AppOpenManager.this.appLoadTime = (new Date()).getTime();
                     AdLoader.resetFailedCountAppOpen();
                 }
 
@@ -91,6 +94,9 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
 
                 @Override
                 public void onAdLoadFailed(@NonNull String s, @NonNull MaxError maxError) {
+                    AppOpenManager.this.maxAppOpenAd = null;
+                    AdLoader.increaseFailedCountAppOpen();
+                    AdLoader.log("APPOPEN -> AD FAILED (" + AdLoader.getFailedCountAppOpen() + " of " + MyApp.getAdModel().getAdsAppOpenFailedCount() + ")\nKEY: " + MyApp.getAdModel().getAdsAppOpenId() + "ERROR: " + maxError.getMessage());
 
                 }
 
@@ -113,9 +119,9 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
 
     public boolean isAdAvailable() {
         if (MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase(AdLoader.AD_GOOGLE)) {
-            return appOpenAd != null && wasLoadTimeLessThanNHoursAgo(4);
+            return appOpenAd != null;
         } else if (MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase(AdLoader.AD_APPLOVIN)) {
-            return maxAppOpenAd != null && wasLoadTimeLessThanNHoursAgo(4);
+            return maxAppOpenAd != null;
         } else return false;
     }
 
@@ -126,6 +132,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
                     @Override
                     public void onAdDismissedFullScreenContent() {
                         AppOpenManager.this.appOpenAd = null;
+                        isAdLoading = false;
                         appIsShowingAd = false;
                         fetchAd();
                     }
@@ -175,6 +182,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
                     public void onAdHidden(@NonNull MaxAd maxAd) {
                         AppOpenManager.this.maxAppOpenAd = null;
                         appIsShowingAd = false;
+                        isAdLoading = false;
                         fetchAd();
                     }
 
@@ -204,12 +212,13 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
 
     public void showAdIfSplashAvailable(@NonNull final Activity activity, @NonNull MyApp.OnShowAdCompleteListener onShowAdCompleteListener) {
         if (!appIsShowingAd && isAdAvailable() && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
-            if (MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase(AdLoader.AD_APPLOVIN)) {
+            if (MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase(AdLoader.AD_GOOGLE)) {
                 FullScreenContentCallback fullScreenContentCallback = new FullScreenContentCallback() {
                     @Override
                     public void onAdDismissedFullScreenContent() {
                         AppOpenManager.this.appOpenAd = null;
                         appIsShowingAd = false;
+                        isAdLoading = false;
                         fetchAd();
                         onShowAdCompleteListener.onShowAdComplete();
                     }
@@ -259,6 +268,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
                     public void onAdHidden(@NonNull MaxAd maxAd) {
                         AppOpenManager.this.maxAppOpenAd = null;
                         appIsShowingAd = false;
+                        isAdLoading = false;
                         fetchAd();
                         onShowAdCompleteListener.onShowAdComplete();
                     }
@@ -421,9 +431,4 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
         }
     }
 
-    public boolean wasLoadTimeLessThanNHoursAgo(long numHours) {
-        long dateDifference = (new Date()).getTime() - this.appLoadTime;
-        long numMilliSecondsPerHour = 3600000;
-        return (dateDifference < (numMilliSecondsPerHour * numHours));
-    }
 }

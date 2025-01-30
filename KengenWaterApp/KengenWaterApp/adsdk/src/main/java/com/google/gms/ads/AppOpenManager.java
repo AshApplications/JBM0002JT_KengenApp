@@ -95,6 +95,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
                 @Override
                 public void onAdLoadFailed(@NonNull String s, @NonNull MaxError maxError) {
                     AppOpenManager.this.maxAppOpenAd = null;
+                    isAdLoading = false;
                     AdLoader.increaseFailedCountAppOpen();
                     AdLoader.log("APPOPEN -> AD FAILED (" + AdLoader.getFailedCountAppOpen() + " of " + MyApp.getAdModel().getAdsAppOpenFailedCount() + ")\nKEY: " + MyApp.getAdModel().getAdsAppOpenId() + "ERROR: " + maxError.getMessage());
 

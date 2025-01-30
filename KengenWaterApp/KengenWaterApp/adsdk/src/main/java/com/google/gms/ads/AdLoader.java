@@ -81,9 +81,11 @@ public class AdLoader {
     public boolean isInterstitialShowing = false;
     private InterstitialAd interstitialAd = null;
     private NativeAd nativeAdPreload = null;
-    private MaxNativeAdView nativeAlPreload = null;
+    private MaxAd nativeAlPreload = null;
+    private MaxNativeAdLoader nativeAlPreloader = null;
     private final ArrayList<NativeAd> nativeAds = new ArrayList<>();
-    private final ArrayList<MaxNativeAdView> alNativeAds = new ArrayList<>();
+    private final ArrayList<MaxAd> alNativeAds = new ArrayList<>();
+    private final ArrayList<MaxNativeAdLoader> alNativeAds2 = new ArrayList<>();
     private static final int NATIVE_LIST_SIZE = 10;
 
     public static AdLoader getInstance() {
@@ -503,6 +505,9 @@ public class AdLoader {
                 public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                     super.onAdFailedToLoad(loadAdError);
                     log("BANNER -> AD FAILED");
+                    ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
+                    ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
+                    ltUniversal.tvAdSpaceSmall.setVisibility(View.GONE);
                     ltUniversal.flAd.setVisibility(View.GONE);
                 }
             });
@@ -569,6 +574,9 @@ public class AdLoader {
                 @Override
                 public void onAdLoadFailed(@NonNull String s, @NonNull MaxError maxError) {
                     log("BANNER -> AD FAILED " + maxError.getMessage());
+                    ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
+                    ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
+                    ltUniversal.tvAdSpaceSmall.setVisibility(View.GONE);
                     ltUniversal.flAd.setVisibility(View.GONE);
                 }
 
@@ -724,12 +732,11 @@ public class AdLoader {
             ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) ltNative.cvAdMain.getLayoutParams();
             int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, activity.getResources().getDisplayMetrics());
             layoutParams.setMargins(0, margin, margin, 0);
-            if (alNativeAds.get(0).getParent() != null) {
-                ((ViewGroup) alNativeAds.get(0).getParent()).removeView(alNativeAds.get(0));
-            }
+            MaxNativeAdView adView = createNativeAdView(activity, false);
+            alNativeAds2.get(0).render(adView, alNativeAds.get(0));
             ltNative.cvAdMain.requestLayout();
             ltNative.flAd.removeAllViews();
-            ltNative.flAd.addView(alNativeAds.get(0));
+            ltNative.flAd.addView(adView);
         } else {
             ltNative.flAd.removeAllViews();
             ltNative.cvAdMain.setVisibility(View.GONE);
@@ -804,19 +811,16 @@ public class AdLoader {
             ltUniversal.flAd.removeAllViews();
             ltUniversal.flAd.addView(adView);
             loadNativeAdPreload(activity);
-        }else if(nativeAlPreload != null) {
+        } else if (nativeAlPreload != null) {
             AdLoader.log("NATIVE (PRELOAD) -> AD SHOW");
-
-            if (nativeAlPreload.getParent() != null) {
-                ((ViewGroup) nativeAlPreload.getParent()).removeView(nativeAlPreload);
-            }
-
+            MaxNativeAdView adView = createNativeAdView(activity, false);
+            nativeAlPreloader.render(adView, nativeAlPreload);
             ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
             ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);
             ltUniversal.tvAdSpaceSmall.setVisibility(View.GONE);
             ltUniversal.flAd.setVisibility(View.VISIBLE);
             ltUniversal.flAd.removeAllViews();
-            ltUniversal.flAd.addView(nativeAlPreload);
+            ltUniversal.flAd.addView(adView);
             loadNativeAdPreload(activity);
 
         } else {
@@ -856,15 +860,18 @@ public class AdLoader {
                 appLoaderNativeOne.loadAd(adRequest);
             } else if (PowerPreference.getDefaultFile().getBoolean(AdUtils.isAppLovinLoaded, false) && MyApp.getAdModel().getAdsNativePreload().equalsIgnoreCase("Yes") && MyApp.getAdModel().getAdsNative().equalsIgnoreCase(AD_APPLOVIN)) {
                 nativeAlPreload = null;
+                nativeAlPreloader = null;
                 MaxNativeAdLoader adLoader = new MaxNativeAdLoader(MyApp.getAdModel().getAdsNativeId(), activity);
                 adLoader.setNativeAdListener(new MaxNativeAdListener() {
                     @Override
                     public void onNativeAdLoaded(@Nullable MaxNativeAdView maxNativeAdView, MaxAd maxAd) {
                         super.onNativeAdLoaded(maxNativeAdView, maxAd);
                         log("NATIVE (PRELOAD) -> AD LOADED");
-                        nativeAlPreload = maxNativeAdView;
+                        nativeAlPreload = maxAd;
+                        nativeAlPreloader = adLoader;
                         if (alNativeAds.size() < NATIVE_LIST_SIZE) {
-                            alNativeAds.add(maxNativeAdView);
+                            alNativeAds.add(maxAd);
+                            alNativeAds2.add(adLoader);
                         }
                     }
 
@@ -923,9 +930,11 @@ public class AdLoader {
                         @Override
                         public void onNativeAdLoaded(@Nullable MaxNativeAdView maxNativeAdView, MaxAd maxAd) {
                             super.onNativeAdLoaded(maxNativeAdView, maxAd);
-                            nativeAlPreload = maxNativeAdView;
+                            nativeAlPreload = maxAd;
+                            nativeAlPreloader = adLoader;
                             if (alNativeAds.size() < NATIVE_LIST_SIZE) {
-                                alNativeAds.add(0, maxNativeAdView);
+                                alNativeAds.add(0, maxAd);
+                                alNativeAds2.add(0, adLoader);
                             }
                         }
 
@@ -942,6 +951,7 @@ public class AdLoader {
                             AdLoader.getInstance().closeAds();
                         }
                     });
+                    log("NATIVE (PRELOAD) -> AD REQUEST");
                     adLoader.loadAd(createNativeAdView(activity, false));
                 }
             }
@@ -950,7 +960,7 @@ public class AdLoader {
         }
     }
 
-    private MaxNativeAdView createNativeAdView(Activity activity, boolean isLarge) {
+    private MaxNativeAdView createNativeAdView(Context activity, boolean isLarge) {
         if (isLarge) {
             MaxNativeAdViewBinder binder = new MaxNativeAdViewBinder.Builder(R.layout.ad_al_native_large)
                     .setTitleTextViewId(R.id.ad_headline)
@@ -1015,7 +1025,7 @@ public class AdLoader {
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError adError) {
                         increaseFailedCountNative();
-                        log("NATIVE -> AD FAILED (" + getFailedCountNative() + " of " + MyApp.getAdModel().getAdsNativeFailedCount() + ")\nKEY: " + MyApp.getAdModel().getAdsInterstitialId() + "ERROR: " + adError.getMessage());
+                        log("NATIVE -> AD FAILED (" + getFailedCountNative() + " of " + MyApp.getAdModel().getAdsNativeFailedCount() + ")\nKEY: " + MyApp.getAdModel().getAdsNativeId() + "ERROR: " + adError.getMessage());
                         ltUniversal.flAd.setVisibility(View.GONE);
                     }
 
@@ -1052,7 +1062,7 @@ public class AdLoader {
                     public void onNativeAdLoadFailed(String s, MaxError maxError) {
                         super.onNativeAdLoadFailed(s, maxError);
                         increaseFailedCountNative();
-                        log("NATIVE -> AD FAILED (" + getFailedCountNative() + " of " + MyApp.getAdModel().getAdsNativeFailedCount() + ")\nKEY: " + MyApp.getAdModel().getAdsInterstitialId() + "ERROR: " + maxError.getMessage());
+                        log("NATIVE -> AD FAILED (" + getFailedCountNative() + " of " + MyApp.getAdModel().getAdsNativeFailedCount() + ")\nKEY: " + MyApp.getAdModel().getAdsNativeId() + "ERROR: " + maxError.getMessage());
                         ltUniversal.flAd.setVisibility(View.GONE);
                     }
 
@@ -1062,6 +1072,7 @@ public class AdLoader {
                         AdLoader.getInstance().closeAds();
                     }
                 });
+                log("NATIVE -> AD REQUEST");
                 adLoader.loadAd(createNativeAdView(activity, adType.equalsIgnoreCase("Large")));
             } else {
                 ltUniversal.flAd.setVisibility(View.GONE);

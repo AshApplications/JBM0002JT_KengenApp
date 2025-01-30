@@ -57,7 +57,7 @@ class HomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         if (MyApp.getAdModel().adsOnOff.equals("Yes", ignoreCase = true)) {
-            if (binding!!.includedAd.flAd.childCount <= 0) {
+            if (binding.includedAd.flAd.childCount <= 0) {
                 AdLoader.getInstance().showUniversalAd(this, binding.includedAd, true)
             }
         } else {
@@ -111,6 +111,7 @@ class HomeActivity : AppCompatActivity() {
             PowerPreference.getDefaultFile().putBoolean("mCheckFirst", false)
             showInfoDialog()
         }
+        AppLovinSdk.getInstance(this).showMediationDebugger()
         listener()
         setTabs()
     }
@@ -260,7 +261,8 @@ class HomeActivity : AppCompatActivity() {
             menu.add(0, categories[i].id.toInt(), i, categories[i].name).setCheckable(true)
             when (categories[i].type) {
                 0 -> pagerFragmentAdapter!!.addFragment(
-                    newInstance( categories[i].id, "Home", false
+                    newInstance(
+                        categories[i].id, "Home", false
                     ), categories[i].name
                 )
 

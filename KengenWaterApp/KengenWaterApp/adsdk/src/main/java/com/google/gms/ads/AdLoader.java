@@ -33,9 +33,11 @@ import androidx.core.content.ContextCompat;
 
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
+import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
+import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdListener;
 import com.applovin.mediation.nativeAds.MaxNativeAdLoader;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
@@ -80,6 +82,7 @@ public class AdLoader {
     public boolean isInterstitialLoading = false;
     public boolean isInterstitialShowing = false;
     private InterstitialAd interstitialAd = null;
+    private MaxInterstitialAd maxInterstitialAd = null;
     private NativeAd nativeAdPreload = null;
     private MaxAd nativeAlPreload = null;
     private MaxNativeAdLoader nativeAlPreloader = null;
@@ -328,6 +331,8 @@ public class AdLoader {
     public static void showExit(Activity activity) {
         if (MyApp.getAdModel().getAdsNative().equalsIgnoreCase(AD_GOOGLE) && MyApp.getAdModel().getAdsExit().equalsIgnoreCase("Yes") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
             showExitBottomDialog(activity);
+        } else if (MyApp.getAdModel().getAdsNative().equalsIgnoreCase(AD_APPLOVIN) && MyApp.getAdModel().getAdsExit().equalsIgnoreCase("Yes") && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            showExitBottomDialog(activity);
         } else {
             showExitDialog(activity);
         }
@@ -446,9 +451,9 @@ public class AdLoader {
     }
 
     public void loadInterstitialAds(final Activity activity) {
-        if (MyApp.getAdModel().getAdsInterstitial().equalsIgnoreCase(AD_GOOGLE)) {
+        if (MyApp.getAdModel().getAdsInterstitial().equalsIgnoreCase(AD_GOOGLE) || MyApp.getAdModel().getAdsInterstitialBack().equalsIgnoreCase(AD_GOOGLE)) {
             loadInterstitialAd(activity);
-        } else if (MyApp.getAdModel().getAdsInterstitialBack().equalsIgnoreCase(AD_GOOGLE)) {
+        } else if (MyApp.getAdModel().getAdsInterstitial().equalsIgnoreCase(AD_APPLOVIN) || MyApp.getAdModel().getAdsInterstitialBack().equalsIgnoreCase(AD_APPLOVIN)) {
             loadInterstitialAd(activity);
         }
     }
@@ -595,7 +600,7 @@ public class AdLoader {
     }
 
     private void loadInterstitialAd(final Activity activity) {
-        if (getFailedCountInterstitial() < MyApp.getAdModel().getAdsInterstitialFailedCount() && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+        if (getFailedCountInterstitial() < MyApp.getAdModel().getAdsInterstitialFailedCount() && (MyApp.getAdModel().getAdsInterstitial().equalsIgnoreCase(AD_GOOGLE) || MyApp.getAdModel().getAdsInterstitialBack().equalsIgnoreCase(AD_GOOGLE))) {
             if (interstitialAd == null && !isInterstitialLoading) {
                 isInterstitialLoading = true;
                 AdRequest adRequest = new AdRequest.Builder().build();
@@ -617,10 +622,56 @@ public class AdLoader {
                     }
                 });
             }
+        } else if (PowerPreference.getDefaultFile().getBoolean(AdUtils.isAppLovinLoaded, false) && getFailedCountInterstitial() < MyApp.getAdModel().getAdsInterstitialFailedCount() && (MyApp.getAdModel().getAdsInterstitial().equalsIgnoreCase(AD_APPLOVIN) || MyApp.getAdModel().getAdsInterstitialBack().equalsIgnoreCase(AD_APPLOVIN))) {
+            if (maxInterstitialAd == null && !isInterstitialLoading) {
+                isInterstitialLoading = true;
+                AdRequest adRequest = new AdRequest.Builder().build();
+                log("INTERSTITIAL -> AD REQUEST");
+                MaxInterstitialAd interstitialAd1 = new MaxInterstitialAd(MyApp.getAdModel().getAdsInterstitialId(), activity);
+                interstitialAd1.setListener(new MaxAdListener() {
+                    @Override
+                    public void onAdLoaded(@NonNull MaxAd maxAd) {
+                        log("INTERSTITIAL -> AD LOADED");
+                        AdLoader.this.maxInterstitialAd = interstitialAd1;
+                        resetFailedCountInterstitial();
+                    }
+
+                    @Override
+                    public void onAdDisplayed(@NonNull MaxAd maxAd) {
+
+                    }
+
+                    @Override
+                    public void onAdHidden(@NonNull MaxAd maxAd) {
+
+                    }
+
+                    @Override
+                    public void onAdClicked(@NonNull MaxAd maxAd) {
+
+                    }
+
+                    @Override
+                    public void onAdLoadFailed(@NonNull String s, @NonNull MaxError maxError) {
+                        increaseFailedCountInterstitial();
+                        log("INTERSTITIAL -> AD FAILED (" + getFailedCountInterstitial() + " of " + MyApp.getAdModel().getAdsInterstitialFailedCount() + ")\nKEY: " + MyApp.getAdModel().getAdsInterstitialId() + "ERROR: " + maxError.getMessage());
+                        maxInterstitialAd = null;
+                        isInterstitialLoading = false;
+                    }
+
+                    @Override
+                    public void onAdDisplayFailed(@NonNull MaxAd maxAd, @NonNull MaxError maxError) {
+
+                    }
+                });
+                interstitialAd1.loadAd();
+            }
         } else {
             log("INTERSTITIAL -> FAILED COUNTER IS " + MyApp.getAdModel().getAdsInterstitialFailedCount());
         }
     }
+
+    public static FullScreenDismissListener mOnAdClosedListener;
 
     public void showInterstitialAd(Activity activity, boolean isBack, FullScreenDismissListener listener) {
         if (isBack ? MyApp.getAdModel().getAdsInterstitialBack().equalsIgnoreCase(AD_GOOGLE) : MyApp.getAdModel().getAdsInterstitial().equalsIgnoreCase(AD_GOOGLE) && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
@@ -661,6 +712,71 @@ public class AdLoader {
                     });
                     AdLoader.log("INTERSTITIAL -> AD SHOW");
                     interstitialAd.show(activity);
+                } else {
+                    loadInterstitialAds(activity);
+                    listener.onDismiss();
+                }
+            } else {
+                increaseInterstitialInterval(isBack);
+                listener.onDismiss();
+            }
+        } else if (PowerPreference.getDefaultFile().getBoolean(AdUtils.isAppLovinLoaded, false) && isBack ? MyApp.getAdModel().getAdsInterstitialBack().equalsIgnoreCase(AD_APPLOVIN) : MyApp.getAdModel().getAdsInterstitial().equalsIgnoreCase(AD_APPLOVIN) && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
+            int currentInterval = getInterstitialInterval(isBack);
+            int regularInterval = isBack ? MyApp.getAdModel().getAdsInterstitialBackCount() : MyApp.getAdModel().getAdsInterstitialCount();
+            if (currentInterval == regularInterval) {
+                if (maxInterstitialAd != null) {
+                    maxInterstitialAd.setListener(new MaxAdViewAdListener() {
+                        @Override
+                        public void onAdExpanded(@NonNull MaxAd maxAd) {
+
+                        }
+
+                        @Override
+                        public void onAdCollapsed(@NonNull MaxAd maxAd) {
+
+                        }
+
+                        @Override
+                        public void onAdLoaded(@NonNull MaxAd maxAd) {
+
+                        }
+
+                        @Override
+                        public void onAdDisplayed(@NonNull MaxAd maxAd) {
+                            maxInterstitialAd = null;
+                            isInterstitialShowing = true;
+                        }
+
+                        @Override
+                        public void onAdHidden(@NonNull MaxAd maxAd) {
+                            resetInterstitialInterval(isBack);
+                            maxInterstitialAd = null;
+                            isInterstitialLoading = false;
+                            isInterstitialShowing = false;
+                            loadInterstitialAd(activity);
+                            listener.onDismiss();
+                        }
+
+                        @Override
+                        public void onAdClicked(@NonNull MaxAd maxAd) {
+                            AdLoader.getInstance().closeAds();
+                        }
+
+                        @Override
+                        public void onAdLoadFailed(@NonNull String s, @NonNull MaxError maxError) {
+
+                        }
+
+                        @Override
+                        public void onAdDisplayFailed(@NonNull MaxAd maxAd, @NonNull MaxError maxError) {
+                            maxInterstitialAd = null;
+                            isInterstitialLoading = false;
+                            isInterstitialShowing = false;
+                            listener.onDismiss();
+                        }
+                    });
+                    AdLoader.log("INTERSTITIAL -> AD SHOW");
+                    maxInterstitialAd.showAd(activity);
                 } else {
                     loadInterstitialAds(activity);
                     listener.onDismiss();
@@ -813,7 +929,7 @@ public class AdLoader {
             loadNativeAdPreload(activity);
         } else if (nativeAlPreload != null) {
             AdLoader.log("NATIVE (PRELOAD) -> AD SHOW");
-            MaxNativeAdView adView = createNativeAdView(activity, false);
+            MaxNativeAdView adView = createNativeAdView(activity, adType.equalsIgnoreCase("Large"));
             nativeAlPreloader.render(adView, nativeAlPreload);
             ltUniversal.tvAdSpaceBanner.setVisibility(View.GONE);
             ltUniversal.tvAdSpaceLarge.setVisibility(View.GONE);

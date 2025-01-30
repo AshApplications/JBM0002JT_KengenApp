@@ -8,7 +8,7 @@ import com.google.gms.ads.AdLoader;
 public class uiController {
 
     public static void onBackPressed(Activity activity) {
-        activity.finish();
+        AdLoader.finishWithAd(activity);
     }
 
     public static void showExit(Activity activity) {

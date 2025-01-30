@@ -111,7 +111,6 @@ class HomeActivity : AppCompatActivity() {
             PowerPreference.getDefaultFile().putBoolean("mCheckFirst", false)
             showInfoDialog()
         }
-        AppLovinSdk.getInstance(this).showMediationDebugger()
         listener()
         setTabs()
     }

@@ -393,6 +393,7 @@ class StartActivity : BaseActivity() {
                 PowerPreference.getDefaultFile().putBoolean(AdUtils.isAppLovinLoaded, true)
                 AdLoader.getInstance().loadNativeAdPreload(this)
                 AdLoader.getInstance().loadNativeListAds(this)
+                AdLoader.getInstance().loadInterstitialAds(this)
             }
         }
     }

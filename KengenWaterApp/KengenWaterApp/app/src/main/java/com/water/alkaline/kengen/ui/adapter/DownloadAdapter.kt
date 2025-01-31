@@ -100,18 +100,15 @@ class DownloadAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is AdHolder) {
-            val adHolder = holder
-            if (adHolder.binding.flAd.childCount <= 0) {
-                AdLoader.getInstance().showNativeList(activity, adHolder.binding)
-            }
+            AdLoader.getInstance().showNativeList(activity, holder.binding)
         } else {
             val viewHolder = holder as ViewHolder
-            Glide.with(activity).load(arrayList[position]!!.imgUrl)
+            Glide.with(activity).load(arrayList[position].imgUrl)
                 .placeholder(MyApplication.getPlaceHolder())
                 .error(R.drawable.ic_logo)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(viewHolder.binding.imgVideo)
-            viewHolder.binding.txtVideoTitle.text = arrayList[position]!!.name
+            viewHolder.binding.txtVideoTitle.text = arrayList[position].name
             viewHolder.binding.txtVideoTitle.isSelected = true
             viewHolder.itemView.setOnClickListener {
                 listener.onItemClick(

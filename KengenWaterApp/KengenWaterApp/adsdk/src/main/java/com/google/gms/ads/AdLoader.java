@@ -1017,7 +1017,6 @@ public class AdLoader {
                 VideoOptions videoOptions = new VideoOptions.Builder().setStartMuted(true).build();
                 NativeAdOptions adOptions = new NativeAdOptions.Builder().setVideoOptions(videoOptions).build();
                 com.google.android.gms.ads.AdLoader appLoaderNativeOne = new com.google.android.gms.ads.AdLoader.Builder(activity, MyApp.getAdModel().getAdsNativeId()).forNativeAd(nativeAd -> {
-                    this.nativeAdPreload = nativeAd;
                     if (nativeAds.size() < NATIVE_LIST_SIZE) {
                         nativeAds.add(nativeAd);
                     }
@@ -1046,9 +1045,7 @@ public class AdLoader {
                         @Override
                         public void onNativeAdLoaded(@Nullable MaxNativeAdView maxNativeAdView, MaxAd maxAd) {
                             super.onNativeAdLoaded(maxNativeAdView, maxAd);
-                            nativeAlPreload = maxAd;
-                            nativeAlPreloader = adLoader;
-                            if (alNativeAds.size() < NATIVE_LIST_SIZE) {
+                             if (alNativeAds.size() < NATIVE_LIST_SIZE) {
                                 alNativeAds.add(0, maxAd);
                                 alNativeAds2.add(0, adLoader);
                             }

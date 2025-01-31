@@ -151,9 +151,7 @@ class VideosAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is AdHolder) {
-            if (holder.binding.flAd.childCount <= 0) {
-                AdLoader.getInstance().showNativeList(activity, holder.binding)
-            }
+            AdLoader.getInstance().showNativeList(activity, holder.binding)
         } else if (holder is ViewHolder) {
             Glide.with(activity).load(arrayList[position].imgUrl)
                 .placeholder(MyApplication.getPlaceHolder())

@@ -34,7 +34,7 @@ class FeedbackActivity : BaseActivity() {
     private val binding by lazy {
         ActivityFeedbackBinding.inflate(layoutInflater)
     }
-    private lateinit var adapter: ViewPagerFragmentAdapter
+    private var adapter: ViewPagerFragmentAdapter? = null
 
     private val feedbackViewModel by lazy {
         ViewModelProvider(this)[FeedbackViewModel::class.java]
@@ -73,8 +73,8 @@ class FeedbackActivity : BaseActivity() {
 
     private fun setAdapter() {
         adapter = ViewPagerFragmentAdapter(supportFragmentManager, lifecycle)
-        adapter.addFragment(FeedbackFragment(), "Feedbacks")
-        adapter.addFragment(HistoryFragment(), "History")
+        adapter!!.addFragment(FeedbackFragment(), "Feedbacks")
+        adapter!!.addFragment(HistoryFragment(), "History")
         binding.vpFeeds.adapter = adapter
         binding.vpFeeds.offscreenPageLimit = 2
         TabLayoutMediator(
@@ -82,13 +82,13 @@ class FeedbackActivity : BaseActivity() {
             binding.vpFeeds
         ) { tab: TabLayout.Tab, position: Int ->
             tab.setText(
-                adapter.mFragmentTitleList[position]
+                adapter!!.mFragmentTitleList[position]
             )
         }.attach()
         binding.vpFeeds.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                if (adapter.arrayList[position] is HistoryFragment) {
+                if (adapter!!.arrayList[position] is HistoryFragment) {
                     binding.ivInfo.visibility = View.VISIBLE
                 } else {
                     binding.ivInfo.visibility = View.GONE

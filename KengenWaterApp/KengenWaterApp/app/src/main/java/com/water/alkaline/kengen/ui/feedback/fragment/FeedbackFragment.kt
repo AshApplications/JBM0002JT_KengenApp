@@ -49,9 +49,7 @@ class FeedbackFragment : BaseFragment(), OnRatingBarChangeListener {
     }
     private var isAnimated: Boolean = false
 
-    private val feedbackViewModel by lazy {
-        ViewModelProvider(this)[FeedbackViewModel::class.java]
-    }
+    private var feedbackViewModel: FeedbackViewModel? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -67,12 +65,13 @@ class FeedbackFragment : BaseFragment(), OnRatingBarChangeListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeUI()
         bindObservers()
+        initializeUI()
     }
 
     private fun bindObservers() {
-        feedbackViewModel.sendFeedData.observe(viewLifecycleOwner) {
+        feedbackViewModel = ViewModelProvider(this)[FeedbackViewModel::class.java]
+        feedbackViewModel!!.sendFeedData.observe(viewLifecycleOwner) {
             when (it) {
                 is NetworkResult.Success -> {
                     hideDialog()
@@ -183,7 +182,7 @@ class FeedbackFragment : BaseFragment(), OnRatingBarChangeListener {
         @SuppressLint("HardwareIds") val deviceId = Settings.Secure.getString(
             appContext.contentResolver, Settings.Secure.ANDROID_ID
         )
-        feedbackViewModel.sendFeedData(
+        feedbackViewModel!!.sendFeedData(
             DecryptEncrypt.EncryptStr(
                 appContext, MyApplication.sendFeedApi(
                     appContext,

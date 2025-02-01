@@ -25,7 +25,7 @@ class HistoryFragment : BaseFragment() {
     private val binding by lazy {
         FragmentHistoryBinding.inflate(layoutInflater)
     }
-    private lateinit var adapter: FeedAdapter
+    private var adapter: FeedAdapter? = null
 
 
     override fun onAttach(context: Context) {
@@ -57,7 +57,7 @@ class HistoryFragment : BaseFragment() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onNewFeedBackEvent(event: NewFeedBackEvent) {
-        adapter.addItem(event.model)
+        adapter!!.addItem(event.model)
         checkData()
     }
 
@@ -71,7 +71,7 @@ class HistoryFragment : BaseFragment() {
         val manager = GridLayoutManager(appContext, 1)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(i: Int): Int {
-                return when (adapter.getItemViewType(i)) {
+                return when (adapter!!.getItemViewType(i)) {
                     Constant.STORE_TYPE -> 1
                     Constant.AD_TYPE -> 1
                     Constant.LOADING -> 1
@@ -90,7 +90,7 @@ class HistoryFragment : BaseFragment() {
     }
 
     private fun refreshActivity(feedbacks: List<Feedback>) {
-        adapter.refresh(feedbacks)
+        adapter!!.refresh(feedbacks)
         binding.includedProgress.progress.visibility = View.GONE
         checkData()
     }
@@ -98,7 +98,7 @@ class HistoryFragment : BaseFragment() {
     @Subscribe
 
     private fun checkData() {
-        if (adapter.itemCount > 0) {
+        if (adapter!!.itemCount > 0) {
             binding.includedProgress.llError.visibility = View.GONE
         } else {
             binding.includedProgress.llError.visibility = View.VISIBLE

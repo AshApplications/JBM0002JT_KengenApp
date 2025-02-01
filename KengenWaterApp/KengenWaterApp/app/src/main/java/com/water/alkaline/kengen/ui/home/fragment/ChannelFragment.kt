@@ -48,25 +48,20 @@ import okhttp3.ResponseBody
 @AndroidEntryPoint
 class ChannelFragment : BaseFragment() {
 
-    private val homeViewModel by lazy {
-        ViewModelProvider(this)[HomeViewModel::class.java]
-    }
+    private var appViewModel: AppViewModel? = null
+    private var homeViewModel: HomeViewModel? = null
 
-    private val viewModel by lazy {
-        ViewModelProvider(this)[AppViewModel::class.java]
-    }
     private var isChannel: Boolean = true
     private var pageToken = ""
     private var channelId = ""
-
 
     private var subList: MutableList<Subcategory> = mutableListOf()
     private var chanList: MutableList<Channel> = mutableListOf()
     private var videoList: MutableList<SaveEntity> = mutableListOf()
 
-    private lateinit var channelAdapter: ChannelAdapter
-    private lateinit var subcatAdapter: SubcatAdapter
-    private lateinit var videosAdapter: VideosAdapter
+    private var channelAdapter: ChannelAdapter? = null
+    private var subcatAdapter: SubcatAdapter? = null
+    private var videosAdapter: VideosAdapter? = null
 
     private var mParam1: String? = null
     private var mParam2: String? = null
@@ -111,7 +106,9 @@ class ChannelFragment : BaseFragment() {
     }
 
     private fun bindObservers() {
-        homeViewModel.updateData.observe(viewLifecycleOwner) {
+        appViewModel = ViewModelProvider(this)[AppViewModel::class.java]
+        homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
+        homeViewModel!!.updateData.observe(viewLifecycleOwner) {
             if (it is NetworkResult.Success) {
                 try {
                     val updateResponse = GsonBuilder().create().fromJson(
@@ -138,7 +135,7 @@ class ChannelFragment : BaseFragment() {
             }
         }
 
-        homeViewModel.videoData.observe(viewLifecycleOwner) {
+        homeViewModel!!.videoData.observe(viewLifecycleOwner) {
             if (it is NetworkResult.Success) {
                 try {
                     parseData(it.data!!)
@@ -263,11 +260,11 @@ class ChannelFragment : BaseFragment() {
     private val fromSubCategory: Unit
         get() {
             if (appContext != null) {
-                subList = viewModel.getAllSubByCategory(mParam1!!)
+                subList = appViewModel!!.getAllSubByCategory(mParam1!!)
                 if (subList.size > 1) {
                     showSubCategory()
                 } else if (subList.size == 1) {
-                    chanList = viewModel.getAllChannelByCategory(subList[0].id)
+                    chanList = appViewModel!!.getAllChannelByCategory(subList[0].id)
                     if (chanList.size > 1) {
                         showChannels()
                     } else if (chanList.size == 1) {
@@ -282,7 +279,7 @@ class ChannelFragment : BaseFragment() {
     private val fromChannel: Unit
         get() {
             if (appContext != null) {
-                chanList = viewModel.getAllChannelByCategory(mParam1!!)
+                chanList = appViewModel!!.getAllChannelByCategory(mParam1!!)
                 if (chanList.size > 1) {
                     showChannels()
                 } else if (chanList.size == 1) {
@@ -447,7 +444,7 @@ class ChannelFragment : BaseFragment() {
 
     private fun getVideoData() {
         if (Constant.checkInternet(appContext)) {
-            homeViewModel.fetchData(
+            homeViewModel!!.fetchData(
                 PowerPreference.getDefaultFile().getString(
                     Constant.mKeyId
                 ), channelId, pageToken, isChannel
@@ -519,7 +516,7 @@ class ChannelFragment : BaseFragment() {
                 version = BuildConfig.VERSION_CODE
             }
 
-            homeViewModel.fetchUpdateData(
+            homeViewModel!!.fetchUpdateData(
                 DecryptEncrypt.EncryptStr(
                     appContext, MyApplication.updateApi(
                         appContext,

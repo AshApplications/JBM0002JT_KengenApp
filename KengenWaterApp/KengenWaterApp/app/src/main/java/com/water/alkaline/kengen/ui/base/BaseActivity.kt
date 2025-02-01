@@ -15,7 +15,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     private lateinit var loaderDialog: Dialog
     private lateinit var downloadDialog: Dialog
-    public lateinit var downloadBinding: DialogDownloadBinding
+    lateinit var downloadBinding: DialogDownloadBinding
 
     private fun initDialog() {
         loaderDialog = Dialog(this, R.style.NormalDialog)

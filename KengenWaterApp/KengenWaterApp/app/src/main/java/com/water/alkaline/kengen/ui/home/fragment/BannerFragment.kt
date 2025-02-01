@@ -29,15 +29,12 @@ class BannerFragment : BaseFragment() {
     private val binding by lazy {
         FragmentBannerBinding.inflate(layoutInflater)
     }
-    private lateinit var mParam1: String
+    private var mParam1: String = Constant.defaultId
 
     var list: MutableList<Banner> = mutableListOf()
 
-    private lateinit var adapter: BannerAdapter
-
-    private val appViewModel by lazy {
-        ViewModelProvider(this)[AppViewModel::class.java]
-    }
+    private var adapter: BannerAdapter? = null
+    private var appViewModel: AppViewModel? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -61,6 +58,7 @@ class BannerFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        appViewModel = ViewModelProvider(this)[AppViewModel::class.java]
         setAdapter()
         refreshFragment()
     }
@@ -80,7 +78,7 @@ class BannerFragment : BaseFragment() {
         val manager = GridLayoutManager(appContext, 2)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(i: Int): Int {
-                return when (adapter.getItemViewType(i)) {
+                return when (adapter!!.getItemViewType(i)) {
                     Constant.STORE_TYPE -> 1
                     Constant.AD_TYPE -> 2
                     else -> 1
@@ -95,8 +93,8 @@ class BannerFragment : BaseFragment() {
 
     fun refreshFragment() {
         delayTask(500) {
-            list = appViewModel.getAllBannerByCategory(mParam1)
-            adapter.refreshAdapter(list)
+            list = appViewModel!!.getAllBannerByCategory(mParam1)
+            adapter!!.refreshAdapter(list)
             binding.includedProgress.progress.visibility = View.GONE
             checkData()
         }

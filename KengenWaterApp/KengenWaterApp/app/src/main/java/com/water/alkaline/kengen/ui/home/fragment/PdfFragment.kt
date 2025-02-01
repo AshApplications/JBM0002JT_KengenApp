@@ -26,16 +26,14 @@ class PdfFragment : BaseFragment() {
     private val binding by lazy {
         FragmentPdfBinding.inflate(layoutInflater)
     }
-    private lateinit var mParam1: String
-    
+    private  var mParam1: String = Constant.defaultId
+
     var list: MutableList<Pdf> = mutableListOf()
-  
-    private lateinit var adapter: PdfAdapter
-    private val viewModel by lazy {
-        ViewModelProvider(this)[AppViewModel::class.java]
-    }
+
+    private var adapter: PdfAdapter? = null
 
 
+    private var appViewModel: AppViewModel? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -59,12 +57,12 @@ class PdfFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        appViewModel = ViewModelProvider(this)[AppViewModel::class.java]
         setAdapter()
         refreshFragment()
     }
-    
-    fun setAdapter()
-    {
+
+    private fun setAdapter() {
         adapter = PdfAdapter(appContext, list) { position: Int, item: Pdf ->
             uiController.gotoIntent(
                 (appContext as HomeActivity),
@@ -76,7 +74,7 @@ class PdfFragment : BaseFragment() {
         val manager = GridLayoutManager(appContext, 2)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(i: Int): Int {
-                return when (adapter.getItemViewType(i)) {
+                return when (adapter!!.getItemViewType(i)) {
                     Constant.STORE_TYPE -> 1
                     Constant.AD_TYPE -> 2
                     Constant.LOADING -> 1
@@ -92,7 +90,7 @@ class PdfFragment : BaseFragment() {
 
     fun refreshFragment() {
         delayTask(500) {
-            adapter.refreshAdapter(viewModel.getAllPdfByCategory(mParam1))
+            adapter!!.refreshAdapter(appViewModel!!.getAllPdfByCategory(mParam1))
             binding.includedProgress.progress.visibility = View.GONE
             checkData()
         }
@@ -108,8 +106,9 @@ class PdfFragment : BaseFragment() {
 
     companion object {
         private const val ARG_PARAM1 = "param1"
+
         @JvmStatic
-        fun newInstance( param1: String): PdfFragment {
+        fun newInstance(param1: String): PdfFragment {
             val fragment = PdfFragment()
             val args = Bundle()
             args.putString(ARG_PARAM1, param1)

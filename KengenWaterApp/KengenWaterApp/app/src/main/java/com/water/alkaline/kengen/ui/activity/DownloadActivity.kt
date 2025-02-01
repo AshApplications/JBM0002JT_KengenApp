@@ -1,5 +1,6 @@
 package com.water.alkaline.kengen.ui.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -27,8 +28,9 @@ class DownloadActivity : BaseActivity() {
         ViewModelProvider(this)[AppViewModel::class.java]
     }
     var list: MutableList<DownloadEntity> = mutableListOf()
-    private lateinit var adapter: DownloadAdapter
+    private var adapter: DownloadAdapter? = null
 
+    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         uiController.onBackPressed(this)
     }
@@ -47,7 +49,7 @@ class DownloadActivity : BaseActivity() {
     }
 
     private fun refreshFragment() {
-        if (!list.isEmpty() && adapter != null) {
+        if (list.isNotEmpty() && adapter != null) {
             adapter!!.refreshAdapter(list)
         }
     }

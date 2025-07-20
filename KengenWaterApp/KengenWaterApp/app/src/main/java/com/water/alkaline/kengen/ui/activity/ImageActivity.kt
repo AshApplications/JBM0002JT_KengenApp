@@ -5,7 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -52,16 +56,26 @@ class ImageActivity : BaseActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        uiController.onBackPressed(this)
+    private fun onClick() {
+        binding.includedToolbar.ivBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                uiController.onBackPressed(this@ImageActivity)
+            }
+        })
     }
-
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         initDownloadDialog()
-        binding.includedToolbar.ivBack.setOnClickListener { onBackPressed() }
+        onClick()
         mPath = intent.extras!!.getString("mpath", "")
         if (mPath.startsWith("http")) {
             banner = null

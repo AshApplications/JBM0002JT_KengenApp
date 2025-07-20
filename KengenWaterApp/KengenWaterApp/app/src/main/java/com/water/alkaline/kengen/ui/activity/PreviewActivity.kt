@@ -8,7 +8,11 @@ import android.text.Html
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
@@ -40,10 +44,6 @@ class PreviewActivity : BaseActivity() {
     private var mList: ArrayList<SaveEntity> = ArrayList()
     private var pos: Int = 0
 
-    override fun onBackPressed() {
-        uiController.onBackPressed(this)
-    }
-
     override fun onResume() {
         super.onResume()
         if (MyApp.getAdModel().adsOnOff.equals("Yes", ignoreCase = true)) {
@@ -58,7 +58,13 @@ class PreviewActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         if (intent != null && intent.hasExtra(Constant.POSITION)) {
             pos = intent.getIntExtra(Constant.POSITION, 0)
@@ -90,7 +96,7 @@ class PreviewActivity : BaseActivity() {
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(binding.frameContainer)
             binding.txtTitle.text = Html.fromHtml(mList.get(pos).title)
-            binding.includedToolbar.ivBack.setOnClickListener(View.OnClickListener { onBackPressed() })
+            onClick()
             binding.btnStart.setOnClickListener {
                 uiController.gotoIntent(
                     this,
@@ -109,6 +115,15 @@ class PreviewActivity : BaseActivity() {
             Constant.showToast(this, "Unknown Error Occurred")
             finish()
         }
+    }
+
+    private fun onClick() {
+        binding.includedToolbar.ivBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                uiController.onBackPressed(this@PreviewActivity)
+            }
+        })
     }
 
 
@@ -139,7 +154,7 @@ class PreviewActivity : BaseActivity() {
             }
 
             override fun convertedWithError(var1: String) {
-                 Toast.makeText(this@PreviewActivity, "Something went Wrong", Toast.LENGTH_SHORT)
+                Toast.makeText(this@PreviewActivity, "Something went Wrong", Toast.LENGTH_SHORT)
                     .show()
                 hideLoadingDialog()
             }

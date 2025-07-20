@@ -11,8 +11,12 @@ import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.gms.ads.AdLoader
@@ -68,13 +72,25 @@ class BannerActivity : BaseActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        uiController.onBackPressed(this)
+    private fun onClick() {
+        binding.includedToolbar.ivBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                uiController.onBackPressed(this@BannerActivity)
+            }
+        })
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         initDownloadDialog()
         getIntentData()
         startPager()
@@ -88,7 +104,7 @@ class BannerActivity : BaseActivity() {
     }
 
     private fun startPager() {
-        binding.includedToolbar.ivBack.setOnClickListener { onBackPressed() }
+        onClick()
         binding.llmenuDownload.setOnClickListener {
             var entity: DownloadEntity? = null
             if (viewModel.getDownloadByUrl(banners[binding.viewpager.currentItem].url).isNotEmpty()

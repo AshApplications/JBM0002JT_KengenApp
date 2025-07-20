@@ -29,13 +29,8 @@ import com.permissionx.guolindev.PermissionX;
 import com.permissionx.guolindev.callback.ForwardToSettingsCallback;
 import com.permissionx.guolindev.callback.RequestCallback;
 import com.permissionx.guolindev.request.ForwardScope;
-import com.preference.PowerPreference;
 import com.water.alkaline.kengen.MyApplication;
 import com.water.alkaline.kengen.R;
-import com.google.gms.ads.AdUtils;
-import com.water.alkaline.kengen.databinding.DialogInternetBinding;
-import com.water.alkaline.kengen.ui.activity.ExitActivity;
-
 import java.io.File;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -149,7 +144,7 @@ public class Constant {
                     public void onResult(boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
                         if (allGranted) {
                             Toast.makeText(activity, "All Permissions are Granted", Toast.LENGTH_LONG).show();
-                        } else if (deniedList.size() > 0) {
+                        } else if (!deniedList.isEmpty()) {
                             Toast.makeText(activity, "These Permissions are Denied: " + deniedList.get(0), Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(activity, "Permissions are Denied", Toast.LENGTH_LONG).show();
@@ -159,7 +154,7 @@ public class Constant {
     }
 
     public static boolean checkPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
             return true;
         else
             return ContextCompat.checkSelfPermission(MyApplication.getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;

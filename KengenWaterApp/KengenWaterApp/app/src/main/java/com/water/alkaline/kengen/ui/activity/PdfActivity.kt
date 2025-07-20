@@ -11,7 +11,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.RelativeLayout
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.gms.ads.AdLoader
 import com.google.gms.ads.MyApp
@@ -23,8 +27,6 @@ import com.water.alkaline.kengen.databinding.DialogJumpBinding
 import com.water.alkaline.kengen.library.downloader.Error
 import com.water.alkaline.kengen.library.downloader.OnDownloadListener
 import com.water.alkaline.kengen.library.downloader.PRDownloader
-import com.water.alkaline.kengen.library.pdfviewer.scroll.DefaultScrollHandle
-import com.water.alkaline.kengen.library.pdfviewer.util.FitPolicy
 import com.water.alkaline.kengen.model.DownloadEntity
 import com.water.alkaline.kengen.model.main.Pdf
 import com.water.alkaline.kengen.ui.base.BaseActivity
@@ -41,6 +43,10 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
+import androidx.core.graphics.drawable.toDrawable
+import androidx.lifecycle.lifecycleScope
+import com.rajat.pdfviewer.PdfRendererView
+import androidx.core.net.toUri
 
 @AndroidEntryPoint
 class PdfActivity() : BaseActivity() {
@@ -53,13 +59,11 @@ class PdfActivity() : BaseActivity() {
     private var mPath: String = ""
     var page: Int = 0
     private var totPages: Int = 0
-    private var fitPolicy: FitPolicy? = null
     private var isLoaded: Boolean = false
     private var nightMode: Boolean = false
     private var stream: InputStream? = null
     var pdf: Pdf? = null
     var entity: DownloadEntity? = null
-
     override fun onResume() {
         super.onResume()
         if (MyApp.getAdModel().adsOnOff.equals("Yes", ignoreCase = true)) {
@@ -72,14 +76,24 @@ class PdfActivity() : BaseActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        uiController.onBackPressed(this)
+    private fun onClick() {
+        binding.includedToolbar.ivBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                uiController.onBackPressed(this@PdfActivity)
+            }
+        })
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         initDownloadDialog()
         mPath = intent.extras!!.getString("mpath", "")
         if (mPath.startsWith("http")) {
@@ -89,19 +103,18 @@ class PdfActivity() : BaseActivity() {
             entity = null
             if (viewModel.getByPath(mPath).isNotEmpty()) entity = viewModel.getByPath(mPath)[0]
         }
-        this.fitPolicy = FitPolicy.BOTH
         listener()
         checkDownload()
         if (mPath.startsWith("http")) {
             loadFromUrl()
         } else {
-            setPdfFile(nightMode, FitPolicy.BOTH, mPath)
+            setPdfFile(mPath)
         }
     }
 
 
     fun listener() {
-        binding.includedToolbar.ivBack.setOnClickListener { onBackPressed() }
+        onClick()
         binding.llmenuJump.setOnClickListener { showJumpDialog() }
         binding.llmenuShare.setOnClickListener {
             if (pdf != null) {
@@ -135,15 +148,15 @@ class PdfActivity() : BaseActivity() {
         binding.ivMenuLeft.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View) {
                 if (page > 0) {
-                    binding.pdfview.jumpTo(binding.pdfview.currentPage - 1, true)
+                    binding.pdfview.jumpToPage(page - 1, true)
                 }
             }
         })
 
         binding.ivMenuRight.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View) {
-                if (page < binding.pdfview.pageCount - 1) {
-                    binding.pdfview.jumpTo(binding.pdfview.currentPage + 1, true)
+                 if (page < binding.pdfview.totalPageCount - 1) {
+                    binding.pdfview.jumpToPage(page + 1, true)
                 }
             }
         })
@@ -152,7 +165,7 @@ class PdfActivity() : BaseActivity() {
     fun checkDownload() {
         if (mPath.startsWith("http")) {
             var entity: DownloadEntity? = null
-            if (!viewModel.getDownloadByUrl(pdf!!.url).isEmpty()) entity =
+            if (viewModel.getDownloadByUrl(pdf!!.url).isNotEmpty()) entity =
                 viewModel.getDownloadByUrl(
                     pdf!!.url
                 )[0]
@@ -179,7 +192,7 @@ class PdfActivity() : BaseActivity() {
                     stream = BufferedInputStream(urlConnection.inputStream)
                 }
                 CoroutineScope(Dispatchers.Main).launch {
-                    setPdfUrl(nightMode, FitPolicy.BOTH, stream)
+                    setPdfUrl(mPath)
                 }
             }
         } else {
@@ -190,13 +203,13 @@ class PdfActivity() : BaseActivity() {
     }
 
     fun checkArrow() {
-        if (binding.pdfview.currentPage == 0) {
+        if (page == 0) {
             binding.ivMenuLeft.visibility = View.GONE
         } else {
             binding.ivMenuLeft.visibility = View.VISIBLE
         }
 
-        if (binding.pdfview.currentPage == binding.pdfview.pageCount - 1) {
+        if (page == binding.pdfview.totalPageCount - 1) {
             binding.ivMenuRight.visibility = View.GONE
         } else {
             binding.ivMenuRight.visibility = View.VISIBLE
@@ -211,14 +224,14 @@ class PdfActivity() : BaseActivity() {
         )
         val dialogJump = Dialog(this@PdfActivity, R.style.NormalDialog)
         dialogJump.setContentView(jumpBinding.root)
-        dialogJump.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialogJump.window!!.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         dialogJump.window!!.setLayout(
             RelativeLayout.LayoutParams.MATCH_PARENT,
             RelativeLayout.LayoutParams.MATCH_PARENT
         )
         dialogJump.setCancelable(true)
         dialogJump.show()
-        jumpBinding.editJump.setText((binding.pdfview.currentPage + 1).toString() + "")
+        jumpBinding.editJump.setText((page + 1).toString() + "")
         jumpBinding.txtJump.setOnClickListener {
             try {
                 if (jumpBinding.editJump.getText().toString()
@@ -230,7 +243,9 @@ class PdfActivity() : BaseActivity() {
                 ) jumpBinding.editJump.error = "Page Not Available"
                 else {
                     dialogJump.dismiss()
-                    binding.pdfview.jumpTo(jumpBinding.editJump.getText().toString().toInt() - 1)
+                    binding.pdfview.jumpToPage(
+                        jumpBinding.editJump.getText().toString().toInt() - 1
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("TAG", e.toString())
@@ -248,34 +263,35 @@ class PdfActivity() : BaseActivity() {
 
 
     @SuppressLint("SetTextI18n")
-    fun setPdfUrl(nightMode: Boolean, fitPolicy: FitPolicy?, stream: InputStream?) {
+    fun setPdfUrl( stream: String) {
         isLoaded = false
-        binding.pdfview.fromStream(stream)
-            .password(null)
-            .enableAnnotationRendering(true)
-            .pageFitPolicy(fitPolicy)
-            .defaultPage(page)
-            .swipeHorizontal(true)
-            .autoSpacing(true)
-            .scrollHandle(DefaultScrollHandle(this@PdfActivity))
-            .pageFling(true)
-            .pageSnap(false)
-            .nightMode(nightMode)
-            .onPageChange { page, pageCount ->
-                this@PdfActivity.page = page
-                binding.txtPageNumbers.text = (page + 1).toString() + " / " + pageCount
-                checkArrow()
-            }.onLoad { nbPages ->
+        binding.pdfview.statusListener = object : PdfRendererView.StatusCallBack {
+            override fun onPdfLoadSuccess(absolutePath: String) {
+
+            }
+
+            override fun onPdfRenderSuccess() {
+                super.onPdfRenderSuccess()
                 isLoaded = true
-                totPages = nbPages
+                totPages = binding.pdfview.totalPageCount
                 binding.pdfview.visibility = View.VISIBLE
                 binding.includedProgress.progress.visibility = View.GONE
-                binding.txtPageNumbers.visibility = View.VISIBLE
+                binding.txtPageNumbers.visibility = View.GONE
                 binding.includedProgress.llError.visibility = View.GONE
                 binding.llPdfMenu.visibility = View.VISIBLE
                 checkArrow()
-            }.onError { t ->
-                Constant.showLog(t.message)
+            }
+
+            override fun onPageChanged(currentPage: Int, totalPage: Int) {
+                super.onPageChanged(currentPage, totalPage)
+                this@PdfActivity.page = currentPage
+                binding.txtPageNumbers.text = (page + 1).toString() + " / " + totalPage
+                checkArrow()
+            }
+
+            override fun onError(error: Throwable) {
+                super.onError(error)
+                Constant.showLog(error.message)
                 isLoaded = false
                 totPages = 0
                 binding.pdfview.visibility = View.GONE
@@ -284,39 +300,47 @@ class PdfActivity() : BaseActivity() {
                 binding.includedProgress.llError.visibility = View.VISIBLE
                 binding.llPdfMenu.visibility = View.GONE
                 Constant.showToast(this@PdfActivity, "Something went wrong")
-            }.load()
+            }
+        }
+        binding.pdfview.initWithUrl(
+            url = stream,
+            lifecycleCoroutineScope = lifecycleScope,
+            lifecycle = lifecycle
+        )
     }
 
 
     @SuppressLint("SetTextI18n")
-    private fun setPdfFile(nightMode: Boolean, fitPolicy: FitPolicy?, stream: String) {
+    private fun setPdfFile( stream: String) {
+
         isLoaded = false
-        binding.pdfview.fromUri(Uri.parse("file://$stream"))
-            .password(null)
-            .enableAnnotationRendering(true)
-            .pageFitPolicy(fitPolicy)
-            .defaultPage(page)
-            .autoSpacing(true)
-            .swipeHorizontal(true)
-            .scrollHandle(DefaultScrollHandle(this@PdfActivity))
-            .pageFling(true)
-            .pageSnap(false)
-            .nightMode(nightMode)
-            .onPageChange { page, pageCount ->
-                this@PdfActivity.page = page
-                binding.txtPageNumbers.text = (page + 1).toString() + " / " + pageCount
-                checkArrow()
-            }.onLoad { nbPages ->
+        binding.pdfview.statusListener = object : PdfRendererView.StatusCallBack {
+            override fun onPdfLoadSuccess(absolutePath: String) {
+
+            }
+
+            override fun onPdfRenderSuccess() {
+                super.onPdfRenderSuccess()
                 isLoaded = true
-                totPages = nbPages
+                totPages = binding.pdfview.totalPageCount
                 binding.pdfview.visibility = View.VISIBLE
                 binding.includedProgress.progress.visibility = View.GONE
-                binding.txtPageNumbers.visibility = View.VISIBLE
+                binding.txtPageNumbers.visibility = View.GONE
                 binding.includedProgress.llError.visibility = View.GONE
                 binding.llPdfMenu.visibility = View.VISIBLE
                 checkArrow()
-            }.onError { t ->
-                Constant.showLog(t.message)
+            }
+
+            override fun onPageChanged(currentPage: Int, totalPage: Int) {
+                super.onPageChanged(currentPage, totalPage)
+                this@PdfActivity.page = currentPage
+                binding.txtPageNumbers.text = (page + 1).toString() + " / " + totalPage
+                checkArrow()
+            }
+
+            override fun onError(error: Throwable) {
+                super.onError(error)
+                Constant.showLog(error.message)
                 isLoaded = false
                 totPages = 0
                 binding.pdfview.visibility = View.GONE
@@ -325,7 +349,11 @@ class PdfActivity() : BaseActivity() {
                 binding.includedProgress.llError.visibility = View.VISIBLE
                 binding.llPdfMenu.visibility = View.GONE
                 Constant.showToast(this@PdfActivity, "Something went wrong")
-            }.load()
+            }
+        }
+        binding.pdfview.initWithUri(
+            uri = "file://$stream".toUri(),
+        )
     }
 
     @SuppressLint("SetTextI18n")

@@ -4,6 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.gms.ads.AdLoader
@@ -30,9 +34,13 @@ class DownloadActivity : BaseActivity() {
     var list: MutableList<DownloadEntity> = mutableListOf()
     private var adapter: DownloadAdapter? = null
 
-    @SuppressLint("MissingSuperCall")
-    override fun onBackPressed() {
-        uiController.onBackPressed(this)
+    private fun onClick() {
+        binding.includedToolbar.ivBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                uiController.onBackPressed(this@DownloadActivity)
+            }
+        })
     }
 
     override fun onResume() {
@@ -56,8 +64,14 @@ class DownloadActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(binding.root)
-        binding.includedToolbar.ivBack.setOnClickListener { onBackPressed() }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+        onClick()
         setAdapter()
         refreshActivity()
     }

@@ -10,7 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
@@ -59,10 +63,35 @@ class PlayerActivity : BaseActivity() {
 
     var position: Int = 0
 
-    
+
+    private fun onClick() {
+        binding.ivBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (isFullScreen) {
+                    isFullScreen = false
+                    binding.cvToolbar.visibility = View.VISIBLE
+                    binding.playerView.layoutParams = FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                } else {
+                    uiController.onBackPressed(this@PlayerActivity)
+                }
+            }
+        })
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         if (intent != null && intent.hasExtra(Constant.POSITION)) {
             position = intent.getIntExtra(Constant.POSITION, 0)
         }
@@ -85,6 +114,7 @@ class PlayerActivity : BaseActivity() {
             mList = ArrayList()
         }
 
+        onClick()
         checkLike()
         setSize()
         setAdapter()
@@ -116,7 +146,6 @@ class PlayerActivity : BaseActivity() {
             }
         }
 
-        binding.ivBack.setOnClickListener { v: View? -> onBackPressed() }
     }
 
     private fun checkLike() {
@@ -275,21 +304,6 @@ class PlayerActivity : BaseActivity() {
             }
         }
     }
-
-    override fun onBackPressed() {
-        if (isFullScreen) {
-            isFullScreen = false
-            binding.cvToolbar.visibility = View.VISIBLE
-            binding.playerView.layoutParams = FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        } else {
-            uiController.onBackPressed(this)
-        }
-    }
-
 
     private fun shareVideo() {
        showLoadingDialog()

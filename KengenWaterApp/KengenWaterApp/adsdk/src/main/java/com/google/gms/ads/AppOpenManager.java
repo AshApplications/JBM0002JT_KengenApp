@@ -48,7 +48,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
             isAdLoading = true;
             AdRequest request = getAdRequest();
             AdLoader.log("APPOPEN -> AD REQUEST");
-            AppOpenAd.load(MyApp.getInstance(), MyApp.getAdModel().getAdsAppOpenId(), request, AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, new AppOpenAd.AppOpenAdLoadCallback() {
+            AppOpenAd.load(MyApp.getInstance(), MyApp.getAdModel().getAdsAppOpenId(), request,new AppOpenAd.AppOpenAdLoadCallback() {
                 @Override
                 public void onAdLoaded(@NonNull AppOpenAd appOpenAd) {
                     super.onAdLoaded(appOpenAd);
@@ -299,7 +299,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
             if (AdLoader.getFailedCountAppOpen() < MyApp.getAdModel().getAdsAppOpenFailedCount() && MyApp.getAdModel().getAdsAppOpen().equalsIgnoreCase(AdLoader.AD_GOOGLE) && MyApp.getAdModel().getAdsOnOff().equalsIgnoreCase("Yes")) {
                 AdRequest request = getAdRequest();
                 AdLoader.log("APPOPEN -> AD REQUEST");
-                AppOpenAd.load(MyApp.getInstance(), MyApp.getAdModel().getAdsAppOpenId(), request, AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, new AppOpenAd.AppOpenAdLoadCallback() {
+                AppOpenAd.load(MyApp.getInstance(), MyApp.getAdModel().getAdsAppOpenId(), request, new AppOpenAd.AppOpenAdLoadCallback() {
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         super.onAdFailedToLoad(loadAdError);
